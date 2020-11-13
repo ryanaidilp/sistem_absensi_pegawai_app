@@ -362,9 +362,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 logout();
               })
         ],
-        title: Text(
-          'SPO Balaesang',
-          style: TextStyle(color: Colors.white),
+        title: Image.asset(
+          'assets/logo/logo.png',
+          width: MediaQuery.of(context).size.width * 0.3,
         ),
       ),
       floatingActionButton: FloatingActionButton(
