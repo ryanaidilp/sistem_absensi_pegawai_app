@@ -123,7 +123,7 @@ class _MyAppState extends State<MyApp> {
       create: (_) => DataRepository(apiService: ApiService(api: API())),
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'SPO Balaesang',
+          title: 'SIAP Balaesang',
           theme: ThemeData(
               primarySwatch: Colors.blue,
               backgroundColor: Colors.white,

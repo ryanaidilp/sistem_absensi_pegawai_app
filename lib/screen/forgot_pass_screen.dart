@@ -39,15 +39,12 @@ class ForgotPassScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(
-                    'SPO',
-                    style: TextStyle(
-                        fontSize: 36.0,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white),
+                  Image.asset(
+                    'assets/logo/logo.png',
+                    width: 200,
                   ),
                   Text(
-                    'Sistem Presensi Online',
+                    'Sistem Absensi Pegawai',
                     style: TextStyle(fontSize: 12.0, color: Colors.white),
                   ),
                 ],

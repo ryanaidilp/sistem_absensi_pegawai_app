@@ -1,9 +1,7 @@
 enum Endpoint { login, logout, change_pass, users, presence, my, permission }
 
 class API {
-  // final String host = 'http://192.168.43.76:8000';
-
-  final String host = 'BASE_URL';
+  final String host = 'http://192.168.43.76:8000';
 
   String endpointUri(Endpoint endpoint) => '$host/api/${_paths[endpoint]}';
 
