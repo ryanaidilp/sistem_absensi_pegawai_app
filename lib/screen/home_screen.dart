@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -33,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<String> _images = new List();
   User user;
   List<Employee> _users;
+  bool isLoading = false;
 
   Widget _buildImageStack() {
     if (_images.isNotEmpty) {
@@ -192,6 +194,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _getUser() async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
       User _user = await dataRepo.getMyData();
       setState(() {
@@ -199,6 +204,10 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     } catch (e) {
       print(e.toString());
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -243,7 +252,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<Widget> _buildPresenceSection() {
-    if (user != null) {
+    if (isLoading) {
+      return [
+        _buildShimmerSection(MediaQuery.of(context).size.width * 0.9, 60),
+        SizedBox(height: 10.0),
+        _buildShimmerSection(MediaQuery.of(context).size.width * 0.9, 60),
+        SizedBox(height: 10.0),
+        _buildShimmerSection(MediaQuery.of(context).size.width * 0.9, 60),
+        SizedBox(height: 10.0),
+        _buildShimmerSection(MediaQuery.of(context).size.width * 0.9, 60),
+        SizedBox(height: 10.0),
+      ];
+    }
+    if (user != null && user.presences.isNotEmpty) {
       return user.presences.map((presence) {
         var color;
         switch (presence.status) {
@@ -282,39 +303,52 @@ class _HomeScreenState extends State<HomeScreen> {
       }).toList();
     }
     return [
-      _buildShimmerSection(MediaQuery.of(context).size.width * 0.9, 60),
-      SizedBox(height: 10.0),
-      _buildShimmerSection(MediaQuery.of(context).size.width * 0.9, 60),
-      SizedBox(height: 10.0),
-      _buildShimmerSection(MediaQuery.of(context).size.width * 0.9, 60),
-      SizedBox(height: 10.0),
-      _buildShimmerSection(MediaQuery.of(context).size.width * 0.9, 60),
-      SizedBox(height: 10.0),
+      Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+            Container(
+              width: 150,
+              height: 150,
+              child: FlareActor(
+                'assets/flare/empty.flr',
+                fit: BoxFit.contain,
+                animation: 'empty',
+                alignment: Alignment.center,
+              ),
+            ),
+            Text('Tidak ada absen hari ini!')
+          ]))
     ];
   }
 
   Widget _buildTimerSection() {
-    if (user == null || user?.nextPresence == null) {
+    if (isLoading) {
       return _buildShimmerSection(MediaQuery.of(context).size.width * 0.8, 60);
     }
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: <Widget>[
-            Text('${user?.nextPresence?.codeType}'),
-            SizedBox(height: 10.0),
-            CountdownTimer(
-              endTime: user?.nextPresence?.endTime?.millisecondsSinceEpoch,
-              emptyWidget: Text(
-                'Semua absen hari ini telah selesai',
-                style: TextStyle(fontSize: 16.0),
+    if (user != null && user.nextPresence == null) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: <Widget>[
+              Text('${user?.nextPresence == null ? 'Tidak ada absen hari ini!' : user?.nextPresence?.codeType}'),
+              SizedBox(height: 10.0),
+              CountdownTimer(
+                endTime: user?.nextPresence?.endTime?.millisecondsSinceEpoch,
+                emptyWidget: Text(
+                  'Semua absen hari ini telah selesai',
+                  style: TextStyle(fontSize: 16.0),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
+      return Center(
+        child: const Text('Tidak Ada Absen hari ini'),
+      );
   }
 
   Widget _buildPNSHonorerSection() {
