@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://i.ibb.co/ZLxbgkS/logo-siap.png"/>
+    <img src="https://i.ibb.co/jGgBj1n/icon.png"/>
 </p>
 
 <h1 align="center">SIAP</h1>
