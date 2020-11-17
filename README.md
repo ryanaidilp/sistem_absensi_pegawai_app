@@ -6,7 +6,7 @@
 
 Aplikasi Android untuk manajemen data presensi pegawai di lingkungan kantor pemerintahan Kecamatan Balaesang. Aplikasi ini dibangun dengan [Flutter](https://flutter.dev)
 
-![SIAP](https://i.ibb.co/5c35JYp/banner.png)
+[![SIAP](https://i.ibb.co/5c35JYp/banner.png)](https://play.google.com/store/apps/details?id=com.banuacoders.siap)
 
 ## About
 
