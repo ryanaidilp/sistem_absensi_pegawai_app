@@ -326,13 +326,13 @@ class _HomeScreenState extends State<HomeScreen> {
     if (isLoading) {
       return _buildShimmerSection(MediaQuery.of(context).size.width * 0.8, 60);
     }
-    if (user != null && user.nextPresence == null) {
+    if (user != null) {
       return Card(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: <Widget>[
-              Text('${user?.nextPresence == null ? 'Tidak ada absen hari ini!' : user?.nextPresence?.codeType}'),
+              Text('${user?.nextPresence == null ? 'Absen Selanjutnya' : user?.nextPresence?.codeType}'),
               SizedBox(height: 10.0),
               CountdownTimer(
                 endTime: user?.nextPresence?.endTime?.millisecondsSinceEpoch,
