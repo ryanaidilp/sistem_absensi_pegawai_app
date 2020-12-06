@@ -37,10 +37,14 @@ class User {
         status: json['status'] as String,
         position: json['position'] as String,
         token: json['token'] as String,
-        nextPresence: json['next_presence'] != null ? Presence.fromJson(
-            json['next_presence']['data'] as Map<String, dynamic>) : null,
-        presences: (json['presence'] as List<dynamic>)
-            .map((json) => Presence.fromJson(json))
-            .toList());
+        nextPresence: json['next_presence'] != null
+            ? Presence.fromJson(
+                json['next_presence']['data'] as Map<String, dynamic>)
+            : null,
+        presences: json['presence'] != null
+            ? (json['presence'] as List<dynamic>)
+                .map((json) => Presence.fromJson(json))
+                .toList()
+            : null);
   }
 }
