@@ -1,4 +1,5 @@
-enum Endpoint { login, logout, change_pass, users, presence, my, permission }
+enum Endpoint { login, logout, change_pass, users, presence, my, permission,
+employeePermission, approvePermission}
 
 class API {
   final String host = 'http://192.168.43.76:8000';
@@ -12,6 +13,8 @@ class API {
     Endpoint.users: 'user',
     Endpoint.presence: 'presence',
     Endpoint.permission: 'permission',
-    Endpoint.my: 'my'
+    Endpoint.my: 'my',
+    Endpoint.employeePermission : 'permission/all',
+    Endpoint.approvePermission : 'permission/approve'
   };
 }
