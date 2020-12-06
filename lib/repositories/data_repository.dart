@@ -94,13 +94,36 @@ class DataRepository {
     return data;
   }
 
+  Future<Map<String, dynamic>> getAllEmployeePermissions() async {
+    Map<String, dynamic> data;
+    try {
+      data = await apiService.getEndpointData(
+          endpoint: Endpoint.employeePermission);
+    } catch (e) {
+      print(e.toString());
+    }
+    return data;
+  }
+
+  Future<Response> approvePermission(
+      Map<String, dynamic> data) async {
+    Response response;
+    try {
+      response = await apiService.postEndpointWithToken(
+          endpoint: Endpoint.approvePermission, data: data);
+    } catch (e) {
+      print(e.toString());
+    }
+    return response;
+  }
+
   Future<Response> presence(Map<String, dynamic> data) async {
     Response response;
     try {
       response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.presence, data: data);
     } catch (e) {
-      debugPrint(e.toString());
+      print(e.toString());
     }
     return response;
   }
