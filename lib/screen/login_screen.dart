@@ -5,6 +5,7 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
@@ -234,6 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           prefs.setString('user',
                                               jsonEncode(result['data']));
                                           print(result['data']['token']);
+                                          OneSignal.shared.setExternalUserId(result['data']['id'].toString());
                                           Navigator.pushAndRemoveUntil(
                                               context,
                                               MaterialPageRoute(
