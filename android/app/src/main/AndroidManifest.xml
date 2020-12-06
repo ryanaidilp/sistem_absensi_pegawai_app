@@ -15,7 +15,7 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:requestLegacyExternalStorage="true"
-        android:label="SIAP"
+        android:label="SiAP Balaesang"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:icon="@mipmap/ic_launcher">
         <activity
