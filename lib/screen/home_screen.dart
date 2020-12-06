@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:intl/intl.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +19,7 @@ import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/change_pass_screen.dart';
 import 'package:spo_balaesang/screen/create_permission_screen.dart';
 import 'package:spo_balaesang/screen/employee_list_screen.dart';
+import 'package:spo_balaesang/screen/employee_permission.dart';
 import 'package:spo_balaesang/screen/login_screen.dart';
 import 'package:spo_balaesang/screen/permission_list_screen.dart';
 import 'package:spo_balaesang/screen/presence_screen.dart';
@@ -172,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         prefs.remove('token');
                         prefs.remove('user');
                         pd.hide();
+                        OneSignal.shared.removeExternalUserId();
                         Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(builder: (_) => LoginScreen()),
@@ -199,6 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
       User _user = await dataRepo.getMyData();
+      OneSignal.shared.setExternalUserId(_user.id.toString());
       setState(() {
         user = _user;
       });
@@ -349,6 +353,43 @@ class _HomeScreenState extends State<HomeScreen> {
       return Center(
         child: const Text('Tidak Ada Absen hari ini'),
       );
+  }
+
+  Widget _buildApprovePermission() {
+    return user?.position == 'Camat' ? ClipRRect(
+      borderRadius: BorderRadius.circular(20.0),
+      child: Card(
+        color: Colors.blueAccent,
+        child: InkWell(
+          onTap: () {
+            Navigator.of(context)
+                .push(MaterialPageRoute(
+                builder: (_) => EmployeePermissionScreen()))
+                .then((value) {
+              _getUser();
+            });
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: <Widget>[
+                Icon(
+                  Icons.check,
+                  size: 84,
+                  color: Colors.white,
+                ),
+                Text(
+                  'Setujui Izin',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ) : SizedBox();
   }
 
   Widget _buildPNSHonorerSection() {
@@ -632,6 +673,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           ),
+                          _buildApprovePermission()
                         ],
                       ),
                     ),
