@@ -2,7 +2,10 @@ import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,7 +18,17 @@ import 'package:spo_balaesang/utils/view_util.dart';
 import 'network/api_service.dart';
 
 Future<void> main() async {
+  await initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
+  Intl.defaultLocale = 'id_ID';
+  OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
+  OneSignal.shared.setLocationShared(true);
+  OneSignal.shared.init('ONE_SIGNAL_APP_ID',iOSSettings: {
+    OSiOSSettings.autoPrompt: false,
+    OSiOSSettings.inAppLaunchUrl: false
+  });
+  OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
+
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
     runApp(MyApp());
