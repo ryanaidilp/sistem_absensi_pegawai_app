@@ -105,8 +105,7 @@ class DataRepository {
     return data;
   }
 
-  Future<Response> approvePermission(
-      Map<String, dynamic> data) async {
+  Future<Response> approvePermission(Map<String, dynamic> data) async {
     Response response;
     try {
       response = await apiService.postEndpointWithToken(
@@ -115,6 +114,93 @@ class DataRepository {
       print(e.toString());
     }
     return response;
+  }
+
+  Future<Map<String, dynamic>> outstation(Map<String, dynamic> data) async {
+    Map<String, dynamic> result;
+    try {
+      var response = await apiService.postEndpointWithToken(
+          endpoint: Endpoint.outstation, data: data);
+      result = jsonDecode(response.body);
+    } catch (e) {
+      print(e.toString());
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> getAllOutstation() async {
+    Map<String, dynamic> data;
+    try {
+      data = await apiService.getEndpointData(endpoint: Endpoint.outstation);
+    } catch (e) {
+      print(e.toString());
+    }
+    return data;
+  }
+
+  Future<Map<String, dynamic>> getAllEmployeeOutstation() async {
+    Map<String, dynamic> data;
+    try {
+      data = await apiService.getEndpointData(
+          endpoint: Endpoint.employeeOutstation);
+    } catch (e) {
+      print(e.toString());
+    }
+    return data;
+  }
+
+  Future<Response> approveOutstation(Map<String, dynamic> data) async {
+    Response response;
+    try {
+      response = await apiService.postEndpointWithToken(
+          endpoint: Endpoint.approveOutstation, data: data);
+    } catch (e) {
+      print(e.toString());
+    }
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getAllNotifications() async {
+    Map<String, dynamic> data;
+    try {
+      data = await apiService.getEndpointData(endpoint: Endpoint.notifications);
+    } catch (e) {
+      print(e.toString());
+    }
+    return data;
+  }
+
+  Future<Response> readNotification(Map<String, dynamic> data) async {
+    Response response;
+    try {
+      response = await apiService.postEndpointWithToken(
+          endpoint: Endpoint.notifications, data: data);
+    } catch (e) {
+      print(e.toString());
+    }
+    return response;
+  }
+
+  Future<Map<String, dynamic>> readAllNotifications() async {
+    Map<String, dynamic> data;
+    try {
+      data = await apiService.getEndpointData(
+          endpoint: Endpoint.readNotifications);
+    } catch (e) {
+      print(e.toString());
+    }
+    return data;
+  }
+
+  Future<Map<String, dynamic>> deleteAllNotifications() async {
+    Map<String, dynamic> data;
+    try {
+      data = await apiService.getEndpointData(
+          endpoint: Endpoint.deleteNotifications);
+    } catch (e) {
+      print(e.toString());
+    }
+    return data;
   }
 
   Future<Response> presence(Map<String, dynamic> data) async {
