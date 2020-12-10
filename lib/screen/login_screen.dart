@@ -235,7 +235,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           prefs.setString('user',
                                               jsonEncode(result['data']));
                                           print(result['data']['token']);
-                                          OneSignal.shared.setExternalUserId(result['data']['id'].toString());
+                                          OneSignal.shared.setExternalUserId(
+                                              result['data']['id'].toString());
                                           Navigator.pushAndRemoveUntil(
                                               context,
                                               MaterialPageRoute(
