@@ -1,0 +1,220 @@
+import 'dart:convert';
+
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:progress_dialog/progress_dialog.dart';
+import 'package:provider/provider.dart';
+import 'package:spo_balaesang/models/notification.dart';
+import 'package:spo_balaesang/repositories/data_repository.dart';
+import 'package:spo_balaesang/utils/view_util.dart';
+
+class NotificationListScreen extends StatefulWidget {
+  @override
+  _NotificationListScreenState createState() => _NotificationListScreenState();
+}
+
+class _NotificationListScreenState extends State<NotificationListScreen> {
+  List<UserNotification> notifications = List<UserNotification>();
+  bool _isLoading = false;
+  DataRepository dataRepo;
+  Set<String> choices = {'Tandai Semua Dibaca', 'Hapus Semua'};
+
+  Future<void> _fetchNotificationsData() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      Map<String, dynamic> _result = await dataRepo.getAllNotifications();
+      List<dynamic> _notifications = _result['data'];
+      List<UserNotification> _data = _notifications
+          .map((json) => UserNotification.fromJson(json))
+          .toList();
+      setState(() {
+        notifications = _data;
+      });
+    } catch (e) {
+      print(e);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _readNotification(String id) async {
+    ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    try {
+      pd.show();
+      Map<String, dynamic> data = {'notification_id': id};
+      Response response = await dataRepo.readNotification(data);
+      Map<String, dynamic> _res = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        pd.hide();
+        showAlertDialog("success", "Sukses", _res['message'], context, true);
+        _fetchNotificationsData();
+      } else {
+        if (pd.isShowing()) pd.hide();
+        showErrorDialog(context, _res);
+      }
+    } catch (e) {
+      print(e);
+      pd.hide();
+    }
+  }
+
+  Future<void> _readAllNotifications() async {
+    ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    try {
+      pd.show();
+      Map<String, dynamic> _res = await dataRepo.readAllNotifications();
+      if (_res['success']) {
+        pd.hide();
+        showAlertDialog("success", "Sukses", _res['message'], context, true);
+        _fetchNotificationsData();
+      } else {
+        if (pd.isShowing()) pd.hide();
+        showErrorDialog(context, _res);
+      }
+    } catch (e) {
+      print(e);
+      pd.hide();
+    }
+  }
+
+  Future<void> _deleteAllNotifications() async {
+    ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    try {
+      pd.show();
+      Map<String, dynamic> _res = await dataRepo.deleteAllNotifications();
+      if (_res['success']) {
+        pd.hide();
+        showAlertDialog("success", "Sukses", _res['message'], context, true);
+        _fetchNotificationsData();
+      } else {
+        if (pd.isShowing()) pd.hide();
+        showErrorDialog(context, _res);
+      }
+    } catch (e) {
+      print(e);
+      pd.hide();
+    }
+  }
+
+  Widget _buildBody() {
+    if (_isLoading) return Center(child: CircularProgressIndicator());
+    if (notifications.isEmpty)
+      return Center(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                width: 150,
+                height: 150,
+                child: FlareActor(
+                  'assets/flare/empty.flr',
+                  fit: BoxFit.contain,
+                  animation: 'empty',
+                  alignment: Alignment.center,
+                ),
+              ),
+              Text('Belum ada pemberitahuan!')
+            ]),
+      );
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ListView.builder(
+        itemBuilder: (_, index) {
+          UserNotification notification = notifications[index];
+          return Container(
+            margin: EdgeInsets.only(bottom: 8.0),
+            child: Card(
+              elevation: 4.0,
+              child: InkWell(
+                onTap: () {
+                  _readNotification(notification.id);
+                },
+                child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              '${notification.data['heading']}',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 16.0),
+                            ),
+                            notification.isRead
+                                ? SizedBox()
+                                : Container(
+                                    child: Text(
+                                      '',
+                                      style: TextStyle(fontSize: 10.0),
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50.0),
+                                      color: Colors.red,
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 6.0, vertical: 1.0),
+                                  )
+                          ],
+                        ),
+                        SizedBox(height: 5.0),
+                        Text(notification.data['body'])
+                      ],
+                    )),
+              ),
+            ),
+          );
+        },
+        itemCount: notifications.length,
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    dataRepo = Provider.of<DataRepository>(context, listen: false);
+    _fetchNotificationsData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            itemBuilder: (BuildContext context) {
+              return choices
+                  .map((String choice) => PopupMenuItem<String>(
+                        child: Text(choice),
+                        value: choice,
+                      ))
+                  .toList();
+            },
+            onSelected: (value) {
+              if (value == choices.first) {
+                _readAllNotifications();
+              }
+              if (value == choices.last) {
+                _deleteAllNotifications();
+              }
+            },
+          )
+        ],
+        title: Text(
+          'Pemberitahuan',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.blueAccent,
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
+      body: _buildBody(),
+    );
+  }
+}
