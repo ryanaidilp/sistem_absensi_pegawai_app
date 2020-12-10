@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/absent_permission.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
+import 'package:spo_balaesang/screen/create_permission_screen.dart';
 
 class PermissionListScreen extends StatefulWidget {
   @override
@@ -144,6 +145,13 @@ class _PermissionListScreenState extends State<PermissionListScreen> {
         appBar: AppBar(
           backgroundColor: Colors.blueAccent,
           title: Text('Daftar Izin'),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => CreatePermissionScreen()));
+          },
+          child: Icon(Icons.add),
         ),
         body: _buildBody());
   }
