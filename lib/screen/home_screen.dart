@@ -17,10 +17,12 @@ import 'package:spo_balaesang/models/employee.dart';
 import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/change_pass_screen.dart';
-import 'package:spo_balaesang/screen/create_permission_screen.dart';
 import 'package:spo_balaesang/screen/employee_list_screen.dart';
+import 'package:spo_balaesang/screen/employee_outstation.dart';
 import 'package:spo_balaesang/screen/employee_permission.dart';
 import 'package:spo_balaesang/screen/login_screen.dart';
+import 'package:spo_balaesang/screen/notification_list_screen.dart';
+import 'package:spo_balaesang/screen/outstation_list_screen.dart';
 import 'package:spo_balaesang/screen/permission_list_screen.dart';
 import 'package:spo_balaesang/screen/presence_screen.dart';
 
@@ -255,6 +257,22 @@ class _HomeScreenState extends State<HomeScreen> {
     return _buildShimmerSection(60, 15);
   }
 
+  Color _checkStatusColor(String status) {
+    switch (status) {
+      case 'Tidak Hadir':
+        return Colors.red;
+      case 'Tepat Waktu':
+        return Colors.green;
+      case 'Terlambat':
+        return Colors.orange;
+      case 'Dinas Luar':
+      case 'Izin':
+        return Colors.blue;
+      default:
+        return Colors.red;
+    }
+  }
+
   List<Widget> _buildPresenceSection() {
     if (isLoading) {
       return [
@@ -270,23 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     if (user != null && user.presences.isNotEmpty) {
       return user.presences.map((presence) {
-        var color;
-        switch (presence.status) {
-          case 'Tidak Hadir':
-            color = Colors.red;
-            break;
-          case 'Tepat Waktu':
-            color = Colors.green;
-            break;
-          case 'Terlambat':
-            color = Colors.orange;
-            break;
-          case 'Izin':
-            color = Colors.blue;
-            break;
-          default:
-            color = Colors.red;
-        }
+        var color = _checkStatusColor(presence.status);
         return Card(
           child: ListTile(
             title: Text(
@@ -326,70 +328,259 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
   }
 
+  int checkTime() {
+    if (user != null &&
+        user.nextPresence != null &&
+        user.nextPresence.startTime.isAfter(DateTime.now())) {
+      return user?.nextPresence?.startTime?.millisecondsSinceEpoch;
+    }
+    return user?.nextPresence?.endTime?.millisecondsSinceEpoch;
+  }
+
+  String _checkTimeLabel() {
+    if (user != null &&
+        user.nextPresence != null &&
+        user.nextPresence.startTime.isAfter(DateTime.now())) {
+      return "MULAI DALAM :";
+    }
+    return "SELESAI DALAM :";
+  }
+
+  Widget _checkStatusIcon(String status) {
+    switch (status) {
+      case 'Tepat Waktu':
+        return Column(
+          children: <Widget>[
+            Icon(Icons.check, color: _checkStatusColor(status), size: 54),
+            Text(
+              status,
+              style: TextStyle(color: Colors.blueGrey),
+            )
+          ],
+        );
+      case 'Tidak Hadir':
+      case 'Terlambat':
+        return Column(
+          children: <Widget>[
+            Icon(Icons.warning, color: _checkStatusColor(status), size: 54),
+            Text(
+              status,
+              style: TextStyle(color: Colors.blueGrey),
+            )
+          ],
+        );
+      case 'Dinas Luar':
+      case 'Izin':
+        return Column(
+          children: <Widget>[
+            Icon(Icons.calendar_today,
+                size: 54, color: _checkStatusColor(status)),
+            Text(
+              status,
+              style: TextStyle(color: Colors.blueGrey),
+            )
+          ],
+        );
+      default:
+        return Column(
+          children: <Widget>[
+            Icon(Icons.warning, color: _checkStatusColor(status), size: 54),
+            Text(
+              status,
+              style: TextStyle(color: Colors.blueGrey),
+            )
+          ],
+        );
+    }
+  }
+
   Widget _buildTimerSection() {
     if (isLoading) {
       return _buildShimmerSection(MediaQuery.of(context).size.width * 0.8, 60);
     }
-    if (user != null) {
+
+    if (user?.nextPresence != null) {
       return Card(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: <Widget>[
-              Text('${user?.nextPresence == null ? 'Absen Selanjutnya' : user?.nextPresence?.codeType}'),
-              SizedBox(height: 10.0),
-              CountdownTimer(
-                endTime: user?.nextPresence?.endTime?.millisecondsSinceEpoch,
-                emptyWidget: Text(
-                  'Semua absen hari ini telah selesai',
-                  style: TextStyle(fontSize: 16.0),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    DateFormat.EEEE().format(user.nextPresence.date),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(width: 5.0),
+                  const Text('|'),
+                  const SizedBox(width: 5.0),
+                  Text(
+                    DateFormat.yMMMd().format(user.nextPresence.date),
+                  ),
+                  const SizedBox(width: 5.0),
+                  const Text('|'),
+                  const SizedBox(width: 5.0),
+                  Text(
+                    user.nextPresence.attendTime.isEmpty
+                        ? '-'
+                        : '${user.nextPresence.attendTime} WITA',
+                  ),
+                ],
+              ),
+              Divider(
+                thickness: 1.0,
+                color: Colors.black26,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        'SKEMA ABSENSI :',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(user.nextPresence.codeType),
+                      const SizedBox(height: 10.0),
+                      const Text(
+                        'JADWAL ABSENSI :',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        DateFormat('hh:mm:ss')
+                            .format(user.nextPresence.startTime),
+                      ),
+                      const SizedBox(height: 10.0),
+                      const Text(
+                        'STATUS KEHADIRAN :',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        user.nextPresence.status,
+                        style: TextStyle(
+                            color: _checkStatusColor(user.nextPresence.status)),
+                      ),
+                      const SizedBox(height: 10.0),
+                      Text(
+                        _checkTimeLabel(),
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      CountdownTimer(
+                        onEnd: () {
+                          _getUser();
+                        },
+                        endTime: checkTime(),
+                        emptyWidget: Text(
+                          'Semua absen hari ini telah selesai',
+                        ),
+                      ),
+                    ],
+                  ),
+                  user.nextPresence.attendTime.isNotEmpty
+                      ? _checkStatusIcon(user.nextPresence.status)
+                      : user.nextPresence.startTime.isAfter(DateTime.now())
+                          ? _checkStatusIcon(user.nextPresence.status)
+                          : ClipRRect(
+                              borderRadius: BorderRadius.circular(20.0),
+                              child: Card(
+                                color: Colors.green[300],
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                            builder: (_) => PresenceScreen()))
+                                        .then((value) {
+                                      _getUser();
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.qr_code_rounded,
+                                          size: 84,
+                                          color: Colors.white,
+                                        ),
+                                        Text(
+                                          'Mulai Absen',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                ],
               ),
             ],
           ),
         ),
       );
     }
-      return Center(
-        child: const Text('Tidak Ada Absen hari ini'),
-      );
-  }
 
-  Widget _buildApprovePermission() {
-    return user?.position == 'Camat' ? ClipRRect(
-      borderRadius: BorderRadius.circular(20.0),
-      child: Card(
-        color: Colors.blueAccent,
-        child: InkWell(
-          onTap: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(
-                builder: (_) => EmployeePermissionScreen()))
-                .then((value) {
-              _getUser();
-            });
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
+    if (user?.holiday != null) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
             child: Column(
               children: <Widget>[
-                Icon(
-                  Icons.check,
-                  size: 84,
-                  color: Colors.white,
-                ),
                 Text(
-                  'Setujui Izin',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
+                  'Libur Nasional. ${DateFormat('EEEE, d MMMM Y').format(user.holiday['date'])}',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0),
                 ),
+                SizedBox(height: 10.0),
+                Text('${user.holiday['name']}'),
               ],
             ),
           ),
         ),
+      );
+    }
+
+    if (user.isWeekend) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: Column(
+              children: const <Widget>[
+                Text(
+                  'Akhir Pekan',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0),
+                ),
+                SizedBox(height: 10.0),
+                Text('Tidak Ada Absen hari ini'),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+          child: Column(
+            children: const <Widget>[
+              Text(
+                'Selesai',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0),
+              ),
+              SizedBox(height: 10.0),
+              Text('Semua presensi hari ini telah selesai!'),
+            ],
+          ),
+        ),
       ),
-    ) : SizedBox();
+    );
   }
 
   Widget _buildPNSHonorerSection() {
@@ -428,6 +619,42 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.blueAccent,
         elevation: 0.0,
         actions: <Widget>[
+          Stack(
+            children: <Widget>[
+              IconButton(
+                icon: Icon(
+                  (user != null && user.unreadNotification > 0)
+                      ? Icons.notifications_active_rounded
+                      : Icons.notifications_none_rounded,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(
+                          builder: (_) => NotificationListScreen()))
+                      .then((value) => _getUser());
+                },
+              ),
+              (user != null && user.unreadNotification > 0)
+                  ? Positioned(
+                      right: 8,
+                      top: 6,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 4.0, vertical: 2.0),
+                        child: Text(
+                          user?.unreadNotification.toString(),
+                          style: TextStyle(
+                              fontSize: 12.0, fontWeight: FontWeight.bold),
+                        ),
+                        decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(50)),
+                      ),
+                    )
+                  : SizedBox(),
+            ],
+          ),
           IconButton(
               icon: Icon(
                 Icons.exit_to_app,
@@ -534,151 +761,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Menu',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16.0,
-                      ),
-                    ),
-                    SizedBox(height: 10.0),
-                    Center(
-                      child: Wrap(
-                        spacing: 20,
-                        runSpacing: 10,
-                        runAlignment: WrapAlignment.spaceBetween,
-                        direction: Axis.horizontal,
-                        children: <Widget>[
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20.0),
-                            child: Card(
-                              color: Colors.green[300],
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.of(context)
-                                      .push(MaterialPageRoute(
-                                          builder: (_) => PresenceScreen()))
-                                      .then((value) {
-                                    _getUser();
-                                  });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: <Widget>[
-                                      Icon(
-                                        Icons.qr_code_rounded,
-                                        size: 84,
-                                        color: Colors.white,
-                                      ),
-                                      Text(
-                                        'Mulai Absen',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20.0),
-                            child: Card(
-                              color: Colors.orange[300],
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (_) =>
-                                          CreatePermissionScreen()));
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: <Widget>[
-                                      Icon(
-                                        Icons.note_add_outlined,
-                                        size: 84,
-                                        color: Colors.white,
-                                      ),
-                                      Text(
-                                        'Buat Izin',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20.0),
-                            child: Card(
-                              color: Colors.blueAccent[200],
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (_) => ChangePasswordScreen()));
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: <Widget>[
-                                      Icon(
-                                        Icons.lock_outline,
-                                        size: 84,
-                                        color: Colors.white,
-                                      ),
-                                      Text(
-                                        'Password',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20.0),
-                            child: Card(
-                              color: Colors.red[300],
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (_) => PermissionListScreen()));
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: <Widget>[
-                                      Icon(
-                                        Icons.list_alt,
-                                        size: 84,
-                                        color: Colors.white,
-                                      ),
-                                      Text(
-                                        'Lihat Izin',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          _buildApprovePermission()
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 10.0),
-                    Text(
                       'Absen Selanjutnya',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -687,6 +769,146 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     Center(
                       child: _buildTimerSection(),
+                    ),
+                    SizedBox(height: 10.0),
+                    Text(
+                      'Menu',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16.0,
+                      ),
+                    ),
+                    SizedBox(height: 10.0),
+                    Center(
+                      child: Column(
+                        children: <Widget>[
+                          Card(
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (_) => PermissionListScreen()));
+                              },
+                              child: ListTile(
+                                leading: Icon(
+                                  Icons.calendar_today_rounded,
+                                  color: Colors.green,
+                                  size: 32.0,
+                                ),
+                                title: Text(
+                                  'Izin',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                subtitle: Text(
+                                  'Pengajuan dan riwayat Izin',
+                                  style: TextStyle(color: Colors.black87),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Card(
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (_) => OutstationListScreen()));
+                              },
+                              child: ListTile(
+                                leading: Icon(
+                                  Icons.card_travel_rounded,
+                                  color: Colors.deepOrange,
+                                  size: 32.0,
+                                ),
+                                title: Text(
+                                  'Dinas Luar',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                subtitle: Text(
+                                  'Pengajuan dan riwayat Dinas Luar',
+                                  style: TextStyle(color: Colors.black87),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Card(
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (_) => ChangePasswordScreen()));
+                              },
+                              child: ListTile(
+                                leading: Icon(
+                                  Icons.lock_outline,
+                                  color: Colors.blueAccent,
+                                  size: 32.0,
+                                ),
+                                title: Text(
+                                  'Password',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                subtitle: Text(
+                                  'Ubah password akun',
+                                  style: TextStyle(color: Colors.black87),
+                                ),
+                              ),
+                            ),
+                          ),
+                          user?.position == 'Camat'
+                              ? Card(
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  EmployeePermissionScreen()));
+                                    },
+                                    child: ListTile(
+                                      leading: Icon(
+                                        Icons.check,
+                                        color: Colors.green,
+                                        size: 32.0,
+                                      ),
+                                      title: Text(
+                                        'Persetujuan Izin',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      subtitle: Text(
+                                        'Setujui Izin yang diajukan',
+                                        style: TextStyle(color: Colors.black87),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : SizedBox(),
+                          user?.position == 'Camat'
+                              ? Card(
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  EmployeeOutstationScreen()));
+                                    },
+                                    child: ListTile(
+                                      leading: Icon(
+                                        Icons.check,
+                                        color: Colors.green,
+                                        size: 32.0,
+                                      ),
+                                      title: Text(
+                                        'Persetujuan Dinas Luar',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      subtitle: Text(
+                                        'Setujui Dinas Luar yang diajukan',
+                                        style: TextStyle(color: Colors.black87),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : SizedBox(),
+                        ],
+                      ),
                     ),
                     SizedBox(height: 10.0),
                     Text(
