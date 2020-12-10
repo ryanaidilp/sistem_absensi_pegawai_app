@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:auto_size_text/auto_size_text.dart';
@@ -8,6 +9,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/absent_permission.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
+import 'package:spo_balaesang/screen/home_screen.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
 class EmployeePermissionScreen extends StatefulWidget {
@@ -53,11 +55,17 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
       };
       Response response = await dataRepo.approvePermission(data);
       Map<String, dynamic> _res = jsonDecode(response.body);
+      print(response.statusCode);
       if (response.statusCode == 200) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], context, true);
+        showAlertDialog("success", "Sukses", _res['message'], context, false);
+        Timer(
+            Duration(seconds: 5),
+                () => Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => HomeScreen()),
+                    (route) => false));
       } else {
-        pd.hide();
+        if (pd.isShowing()) pd.hide();
         showErrorDialog(context, _res);
       }
     } catch (e) {
