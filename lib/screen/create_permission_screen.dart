@@ -55,8 +55,7 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
       Map<String, dynamic> _res = await dataRepo.permission(data);
       if (_res['success']) {
         pd.hide();
-        showAlertDialog('success', "Sukses",
-            _res['message'], context, false);
+        showAlertDialog('success', "Sukses", _res['message'], context, false);
         Timer(
             Duration(seconds: 5),
             () => Navigator.of(context).pushAndRemoveUntil(
@@ -98,7 +97,7 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
       });
     }
   }
-  
+
   _selectStartDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: context,
@@ -157,7 +156,6 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
                     focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.blueAccent)),
                     labelStyle: TextStyle(color: Colors.grey)),
-                smartDashesType: SmartDashesType.enabled,
               ),
               SizedBox(height: 20.0),
               Row(
@@ -203,7 +201,7 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      '${DateFormat.yMMMMd().format(
+                      '${DateFormat('EEEE, d MMMM y').format(
                         _startDate,
                       )}',
                       style: TextStyle(
@@ -240,7 +238,7 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      '${DateFormat.yMMMMd().format(
+                      '${DateFormat('EEEE, d MMMM y').format(
                         _dueDate,
                       )}',
                       style: TextStyle(
