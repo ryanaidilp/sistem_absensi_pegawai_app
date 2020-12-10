@@ -25,6 +25,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
+apply from: project(':flutter_config').projectDir.getPath() + "/dotenv.gradle"
 
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
@@ -47,8 +48,8 @@ android {
         applicationId "com.banuacoders.siap"
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 5
-        versionName '3.0.2'
+        versionCode 9
+        versionName '4.0.0'
     }
 
     signingConfigs {

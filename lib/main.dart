@@ -1,6 +1,7 @@
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_config/flutter_config.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -20,10 +21,11 @@ import 'network/api_service.dart';
 Future<void> main() async {
   await initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
+  await FlutterConfig.loadEnvVariables();
   Intl.defaultLocale = 'id_ID';
   OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
   OneSignal.shared.setLocationShared(true);
-  OneSignal.shared.init('ONE_SIGNAL_APP_ID',iOSSettings: {
+  OneSignal.shared.init(FlutterConfig.get("ONE_SIGNAL_APP_ID"),iOSSettings: {
     OSiOSSettings.autoPrompt: false,
     OSiOSSettings.inAppLaunchUrl: false
   });
