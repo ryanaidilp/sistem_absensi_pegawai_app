@@ -25,11 +25,12 @@ Future<void> main() async {
   Intl.defaultLocale = 'id_ID';
   OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
   OneSignal.shared.setLocationShared(true);
-  OneSignal.shared.init(FlutterConfig.get("ONE_SIGNAL_APP_ID"),iOSSettings: {
+  OneSignal.shared.init(FlutterConfig.get("ONE_SIGNAL_APP_ID"), iOSSettings: {
     OSiOSSettings.autoPrompt: false,
     OSiOSSettings.inAppLaunchUrl: false
   });
-  OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
+  OneSignal.shared
+      .setInFocusDisplayType(OSNotificationDisplayType.notification);
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
@@ -67,6 +68,12 @@ class _MyAppState extends State<MyApp> {
       final PermissionStatus phonePerms = await Permission.phone.status;
       if (phonePerms != PermissionStatus.granted) {
         await Permission.phone.request();
+      }
+
+      final PermissionStatus notificationPerms =
+          await Permission.notification.status;
+      if (notificationPerms != PermissionStatus.granted) {
+        await Permission.notification.request();
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -148,7 +155,7 @@ class _MyAppState extends State<MyApp> {
             builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data) {
-                  return  _isLoggedIn ? HomeScreen() : LoginScreen();
+                  return _isLoggedIn ? HomeScreen() : LoginScreen();
                 } else {
                   return IntroductionScreen(
                     pages: onBoardingScreens,
@@ -171,8 +178,8 @@ class _MyAppState extends State<MyApp> {
                           context,
                           MaterialPageRoute(
                               builder: (_) =>
-                              _isLoggedIn ? HomeScreen() : LoginScreen()),
-                              (route) => false);
+                                  _isLoggedIn ? HomeScreen() : LoginScreen()),
+                          (route) => false);
                     },
                   );
                 }
