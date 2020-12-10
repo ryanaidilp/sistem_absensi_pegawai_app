@@ -44,18 +44,18 @@ dependencies:
   camera:
   path_provider:
   path:
-  flutter_image_compress: 0.7.0
+  flutter_image_compress: ^0.7.0
   qr_code_scanner: ^0.0.12
-  flutter_countdown_timer: 1.4.0
-  image_picker: 0.6.7+14
+  flutter_countdown_timer: ^1.4.0
+  image_picker: ^0.6.7+14
   geocoding: ^1.0.5
   progress_dialog: ^1.2.4
   shimmer: ^1.0.0
   get:
-  flare_flutter: 2.0.6
+  flare_flutter: ^2.0.6
   introduction_screen:
   flutter_launcher_icons:
-  onesignal_flutter:
+  onesignal_flutter: ^2.6.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

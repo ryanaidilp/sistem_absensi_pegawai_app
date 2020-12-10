@@ -19,9 +19,9 @@ Permasalahan timbul saat sebagian besar pegawai tidak jujur dalam mengisi absen 
 *Clone* repository back-end aplikasinya [disini](https://github.com/ryanaidilp/sistem_absensi_pegawai). Buat file **.env** pada root folder aplikasi ini lalu tambahkan variabe berikut
 
 ```dotenv
-    BASE_URL="BASE URL ONLINE"
-    LOCAL_URL="LOCAL_URL" #Jika kamu ingin menyambungkian ke server di localhost
-    ONE_SIGNAL_APP_ID="APP ID UNTUK ONE SIGNAL"
+    BASE_URL=BASE URL ONLINE
+    LOCAL_URL=LOCAL_URL #Jika kamu ingin menyambungkian ke server di localhost
+    ONE_SIGNAL_APP_ID=APP ID UNTUK ONE SIGNAL
 ``` 
 Isikan variabel sesuai dengan konfigurasi anda.
 
