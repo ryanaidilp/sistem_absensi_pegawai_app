@@ -22,6 +22,13 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
   List<Outstation> _outstations = List<Outstation>();
   bool _isLoading = false;
 
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   Future<void> _fetchOutstationData() async {
     try {
       setState(() {

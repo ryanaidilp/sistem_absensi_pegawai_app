@@ -7,6 +7,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/notification.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
+import 'package:spo_balaesang/screen/create_notification_screen.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
 class NotificationListScreen extends StatefulWidget {
@@ -19,6 +20,13 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   bool _isLoading = false;
   DataRepository dataRepo;
   Set<String> choices = {'Tandai Semua Dibaca', 'Hapus Semua'};
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
 
   Future<void> _fetchNotificationsData() async {
     try {
@@ -205,6 +213,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                 _deleteAllNotifications();
               }
             },
+            offset: Offset(0, 100),
           )
         ],
         title: Text(
@@ -215,6 +224,14 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: _buildBody(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => CreateNotificationScreen()));
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.blueAccent,
+      ),
     );
   }
 }

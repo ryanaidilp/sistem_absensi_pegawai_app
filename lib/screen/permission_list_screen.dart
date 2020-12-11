@@ -15,6 +15,13 @@ class _PermissionListScreenState extends State<PermissionListScreen> {
   List<AbsentPermission> _permissions = List<AbsentPermission>();
   bool _isLoading = false;
 
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   Future<void> _fetchPermissionData() async {
     try {
       setState(() {
