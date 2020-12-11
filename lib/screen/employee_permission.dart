@@ -22,6 +22,13 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
   List<AbsentPermission> _permissions = List<AbsentPermission>();
   bool _isLoading = false;
 
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   Future<void> _fetchPermissionData() async {
     try {
       setState(() {
@@ -61,9 +68,9 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
         showAlertDialog("success", "Sukses", _res['message'], context, false);
         Timer(
             Duration(seconds: 5),
-                () => Navigator.of(context).pushAndRemoveUntil(
+            () => Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (_) => HomeScreen()),
-                    (route) => false));
+                (route) => false));
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(context, _res);

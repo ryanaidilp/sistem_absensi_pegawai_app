@@ -394,6 +394,46 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Widget _buildStatusSection() {
+    if (user.nextPresence.attendTime.isNotEmpty ||
+        user.nextPresence.startTime.isAfter(DateTime.now()))
+      return _checkStatusIcon(user.nextPresence.status);
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20.0),
+      child: Card(
+        color: Colors.green[300],
+        child: InkWell(
+          onTap: () {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => PresenceScreen()))
+                .then((value) {
+              _getUser();
+            });
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: <Widget>[
+                Icon(
+                  Icons.qr_code_rounded,
+                  size: 84,
+                  color: Colors.white,
+                ),
+                Text(
+                  'Mulai Absen',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildTimerSection() {
     if (isLoading) {
       return _buildShimmerSection(MediaQuery.of(context).size.width * 0.8, 60);
@@ -478,44 +518,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  user.nextPresence.attendTime.isNotEmpty
-                      ? _checkStatusIcon(user.nextPresence.status)
-                      : user.nextPresence.startTime.isAfter(DateTime.now())
-                          ? _checkStatusIcon(user.nextPresence.status)
-                          : ClipRRect(
-                              borderRadius: BorderRadius.circular(20.0),
-                              child: Card(
-                                color: Colors.green[300],
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                            builder: (_) => PresenceScreen()))
-                                        .then((value) {
-                                      _getUser();
-                                    });
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      children: <Widget>[
-                                        Icon(
-                                          Icons.qr_code_rounded,
-                                          size: 84,
-                                          color: Colors.white,
-                                        ),
-                                        Text(
-                                          'Mulai Absen',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
+                  Expanded(child: _buildStatusSection()),
                 ],
               ),
             ],
