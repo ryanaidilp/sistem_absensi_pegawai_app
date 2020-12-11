@@ -15,7 +15,8 @@ enum Endpoint {
   approveOutstation,
   notifications,
   readNotifications,
-  deleteNotifications
+  deleteNotifications,
+  sendNotifications
 }
 
 class API {
@@ -39,5 +40,6 @@ class API {
     Endpoint.notifications: 'notifications',
     Endpoint.readNotifications: 'notifications/read',
     Endpoint.deleteNotifications: 'notifications/delete',
+    Endpoint.sendNotifications: 'notifications/send',
   };
 }

@@ -203,6 +203,20 @@ class DataRepository {
     return data;
   }
 
+  Future<Map<String, dynamic>> sendNotification(
+      Map<String, dynamic> data) async {
+    Map<String, dynamic> result;
+    try {
+      var response = await apiService.postEndpointWithToken(
+          endpoint: Endpoint.sendNotifications, data: data);
+      print(response.body);
+      result = jsonDecode(response.body);
+    } catch (e) {
+      print(e.toString());
+    }
+    return result;
+  }
+
   Future<Response> presence(Map<String, dynamic> data) async {
     Response response;
     try {
