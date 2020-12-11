@@ -87,17 +87,13 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
               SizedBox(height: 20.0),
               Row(
                 children: <Widget>[
-                  Text('Content'),
+                  Text('Isi Pemberitahuan'),
                   SizedBox(width: 5.0),
                   Text(
                     '*',
                     style: TextStyle(color: Colors.red),
                   ),
                 ],
-              ),
-              Text(
-                'Jelaskan secara singkat tentang Dinas Luar yang diajukan!',
-                style: TextStyle(color: Colors.grey),
               ),
               TextFormField(
                 keyboardType: TextInputType.multiline,

@@ -173,7 +173,9 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
                 style: TextStyle(color: Colors.grey),
               ),
               TextFormField(
-                keyboardType: TextInputType.text,
+                keyboardType: TextInputType.multiline,
+                minLines: 1,
+                maxLines: 5,
                 controller: _descriptionController,
                 decoration: InputDecoration(
                     alignLabelWithHint: true,
