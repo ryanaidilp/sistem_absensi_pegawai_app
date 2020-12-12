@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui' as ui;
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flare_flutter/flare_actor.dart';
@@ -11,19 +10,12 @@ import 'package:intl/intl.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:spo_balaesang/models/employee.dart';
 import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
-import 'package:spo_balaesang/screen/change_pass_screen.dart';
 import 'package:spo_balaesang/screen/employee_list_screen.dart';
-import 'package:spo_balaesang/screen/employee_outstation.dart';
-import 'package:spo_balaesang/screen/employee_permission.dart';
-import 'package:spo_balaesang/screen/login_screen.dart';
 import 'package:spo_balaesang/screen/notification_list_screen.dart';
-import 'package:spo_balaesang/screen/outstation_list_screen.dart';
-import 'package:spo_balaesang/screen/permission_list_screen.dart';
 import 'package:spo_balaesang/screen/presence_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -39,6 +31,13 @@ class _HomeScreenState extends State<HomeScreen> {
   User user;
   List<Employee> _users;
   bool isLoading = false;
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
 
   Widget _buildImageStack() {
     if (_images.isNotEmpty) {
@@ -137,61 +136,6 @@ class _HomeScreenState extends State<HomeScreen> {
             .toList();
         if (pd != null && pd.isShowing()) pd?.hide();
       });
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
-  Future<void> logout() async {
-    try {
-      showDialog(
-          context: context,
-          builder: (_) {
-            return AlertDialog(
-              title: Column(
-                children: <Widget>[
-                  Icon(
-                    Icons.dangerous,
-                    color: Colors.red,
-                    size: 72,
-                  ),
-                  Text('Keluar'),
-                ],
-              ),
-              content: Text('Apakah anda yakin ingin keluar dari aplikasi?'),
-              actions: [
-                FlatButton(
-                    onPressed: () async {
-                      Navigator.of(context).pop();
-                      final ProgressDialog pd =
-                          ProgressDialog(context, isDismissible: false);
-                      pd.show();
-                      final dataRepo =
-                          Provider.of<DataRepository>(context, listen: false);
-                      final Map<String, dynamic> _response =
-                          await dataRepo.logout();
-                      if (_response['success']) {
-                        SharedPreferences prefs =
-                            await SharedPreferences.getInstance();
-                        prefs.remove('token');
-                        prefs.remove('user');
-                        pd.hide();
-                        OneSignal.shared.removeExternalUserId();
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (_) => LoginScreen()),
-                            (route) => false);
-                      }
-                    },
-                    child: Text('Ya')),
-                FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Tidak')),
-              ],
-            );
-          });
     } catch (e) {
       print(e.toString());
     }
@@ -353,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             Icon(Icons.check, color: _checkStatusColor(status), size: 54),
             Text(
-              status,
+              'Hadir',
               style: TextStyle(color: Colors.blueGrey),
             )
           ],
@@ -399,34 +343,36 @@ class _HomeScreenState extends State<HomeScreen> {
         user.nextPresence.startTime.isAfter(DateTime.now()))
       return _checkStatusIcon(user.nextPresence.status);
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20.0),
-      child: Card(
-        color: Colors.green[300],
-        child: InkWell(
-          onTap: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (_) => PresenceScreen()))
-                .then((value) {
-              _getUser();
-            });
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: <Widget>[
-                Icon(
-                  Icons.qr_code_rounded,
-                  size: 84,
-                  color: Colors.white,
-                ),
-                Text(
-                  'Mulai Absen',
-                  style: TextStyle(
+    return Center(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20.0),
+        child: Card(
+          color: Colors.green[300],
+          child: InkWell(
+            onTap: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => PresenceScreen()))
+                  .then((value) {
+                _getUser();
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: <Widget>[
+                  Icon(
+                    Icons.qr_code_rounded,
+                    size: 84,
                     color: Colors.white,
                   ),
-                ),
-              ],
+                  Text(
+                    'Mulai Absen',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -482,21 +428,33 @@ class _HomeScreenState extends State<HomeScreen> {
                         'SKEMA ABSENSI :',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
+                      const SizedBox(height: 2.0),
                       Text(user.nextPresence.codeType),
                       const SizedBox(height: 10.0),
                       const Text(
                         'JADWAL ABSENSI :',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      Text(
-                        DateFormat('hh:mm:ss')
-                            .format(user.nextPresence.startTime),
+                      const SizedBox(height: 2.0),
+                      Row(
+                        children: <Widget>[
+                          Text(
+                            DateFormat('HH:mm')
+                                .format(user.nextPresence.startTime),
+                          ),
+                          const Text(' - '),
+                          Text(
+                            DateFormat('HH:mm')
+                                .format(user.nextPresence.endTime),
+                          )
+                        ],
                       ),
                       const SizedBox(height: 10.0),
                       const Text(
                         'STATUS KEHADIRAN :',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
+                      const SizedBox(height: 2.0),
                       Text(
                         user.nextPresence.status,
                         style: TextStyle(
@@ -507,6 +465,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         _checkTimeLabel(),
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
+                      const SizedBox(height: 2.0),
                       CountdownTimer(
                         onEnd: () {
                           _getUser();
@@ -610,364 +569,189 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _getUser();
-    _getAllEmployee();
+    Future.wait([_getUser(), _getAllEmployee()]);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        backgroundColor: Colors.blueAccent,
-        elevation: 0.0,
-        actions: <Widget>[
-          Stack(
-            children: <Widget>[
-              IconButton(
-                icon: Icon(
-                  (user != null && user.unreadNotification > 0)
-                      ? Icons.notifications_active_rounded
-                      : Icons.notifications_none_rounded,
-                  color: Colors.white,
+        backgroundColor: Colors.grey[100],
+        appBar: AppBar(
+          backgroundColor: Colors.blueAccent,
+          elevation: 0.0,
+          actions: <Widget>[
+            Stack(
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    (user != null && user.unreadNotification > 0)
+                        ? Icons.notifications_active_rounded
+                        : Icons.notifications_none_rounded,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(
+                            builder: (_) => NotificationListScreen()))
+                        .then((value) => _getUser());
+                  },
                 ),
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(
-                          builder: (_) => NotificationListScreen()))
-                      .then((value) => _getUser());
-                },
-              ),
-              (user != null && user.unreadNotification > 0)
-                  ? Positioned(
-                      right: 8,
-                      top: 6,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 4.0, vertical: 2.0),
-                        child: Text(
-                          user?.unreadNotification.toString(),
-                          style: TextStyle(
-                              fontSize: 12.0, fontWeight: FontWeight.bold),
+                (user != null && user.unreadNotification > 0)
+                    ? Positioned(
+                        right: 8,
+                        top: 6,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 4.0, vertical: 2.0),
+                          child: Text(
+                            user?.unreadNotification.toString(),
+                            style: TextStyle(
+                                fontSize: 12.0, fontWeight: FontWeight.bold),
+                          ),
+                          decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(50)),
                         ),
-                        decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(50)),
-                      ),
-                    )
-                  : SizedBox(),
-            ],
+                      )
+                    : SizedBox(),
+              ],
+            ),
+          ],
+          leadingWidth: MediaQuery.of(context).size.width * 0.25,
+          leading: Image.asset(
+            'assets/logo/logo.png',
           ),
-          IconButton(
-              icon: Icon(
-                Icons.exit_to_app,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                logout();
-              })
-        ],
-        title: Image.asset(
-          'assets/logo/logo.png',
-          width: MediaQuery.of(context).size.width * 0.3,
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: RotatedBox(
-          quarterTurns: 0,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.blueAccent,
           child: Icon(
             Icons.refresh,
             color: Colors.white,
           ),
+          onPressed: () {
+            ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+            pd.show();
+            _getUser();
+            _getAllEmployee(pd: pd);
+          },
         ),
-        onPressed: () {
-          ProgressDialog pd = ProgressDialog(context, isDismissible: false);
-          pd.show();
-          _getUser();
-          _getAllEmployee(pd: pd);
-        },
-      ),
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: double.infinity,
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
-            Widget>[
-          Stack(
-            overflow: Overflow.clip,
-            children: <Widget>[
-              Positioned(
-                top: 0,
-                child: CustomPaint(
-                  size: Size(MediaQuery.of(context).size.width, 200),
-                  painter: RPSCustomPainter(),
-                ),
-              ),
-              Align(
-                alignment: Alignment.topCenter,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      'Selamat Datang',
-                      style: TextStyle(fontSize: 12.0, color: Colors.white),
-                    ),
-                    SizedBox(height: 10.0),
-                    _buildUserNameSection(),
-                    SizedBox(height: 5.0),
-                    _buildPositionSection(),
-                  ],
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(20, 80, 20, 0),
-                child: ClipRRect(
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: Card(
-                      elevation: 4.0,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  '${_users == null ? 0 : (_users.length + 1)} Pegawai',
-                                  style: TextStyle(fontWeight: FontWeight.w600),
-                                ),
-                                SizedBox(height: 10.0),
-                                _buildPNSHonorerSection()
-                              ],
-                            ),
-                            SizedBox(height: 10.0),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: _buildImageStack(),
-                            )
-                          ],
-                        ),
+        body: CustomScrollView(
+          physics: ClampingScrollPhysics(),
+          slivers: <Widget>[_buildHeader(), _buildNextPresence()],
+        ));
+  }
+
+  SliverToBoxAdapter _buildHeader() {
+    return SliverToBoxAdapter(
+      child: Stack(
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.only(
+                top: 20.0, left: 20.0, right: 20.0, bottom: 80),
+            decoration: BoxDecoration(
+                color: Colors.blueAccent,
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(40.0),
+                    bottomRight: Radius.circular(40.0))),
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'Selamat Datang',
+                        style: TextStyle(fontSize: 12.0, color: Colors.white),
                       ),
-                    ),
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ],
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      'Absen Selanjutnya',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16.0,
-                      ),
-                    ),
-                    Center(
-                      child: _buildTimerSection(),
-                    ),
-                    SizedBox(height: 10.0),
-                    Text(
-                      'Menu',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16.0,
-                      ),
-                    ),
-                    SizedBox(height: 10.0),
-                    Center(
-                      child: Column(
-                        children: <Widget>[
-                          Card(
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (_) => PermissionListScreen()));
-                              },
-                              child: ListTile(
-                                leading: Icon(
-                                  Icons.calendar_today_rounded,
-                                  color: Colors.green,
-                                  size: 32.0,
-                                ),
-                                title: Text(
-                                  'Izin',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                subtitle: Text(
-                                  'Pengajuan dan riwayat Izin',
-                                  style: TextStyle(color: Colors.black87),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Card(
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (_) => OutstationListScreen()));
-                              },
-                              child: ListTile(
-                                leading: Icon(
-                                  Icons.card_travel_rounded,
-                                  color: Colors.deepOrange,
-                                  size: 32.0,
-                                ),
-                                title: Text(
-                                  'Dinas Luar',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                subtitle: Text(
-                                  'Pengajuan dan riwayat Dinas Luar',
-                                  style: TextStyle(color: Colors.black87),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Card(
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (_) => ChangePasswordScreen()));
-                              },
-                              child: ListTile(
-                                leading: Icon(
-                                  Icons.lock_outline,
-                                  color: Colors.blueAccent,
-                                  size: 32.0,
-                                ),
-                                title: Text(
-                                  'Password',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                subtitle: Text(
-                                  'Ubah password akun',
-                                  style: TextStyle(color: Colors.black87),
-                                ),
-                              ),
-                            ),
-                          ),
-                          user?.position == 'Camat'
-                              ? Card(
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (_) =>
-                                                  EmployeePermissionScreen()));
-                                    },
-                                    child: ListTile(
-                                      leading: Icon(
-                                        Icons.check,
-                                        color: Colors.green,
-                                        size: 32.0,
-                                      ),
-                                      title: Text(
-                                        'Persetujuan Izin',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      subtitle: Text(
-                                        'Setujui Izin yang diajukan',
-                                        style: TextStyle(color: Colors.black87),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : SizedBox(),
-                          user?.position == 'Camat'
-                              ? Card(
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (_) =>
-                                                  EmployeeOutstationScreen()));
-                                    },
-                                    child: ListTile(
-                                      leading: Icon(
-                                        Icons.check,
-                                        color: Colors.green,
-                                        size: 32.0,
-                                      ),
-                                      title: Text(
-                                        'Persetujuan Dinas Luar',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      subtitle: Text(
-                                        'Setujui Dinas Luar yang diajukan',
-                                        style: TextStyle(color: Colors.black87),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : SizedBox(),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 10.0),
-                    Text(
-                      'Absen Hari Ini',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16.0,
-                      ),
-                    ),
-                    Center(
-                      child: Column(
-                        children: _buildPresenceSection(),
-                      ),
-                    )
-                  ],
-                ),
+                      SizedBox(height: 10),
+                      _buildUserNameSection(),
+                      SizedBox(height: 10),
+                      _buildPositionSection(),
+                      SizedBox(height: 10),
+                    ],
+                  )
+                ],
               ),
             ),
           ),
-        ]),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              margin: EdgeInsets.only(top: 100.0, left: 20.0, right: 20.0),
+              child: ClipRRect(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Card(
+                    elevation: 4.0,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                '${_users == null ? 0 : (_users.length + 1)} Pegawai',
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                              SizedBox(height: 10.0),
+                              _buildPNSHonorerSection()
+                            ],
+                          ),
+                          SizedBox(height: 10.0),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: _buildImageStack(),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
-}
 
-class RPSCustomPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint paint_0 = new Paint()
-      ..color = Color.fromARGB(255, 33, 150, 243)
-      ..style = PaintingStyle.fill
-      ..strokeWidth = 1;
-    paint_0.shader = ui.Gradient.linear(
-        Offset(size.width * 0.50, 0),
-        Offset(size.width * 0.50, size.height * 0.95),
-        [Colors.blueAccent, Colors.blueAccent, Colors.blueAccent],
-        [0.00, 0.49, 1.00]);
-
-    Path path_0 = Path();
-    path_0.moveTo(0, 0);
-    path_0.quadraticBezierTo(size.width * -0.01, size.height * 0.57,
-        size.width * 0.06, size.height * 0.75);
-    path_0.cubicTo(size.width * 0.14, size.height * 0.97, size.width * 0.29,
-        size.height * 0.86, size.width * 0.50, size.height * 0.95);
-    path_0.cubicTo(size.width * 0.71, size.height * 0.87, size.width * 0.87,
-        size.height * 0.97, size.width * 0.94, size.height * 0.75);
-    path_0.quadraticBezierTo(
-        size.width * 1.01, size.height * 0.57, size.width, 0);
-    path_0.lineTo(0, 0);
-    path_0.close();
-
-    canvas.drawPath(path_0, paint_0);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  SliverToBoxAdapter _buildNextPresence() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              'Absen Selanjutnya',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16.0,
+              ),
+            ),
+            Center(
+              child: _buildTimerSection(),
+            ),
+            SizedBox(height: 30.0),
+            Text(
+              'Absen Hari Ini',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16.0,
+              ),
+            ),
+            Center(
+              child: Column(
+                children: _buildPresenceSection(),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

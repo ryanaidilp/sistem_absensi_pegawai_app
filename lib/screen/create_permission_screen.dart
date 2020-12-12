@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
-import 'package:spo_balaesang/screen/home_screen.dart';
+import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/utils/file_util.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
@@ -59,7 +59,7 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
         Timer(
             Duration(seconds: 5),
             () => Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => HomeScreen()),
+                MaterialPageRoute(builder: (_) => BottomNavScreen()),
                 (route) => false));
       } else {
         if (pd.isShowing()) pd.hide();

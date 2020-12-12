@@ -14,7 +14,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
-import 'package:spo_balaesang/screen/home_screen.dart';
+import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/utils/file_util.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
@@ -98,7 +98,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
         Timer(
             Duration(seconds: 5),
             () => Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => HomeScreen()),
+                MaterialPageRoute(builder: (_) => BottomNavScreen()),
                 (route) => false));
       } else {
         this.controller?.resumeCamera();
@@ -114,8 +114,8 @@ class _PresenceScreenState extends State<PresenceScreen> {
   getUserLocation() async {
     if (await Permission.location.serviceStatus.isDisabled) {
       Permission.location.shouldShowRequestRationale;
-      final AndroidIntent intent = AndroidIntent(
-          action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+      final AndroidIntent intent =
+          AndroidIntent(action: 'android.settings.LOCATION_SOURCE_SETTINGS');
       intent.launch();
     }
     Position position = await Geolocator().getCurrentPosition(

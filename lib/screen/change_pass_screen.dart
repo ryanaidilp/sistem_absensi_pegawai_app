@@ -6,7 +6,7 @@ import 'package:http/http.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
-import 'package:spo_balaesang/screen/home_screen.dart';
+import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -149,12 +149,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     final Map<String, dynamic> _res = jsonDecode(response.body);
                     if (response.statusCode == 200) {
                       pd.hide();
-                      showAlertDialog('success',
-                          "Sukses", _res['message'], context, false);
+                      showAlertDialog(
+                          'success', "Sukses", _res['message'], context, false);
                       Timer(
                           Duration(seconds: 1),
                           () => Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(builder: (_) => HomeScreen()),
+                              MaterialPageRoute(
+                                  builder: (_) => BottomNavScreen()),
                               (route) => false));
                     } else {
                       pd.hide();

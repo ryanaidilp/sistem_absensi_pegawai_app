@@ -137,7 +137,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
           return Container(
             margin: EdgeInsets.only(bottom: 8.0),
             child: Card(
-              elevation: 4.0,
+              elevation: 2.0,
               child: InkWell(
                 onTap: () {
                   _readNotification(notification.id);
@@ -150,10 +150,13 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Text(
-                              '${notification.data['heading']}',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600, fontSize: 16.0),
+                            Expanded(
+                              child: Text(
+                                '${notification.data['heading']}',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16.0),
+                              ),
                             ),
                             notification.isRead
                                 ? SizedBox()
@@ -171,7 +174,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                                   )
                           ],
                         ),
-                        SizedBox(height: 5.0),
+                        Divider(thickness: 1.0),
                         Text(notification.data['body'])
                       ],
                     )),
