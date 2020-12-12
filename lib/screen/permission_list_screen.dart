@@ -154,6 +154,7 @@ class _PermissionListScreenState extends State<PermissionListScreen> {
           title: Text('Daftar Izin'),
         ),
         floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.blueAccent,
           onPressed: () {
             Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => CreatePermissionScreen()));

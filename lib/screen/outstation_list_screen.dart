@@ -157,6 +157,7 @@ class _OutstationListScreenState extends State<OutstationListScreen> {
           title: Text('Daftar Dinas Luar'),
         ),
         floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.blueAccent,
           child: Icon(Icons.add),
           onPressed: () {
             Navigator.of(context).push(

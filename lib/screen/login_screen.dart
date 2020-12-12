@@ -9,8 +9,8 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
+import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/forgot_pass_screen.dart';
-import 'package:spo_balaesang/screen/home_screen.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -240,7 +240,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           Navigator.pushAndRemoveUntil(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) => HomeScreen()),
+                                                  builder: (_) =>
+                                                      BottomNavScreen()),
                                               (route) => false);
                                         } else {
                                           showErrorDialog(context, result);

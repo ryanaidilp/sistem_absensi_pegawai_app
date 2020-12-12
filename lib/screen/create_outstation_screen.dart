@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
-import 'package:spo_balaesang/screen/home_screen.dart';
+import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/utils/file_util.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
@@ -59,7 +59,7 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
         Timer(
             Duration(seconds: 5),
             () => Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => HomeScreen()),
+                MaterialPageRoute(builder: (_) => BottomNavScreen()),
                 (route) => false));
       } else {
         if (pd.isShowing()) pd.hide();
@@ -87,6 +87,7 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
 
   _selectDueDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
+        locale: Locale('id_ID'),
         context: context,
         initialDate: _dueDate,
         firstDate: DateTime.now(),
@@ -183,7 +184,7 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
               SizedBox(height: 20.0),
               Row(
                 children: <Widget>[
-                  Text('Tanggal Tugas'),
+                  Text('Tanggal Mulai'),
                   SizedBox(width: 5.0),
                   Text(
                     '*',
@@ -220,7 +221,7 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
               SizedBox(height: 20.0),
               Row(
                 children: <Widget>[
-                  Text('Tanggal Kadaluarsa'),
+                  Text('Tanggal Selesai'),
                   SizedBox(width: 5.0),
                   Text(
                     '*',

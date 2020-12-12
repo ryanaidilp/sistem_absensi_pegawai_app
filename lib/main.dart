@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/network/api.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
-import 'package:spo_balaesang/screen/home_screen.dart';
+import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/login_screen.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
@@ -149,13 +149,13 @@ class _MyAppState extends State<MyApp> {
           theme: ThemeData(
               primarySwatch: Colors.blue,
               backgroundColor: Colors.white,
-              scaffoldBackgroundColor: Colors.white),
+              scaffoldBackgroundColor: Colors.grey[100]),
           home: FutureBuilder<bool>(
             future: _isFirstSeen,
             builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data) {
-                  return _isLoggedIn ? HomeScreen() : LoginScreen();
+                  return _isLoggedIn ? BottomNavScreen() : LoginScreen();
                 } else {
                   return IntroductionScreen(
                     pages: onBoardingScreens,
@@ -166,8 +166,9 @@ class _MyAppState extends State<MyApp> {
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
-                              builder: (_) =>
-                                  _isLoggedIn ? HomeScreen() : LoginScreen()),
+                              builder: (_) => _isLoggedIn
+                                  ? BottomNavScreen()
+                                  : LoginScreen()),
                           (route) => false);
                     },
                     done: const Text("Selesai",
@@ -177,8 +178,9 @@ class _MyAppState extends State<MyApp> {
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
-                              builder: (_) =>
-                                  _isLoggedIn ? HomeScreen() : LoginScreen()),
+                              builder: (_) => _isLoggedIn
+                                  ? BottomNavScreen()
+                                  : LoginScreen()),
                           (route) => false);
                     },
                   );
