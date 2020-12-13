@@ -12,7 +12,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
   int _currentIndex = 0;
 
   final Map<String, dynamic> _bottomNavItems = {
-    'Beranda': Icons.home_outlined,
+    'Beranda': Icons.home_filled,
     'Aplikasi': Icons.apps_rounded,
   };
 

@@ -175,18 +175,43 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildUserNameSection() {
-    return user == null
-        ? _buildShimmerSection(200, 20)
-        : Text(
-            '${user.name}',
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 20.0,
-                fontWeight: FontWeight.w600),
-          );
+    if (isLoading) {
+      return _buildShimmerSection(200, 20);
+    }
+
+    if (user == null) {
+      Text(
+        'Gagal memuat data',
+        style: TextStyle(
+            color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w600),
+      );
+    }
+
+    return Column(
+      children: <Widget>[
+        Text(
+          '${user.name}',
+          style: TextStyle(
+              color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w600),
+        ),
+        SizedBox(height: 5.0),
+        user.status == 'PNS'
+            ? Text(
+                'NIP : ${user.nip}',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12.0,
+                ),
+              )
+            : SizedBox()
+      ],
+    );
   }
 
   Widget _buildPositionSection() {
+    if (isLoading) {
+      return _buildShimmerSection(60, 15);
+    }
     if (user != null) {
       var text = user.position == 'Camat' || user.position == 'Sekcam'
           ? user.position
@@ -198,7 +223,11 @@ class _HomeScreenState extends State<HomeScreen> {
         minFontSize: 12.0,
       );
     }
-    return _buildShimmerSection(60, 15);
+    return Text(
+      'Coba untuk memuat kembali data!',
+      style: TextStyle(
+          color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w600),
+    );
   }
 
   Color _checkStatusColor(String status) {
@@ -253,22 +282,19 @@ class _HomeScreenState extends State<HomeScreen> {
       }).toList();
     }
     return [
-      Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-            Container(
-              width: 150,
-              height: 150,
-              child: FlareActor(
-                'assets/flare/empty.flr',
-                fit: BoxFit.contain,
-                animation: 'empty',
-                alignment: Alignment.center,
-              ),
-            ),
-            Text('Tidak ada absen hari ini!')
-          ]))
+      Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+        Container(
+          width: 150,
+          height: 150,
+          child: FlareActor(
+            'assets/flare/empty.flr',
+            fit: BoxFit.contain,
+            animation: 'empty',
+            alignment: Alignment.center,
+          ),
+        ),
+        Text('Tidak ada absen hari ini!')
+      ])
     ];
   }
 
@@ -646,8 +672,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Stack(
         children: <Widget>[
           Container(
-            padding: const EdgeInsets.only(
-                top: 20.0, left: 20.0, right: 20.0, bottom: 80),
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 80),
             decoration: BoxDecoration(
                 color: Colors.blueAccent,
                 borderRadius: BorderRadius.only(
@@ -746,6 +771,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: _buildPresenceSection(),
               ),
             )

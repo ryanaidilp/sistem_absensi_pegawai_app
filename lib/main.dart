@@ -2,6 +2,7 @@ import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_config/flutter_config.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -15,8 +16,13 @@ import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/login_screen.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 import 'network/api_service.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
   await initializeDateFormatting();
@@ -31,6 +37,12 @@ Future<void> main() async {
   });
   OneSignal.shared
       .setInFocusDisplayType(OSNotificationDisplayType.notification);
+
+  var initializedSettingsAndroid =
+      AndroidInitializationSettings('ic_stat_onesignal_default');
+  var initializationSettings =
+      InitializationSettings(android: initializedSettingsAndroid);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
@@ -196,4 +208,28 @@ class _MyAppState extends State<MyApp> {
           )),
     );
   }
+}
+
+void scheduleAlarm(DateTime scheduledNotificationDateTime, String body) async {
+  var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    'alarm_id',
+    'alarm_id',
+    'Channel alarm',
+    icon: 'ic_stat_onesignal_default',
+  );
+
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation('Asia/Makassar'));
+
+  var scheduleTime = tz.TZDateTime.from(
+      scheduledNotificationDateTime, tz.getLocation('Asia/Makassar'));
+
+  var platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+      0, 'Pengingat', body, scheduleTime, platformChannelSpecifics,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      androidAllowWhileIdle: true);
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -10,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/absent_permission.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
+import 'package:spo_balaesang/screen/image_detail_screen.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
 class EmployeePermissionScreen extends StatefulWidget {
@@ -183,7 +185,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 5.0),
+                      SizedBox(height: 10.0),
                       Text(
                         'Deskripsi : ',
                         style: TextStyle(fontSize: 12.0, color: Colors.grey),
@@ -195,18 +197,54 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
                         maxLines: 4,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(height: 5.0),
+                      SizedBox(height: 10.0),
                       Text(
                         'Bukti Izin : ',
                         style: TextStyle(fontSize: 12.0, color: Colors.grey),
                       ),
+                      Text(
+                        '*tekan untuk memperbesar',
+                        style: TextStyle(
+                            fontSize: 12.0,
+                            color: Colors.black87,
+                            fontStyle: FontStyle.italic),
+                      ),
                       SizedBox(height: 5.0),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: FadeInImage.assetNetwork(
-                          placeholder: 'assets/images/upload_placeholder.png',
-                          image: permission.photo,
-                          fit: BoxFit.cover,
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (_) => ImageDetailScreen(
+                                    imageUrl: permission.photo,
+                                  )));
+                        },
+                        child: Hero(
+                          tag: 'image',
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: CachedNetworkImage(
+                              placeholder: (_, __) => Container(
+                                child: Stack(
+                                  children: <Widget>[
+                                    Image.asset(
+                                        'assets/images/upload_placeholder.png'),
+                                    Center(
+                                      child: SizedBox(
+                                        child: CircularProgressIndicator(),
+                                        width: 25.0,
+                                        height: 25.0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              imageUrl: permission.photo,
+                              fit: BoxFit.cover,
+                              errorWidget: (_, __, ___) =>
+                                  Center(child: Icon(Icons.error)),
+                              width: MediaQuery.of(context).size.width,
+                              height: 250.0,
+                            ),
+                          ),
                         ),
                       ),
                       SizedBox(height: 5.0),

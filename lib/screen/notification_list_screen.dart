@@ -198,27 +198,29 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: <Widget>[
-          PopupMenuButton<String>(
-            itemBuilder: (BuildContext context) {
-              return choices
-                  .map((String choice) => PopupMenuItem<String>(
-                        child: Text(choice),
-                        value: choice,
-                      ))
-                  .toList();
-            },
-            onSelected: (value) {
-              if (value == choices.first) {
-                _readAllNotifications();
-              }
-              if (value == choices.last) {
-                _deleteAllNotifications();
-              }
-            },
-            offset: Offset(0, 100),
-          )
-        ],
+        actions: notifications.length > 0
+            ? <Widget>[
+                PopupMenuButton<String>(
+                  itemBuilder: (BuildContext context) {
+                    return choices
+                        .map((String choice) => PopupMenuItem<String>(
+                              child: Text(choice),
+                              value: choice,
+                            ))
+                        .toList();
+                  },
+                  onSelected: (value) {
+                    if (value == choices.first) {
+                      _readAllNotifications();
+                    }
+                    if (value == choices.last) {
+                      _deleteAllNotifications();
+                    }
+                  },
+                  offset: Offset(0, 100),
+                )
+              ]
+            : [],
         title: Text(
           'Pemberitahuan',
           style: TextStyle(color: Colors.white),
