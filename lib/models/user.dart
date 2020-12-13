@@ -56,4 +56,21 @@ class User {
                 .toList()
             : null);
   }
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'nip': nip,
+        'name': name,
+        'phone': phone,
+        'gender': gender,
+        'department': department,
+        'status': status,
+        'position': position,
+        'unread_notification': unreadNotification,
+        'holiday': holiday,
+        'is_weekend': isWeekend,
+        'token': token,
+        'next_presence': nextPresence,
+        'presence': presences
+      };
 }

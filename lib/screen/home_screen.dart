@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flare_flutter/flare_actor.dart';
@@ -10,6 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:spo_balaesang/models/employee.dart';
 import 'package:spo_balaesang/models/user.dart';
@@ -142,12 +144,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _getUser() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       setState(() {
         isLoading = true;
       });
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
       User _user = await dataRepo.getMyData();
+      prefs.setString('user', jsonEncode(_user.toMap()));
       OneSignal.shared.setExternalUserId(_user.id.toString());
       setState(() {
         user = _user;
