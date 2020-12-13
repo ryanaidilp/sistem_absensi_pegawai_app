@@ -74,6 +74,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                             await SharedPreferences.getInstance();
                         prefs.remove('token');
                         prefs.remove('user');
+                        prefs.remove('alarm');
                         pd.hide();
                         OneSignal.shared.removeExternalUserId();
                         Navigator.pushAndRemoveUntil(
