@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flare_flutter/flare_actor.dart';
@@ -11,7 +10,6 @@ import 'package:intl/intl.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:spo_balaesang/models/employee.dart';
 import 'package:spo_balaesang/models/user.dart';
@@ -144,14 +142,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _getUser() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       setState(() {
         isLoading = true;
       });
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
       User _user = await dataRepo.getMyData();
-      prefs.setString('user', jsonEncode(_user.toMap()));
       OneSignal.shared.setExternalUserId(_user.id.toString());
       setState(() {
         user = _user;
@@ -214,7 +210,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildPositionSection() {
     if (isLoading) {
-      return _buildShimmerSection(60, 15);
+      return Column(
+        children: <Widget>[
+          SizedBox(height: 10.0),
+          _buildShimmerSection(60, 15)
+        ],
+      );
     }
     if (user != null) {
       var text = user.position == 'Camat' || user.position == 'Sekcam'
@@ -676,7 +677,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Stack(
         children: <Widget>[
           Container(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 80),
+            padding: EdgeInsets.only(
+                left: 20.0,
+                right: 20.0,
+                bottom: MediaQuery.of(context).size.height * 0.13,
+                top: 5.0),
             decoration: BoxDecoration(
                 color: Colors.blueAccent,
                 borderRadius: BorderRadius.only(
@@ -695,9 +700,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       SizedBox(height: 10),
                       _buildUserNameSection(),
-                      SizedBox(height: 10),
                       _buildPositionSection(),
-                      SizedBox(height: 10),
                     ],
                   )
                 ],
@@ -707,7 +710,11 @@ class _HomeScreenState extends State<HomeScreen> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              margin: EdgeInsets.only(top: 100.0, left: 20.0, right: 20.0),
+              margin: EdgeInsets.only(
+                top: MediaQuery.of(context).size.height * 0.15,
+                left: 20.0,
+                right: 20.0,
+              ),
               child: ClipRRect(
                 child: Container(
                   width: MediaQuery.of(context).size.width,

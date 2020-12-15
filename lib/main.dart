@@ -1,3 +1,6 @@
+import 'dart:math';
+import 'dart:typed_data';
+
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -210,13 +213,17 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-void scheduleAlarm(DateTime scheduledNotificationDateTime, String body) async {
+Future<void> scheduleAlarm(
+    DateTime scheduledNotificationDateTime, String body) async {
   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-    'alarm_id',
-    'alarm_id',
-    'Channel alarm',
-    icon: 'ic_stat_onesignal_default',
-  );
+      'alarm_id', 'alarm_id', 'Channel alarm',
+      icon: 'ic_stat_onesignal_default',
+      enableVibration: true,
+      enableLights: true,
+      playSound: true,
+      priority: Priority.high,
+      importance: Importance.max,
+      vibrationPattern: Int64List.fromList([0, 1000, 5000, 2000]));
 
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation('Asia/Makassar'));
@@ -228,8 +235,13 @@ void scheduleAlarm(DateTime scheduledNotificationDateTime, String body) async {
       NotificationDetails(android: androidPlatformChannelSpecifics);
 
   await flutterLocalNotificationsPlugin.zonedSchedule(
-      0, 'Pengingat', body, scheduleTime, platformChannelSpecifics,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      androidAllowWhileIdle: true);
+    Random().nextInt(pow(2, 31)),
+    'Pengingat',
+    body,
+    scheduleTime,
+    platformChannelSpecifics,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+    androidAllowWhileIdle: true,
+  );
 }

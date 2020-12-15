@@ -15,6 +15,7 @@ import 'package:spo_balaesang/screen/employee_permission.dart';
 import 'package:spo_balaesang/screen/login_screen.dart';
 import 'package:spo_balaesang/screen/outstation_list_screen.dart';
 import 'package:spo_balaesang/screen/permission_list_screen.dart';
+import 'package:spo_balaesang/utils/view_util.dart';
 
 class ApplicationScreen extends StatefulWidget {
   @override
@@ -24,6 +25,7 @@ class ApplicationScreen extends StatefulWidget {
 class _ApplicationScreenState extends State<ApplicationScreen> {
   User user;
   bool _isAlarmActive = false;
+  List<Presence> _presences;
 
   Future<void> getUser() async {
     var sp = await SharedPreferences.getInstance();
@@ -35,9 +37,16 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
       sp.setBool('alarm', _alarm);
     }
     Map<String, dynamic> _json = jsonDecode(_data);
+    if (_alarm) {
+      await flutterLocalNotificationsPlugin.cancelAll();
+    }
     setState(() {
       user = User.fromJson(_json);
+      _presences = user.presences;
       _isAlarmActive = _alarm;
+      if (_isAlarmActive) {
+        _presences.forEach(_setAlarm);
+      }
     });
   }
 
@@ -105,32 +114,36 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
       _isAlarmActive = value;
     });
     if (value) {
-      user.presences.map(_setAlarm);
-      scheduleAlarm(DateTime.now().add(Duration(milliseconds: 100)),
-          'Pengingat diaktifkan!');
+      _presences.forEach(_setAlarm);
+      showAlertDialog(
+          'success', 'Sukses', 'Berhasil mengaktifkan alarm!', context, true);
     } else {
       await flutterLocalNotificationsPlugin.cancelAll();
-      scheduleAlarm(DateTime.now().add(Duration(milliseconds: 100)),
-          'Pengingat dinonaktifkan!');
+      showAlertDialog(
+          'success', 'Sukses', 'Berhasil menonaktifkan alarm!', context, true);
     }
   }
 
   void _setAlarm(Presence presence) {
-    DateTime scheduledAlarmPresenceStart;
-    DateTime scheduledAlarmPresenceEnd;
     if (presence.startTime.isAfter(DateTime.now())) {
-      scheduledAlarmPresenceStart =
-          presence.startTime.subtract(Duration(minutes: 10));
+      scheduleAlarm(presence.startTime.subtract(Duration(minutes: 10)),
+          '${presence.codeType} akan dimulai dalam 10 menit!');
+    } else {
+      if (presence.startTime.weekday < DateTime.friday) {
+        scheduleAlarm(presence.startTime.add(Duration(days: 1)),
+            '${presence.codeType} akan dimulai dalam 10 menit!');
+      }
     }
 
     if (presence.endTime.isAfter(DateTime.now())) {
-      scheduledAlarmPresenceStart =
-          presence.endTime.subtract(Duration(minutes: 10));
+      scheduleAlarm(presence.endTime.subtract(Duration(minutes: 10)),
+          '${presence.codeType} akan selesai dalam 10 menit!');
+    } else {
+      if (presence.endTime.weekday < DateTime.friday) {
+        scheduleAlarm(presence.endTime.add(Duration(days: 1)),
+            '${presence.codeType} akan selesai dalam 10 menit!');
+      }
     }
-    scheduleAlarm(scheduledAlarmPresenceStart,
-        '${presence.codeType} akan dimulai dalam 10 menit!');
-    scheduleAlarm(scheduledAlarmPresenceEnd,
-        '${presence.codeType} akan selesai dalam 10 menit!');
   }
 
   @override
@@ -211,7 +224,8 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
               ),
             ),
           ),
-        )
+        ),
+        SizedBox(height: 30.0),
       ],
     );
   }
@@ -324,7 +338,6 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
               ),
               SizedBox(height: 30.0),
               _buildStakeholderMenu(),
-              SizedBox(height: 30.0),
               Text(
                 'Akun',
                 style: TextStyle(
