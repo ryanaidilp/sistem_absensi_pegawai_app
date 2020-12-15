@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/models/notification.dart';
+import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/create_notification_screen.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
@@ -20,6 +22,17 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   bool _isLoading = false;
   DataRepository dataRepo;
   Set<String> choices = {'Tandai Semua Dibaca', 'Hapus Semua'};
+  User _user;
+
+  Future<void> getUser() async {
+    var sp = await SharedPreferences.getInstance();
+    var _data = sp.get('user');
+    Map<String, dynamic> _json = jsonDecode(_data);
+
+    setState(() {
+      _user = User.fromJson(_json);
+    });
+  }
 
   @override
   void setState(fn) {
@@ -191,6 +204,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   void initState() {
     super.initState();
     dataRepo = Provider.of<DataRepository>(context, listen: false);
+    getUser();
     _fetchNotificationsData();
   }
 
@@ -229,14 +243,16 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: _buildBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => CreateNotificationScreen()));
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.blueAccent,
-      ),
+      floatingActionButton: _user?.position == 'Camat'
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => CreateNotificationScreen()));
+              },
+              child: Icon(Icons.add),
+              backgroundColor: Colors.blueAccent,
+            )
+          : null,
     );
   }
 }

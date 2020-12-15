@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/models/employee.dart';
 import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/network/api.dart';
@@ -27,10 +28,14 @@ class DataRepository {
   }
 
   Future<User> getMyData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     User user;
     try {
       final Map<String, dynamic> _data =
           await apiService.getEndpointData(endpoint: Endpoint.my);
+      prefs.remove('user');
+      prefs.reload();
+      prefs.setString('user', jsonEncode(_data['data']));
       user = User.fromJson(_data['data']);
     } catch (e) {
       print(e.toString());
