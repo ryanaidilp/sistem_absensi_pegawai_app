@@ -20,7 +20,7 @@ Future showAlertDialog(String type, String title, String content,
         var color = type == 'success' ? Colors.green : Colors.red;
         var icon = type == 'success' ? Icons.check_circle : Icons.dangerous;
         return AlertDialog(
-          title: Text(title),
+          title: Center(child: Text(title)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -29,7 +29,7 @@ Future showAlertDialog(String type, String title, String content,
                 color: color,
                 size: 72,
               ),
-              Text(content),
+              Center(child: Text(content)),
             ],
           ),
           actions: actions,
