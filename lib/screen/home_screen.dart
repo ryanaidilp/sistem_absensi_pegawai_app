@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:spo_balaesang/models/employee.dart';
 import 'package:spo_balaesang/models/user.dart';
@@ -17,6 +20,7 @@ import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/employee_list_screen.dart';
 import 'package:spo_balaesang/screen/notification_list_screen.dart';
 import 'package:spo_balaesang/screen/presence_screen.dart';
+import 'package:spo_balaesang/utils/view_util.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -48,8 +52,33 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.only(right: 4.0, top: 4.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(100),
-                child: Image.network(
-                  e,
+                child: CachedNetworkImage(
+                  imageUrl: e,
+                  placeholder: (_, __) => Shimmer.fromColors(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 4.0, top: 4.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: Material(
+                          color: Colors.grey[300],
+                          child: InkWell(
+                            onTap: () {},
+                            splashColor: Colors.white,
+                            borderRadius: BorderRadius.circular(100),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.grey[300],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    baseColor: Colors.grey[400],
+                    highlightColor: Colors.white,
+                  ),
                   height: 55.0,
                 ),
               ),
@@ -148,6 +177,17 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
       User _user = await dataRepo.getMyData();
+      if (_user == null) {
+        showAlertDialog(
+            'failed',
+            'Kesalahan',
+            'Pastikan anda terhubung ke internet lalu tekan tombol refresh.',
+            context,
+            true);
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        var data = jsonDecode(prefs.getString('user'));
+        _user = User.fromJson(data);
+      }
       OneSignal.shared.setExternalUserId(_user.id.toString());
       setState(() {
         user = _user;
@@ -659,11 +699,18 @@ class _HomeScreenState extends State<HomeScreen> {
             Icons.refresh,
             color: Colors.white,
           ),
-          onPressed: () {
+          onPressed: () async {
             ProgressDialog pd = ProgressDialog(context, isDismissible: false);
-            pd.show();
-            _getUser();
-            _getAllEmployee(pd: pd);
+            var showing = await pd.show();
+            try {
+              Future.wait([_getUser(), _getAllEmployee()]);
+            } catch (e) {
+              print(e);
+            } finally {
+              if (showing) {
+                pd.hide();
+              }
+            }
           },
         ),
         body: CustomScrollView(

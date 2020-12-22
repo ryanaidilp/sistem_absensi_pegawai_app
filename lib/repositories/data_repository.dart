@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
@@ -14,13 +15,23 @@ class DataRepository {
   final ApiService apiService;
 
   Future<List<Employee>> getAllEmployee() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     List<Employee> employee;
     try {
       final Map<String, dynamic> _data =
           await apiService.getEndpointData(endpoint: Endpoint.users);
       final List<dynamic> _result = _data['data'];
+      if (prefs.containsKey('employee')) {
+        prefs.remove('employee');
+        prefs.reload();
+      }
+      prefs.setString('employee', jsonEncode(_data));
       employee =
           _result.map((dynamic json) => Employee.fromJson(json)).toList();
+    } on SocketException {
+      Map<String, dynamic> data = jsonDecode(prefs.getString('employee'));
+      final List<dynamic> _data = data['data'];
+      employee = _data.map((dynamic json) => Employee.fromJson(json)).toList();
     } catch (e) {
       print(e.toString());
     }
@@ -37,6 +48,8 @@ class DataRepository {
       prefs.reload();
       prefs.setString('user', jsonEncode(_data['data']));
       user = User.fromJson(_data['data']);
+    } on SocketException {
+      return null;
     } catch (e) {
       print(e.toString());
     }
