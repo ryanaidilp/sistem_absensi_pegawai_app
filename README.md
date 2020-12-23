@@ -6,7 +6,7 @@
 
 Aplikasi Android untuk manajemen data presensi pegawai di lingkungan kantor pemerintahan Kecamatan Balaesang. Aplikasi ini dibangun dengan [Flutter](https://flutter.dev)
 
-[![SIAP](https://i.ibb.co/5c35JYp/banner.png)](https://play.google.com/store/apps/details?id=com.banuacoders.siap)
+[![SIAP](https://i.ibb.co/MGrChNR/banner.png)](https://play.google.com/store/apps/details?id=com.banuacoders.siap)
 
 ## About
 
@@ -16,13 +16,14 @@ Permasalahan timbul saat sebagian besar pegawai tidak jujur dalam mengisi absen 
 
 ## Konfigurasi
 
-*Clone* repository back-end aplikasinya [disini](https://github.com/ryanaidilp/sistem_absensi_pegawai). Buat file **.env** pada root folder aplikasi ini lalu tambahkan variabe berikut
+*Clone* repository back-end aplikasinya [disini](https://github.com/ryanaidilp/sistem_absensi_pegawai). Buat file **.env** pada root folder aplikasi ini lalu tambahkan variabel berikut
 
 ```dotenv
     BASE_URL=BASE URL ONLINE
     LOCAL_URL=LOCAL_URL #Jika kamu ingin menyambungkian ke server di localhost
     ONE_SIGNAL_APP_ID=APP ID UNTUK ONE SIGNAL
 ``` 
+
 Isikan variabel sesuai dengan konfigurasi anda.
 
 ## Screenshoot
@@ -30,23 +31,29 @@ Isikan variabel sesuai dengan konfigurasi anda.
 - *Login Screen*
   ![Login Screen](https://i.ibb.co/fxCP1FX/login.png)
 
-- *Home*
-![Home](https://i.ibb.co/WcPfmKm/home.png)
+- *Home* diluar jadwal presensi
+  ![Home](https://i.ibb.co/r4w2J0R/home-not-absent.png)
+
+- *Home* saat jadwal presensi
+  ![Home2](https://i.ibb.co/FDJfPMd/home.png)
+
+- Halaman aplikasi
+  ![Application](https://i.ibb.co/Rgnhp4j/application-screen.png)
+
+- Halaman aplikasi pimpinan
+  ![Application2](https://i.ibb.co/GkMHxDk/application-screen-2.png)
 
 - Absensi (*QR Scanner*)
   ![Scanner](https://i.ibb.co/5kXRkRM/presensi.png)
 
-- Daftar Absensi
-  ![Attendance List](https://i.ibb.co/fCPk4Pn/absent-list.png)
-
 - Daftar Pegawai
-  ![Employee List](https://i.ibb.co/0939TPX/employee-list.png)
+  ![Employee List](https://i.ibb.co/qpW6sBV/employee-screen.png)
 
 - Ubah Password
   ![Change Password](https://i.ibb.co/FKk6Vzv/change-pass.png)
 
 - Pengajuan Izin
-![Create Permission](https://i.ibb.co/GM2rQjH/create-permission.png)
+  ![Create Permission](https://i.ibb.co/GM2rQjH/create-permission.png)
 
 - Daftar Izin yang diajukan
   ![Permission List](https://i.ibb.co/FmgzWKF/permission-list.png)
