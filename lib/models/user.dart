@@ -50,10 +50,11 @@ class User {
             ? Presence.fromJson(
                 json['next_presence']['data'] as Map<String, dynamic>)
             : null,
-        presences: json['presence'] != null
+        presences: ((json['presence'] != null) ||
+                (json['presence'] as List<dynamic>).isNotEmpty)
             ? (json['presence'] as List<dynamic>)
                 .map((json) => Presence.fromJson(json))
                 .toList()
-            : null);
+            : []);
   }
 }

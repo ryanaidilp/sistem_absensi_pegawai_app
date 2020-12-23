@@ -565,8 +565,8 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               children: <Widget>[
                 Text(
-                  'Libur Nasional. ${DateFormat('EEEE, d MMMM Y').format(user.holiday['date'])}',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0),
+                  'Libur Nasional. ${DateFormat('EEEE, d MMMM y').format(DateTime.parse(user.holiday['date']))}',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.0),
                 ),
                 SizedBox(height: 10.0),
                 Text('${user.holiday['name']}'),
