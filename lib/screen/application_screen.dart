@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +16,7 @@ import 'package:spo_balaesang/screen/employee_permission.dart';
 import 'package:spo_balaesang/screen/login_screen.dart';
 import 'package:spo_balaesang/screen/outstation_list_screen.dart';
 import 'package:spo_balaesang/screen/permission_list_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
 class ApplicationScreen extends StatefulWidget {
@@ -29,12 +31,12 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
 
   Future<void> getUser() async {
     var sp = await SharedPreferences.getInstance();
-    var _data = sp.get('user');
+    var _data = sp.get(PREFS_USER_KEY);
     var _alarm = false;
-    if (sp.containsKey('alarm')) {
-      _alarm = sp.get('alarm');
+    if (sp.containsKey(PREFS_ALARM_KEY)) {
+      _alarm = sp.get(PREFS_ALARM_KEY);
     } else {
-      sp.setBool('alarm', _alarm);
+      sp.setBool(PREFS_ALARM_KEY, _alarm);
     }
     Map<String, dynamic> _json = jsonDecode(_data);
     if (_alarm) {
@@ -81,15 +83,12 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                       if (_response['success']) {
                         SharedPreferences prefs =
                             await SharedPreferences.getInstance();
-                        prefs.remove('token');
-                        prefs.remove('user');
-                        prefs.remove('alarm');
+                        prefs.remove(PREFS_TOKEN_KEY);
+                        prefs.remove(PREFS_USER_KEY);
+                        prefs.remove(PREFS_ALARM_KEY);
                         pd.hide();
                         OneSignal.shared.removeExternalUserId();
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (_) => LoginScreen()),
-                            (route) => false);
+                        Get.off(LoginScreen());
                       }
                     },
                     child: Text('Ya')),
@@ -109,7 +108,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
   Future<void> _handleSelected(bool value) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.reload();
-    prefs.setBool('alarm', value);
+    prefs.setBool(PREFS_ALARM_KEY, value);
     setState(() {
       _isAlarmActive = value;
     });
