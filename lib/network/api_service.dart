@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/network/api.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 
 class ApiService {
   ApiService({@required this.api});
@@ -15,14 +16,13 @@ class ApiService {
     final SharedPreferences localStorage =
         await SharedPreferences.getInstance();
 
-    token = jsonDecode(localStorage.getString("token")) as String;
+    token = jsonDecode(localStorage.getString(PREFS_TOKEN_KEY)) as String;
   }
 
   Future<Map<String, dynamic>> getEndpointData(
       {@required Endpoint endpoint}) async {
     final url = api.endpointUri(endpoint);
     await _getToken();
-    print(token);
     final response = await http.get(url.toString(), headers: _setHeaders());
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -37,15 +37,14 @@ class ApiService {
 
   Future<http.Response> postEndpointWithoutToken(
       {@required Endpoint endpoint, Map<String, dynamic> data}) async {
-    final url =  api.endpointUri(endpoint);
-    print(url);
+    final url = api.endpointUri(endpoint);
     return await http.post(url, body: data);
   }
 
   Future<http.Response> postEndpointWithToken(
       {@required Endpoint endpoint, Map<String, dynamic> data}) async {
     await _getToken();
-    final url =  api.endpointUri(endpoint);
+    final url = api.endpointUri(endpoint);
     return await http.post(url, body: jsonEncode(data), headers: _setHeaders());
   }
 
