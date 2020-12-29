@@ -8,9 +8,5 @@ Future<File> compressAndGetFile(File file, String targetPath) async {
     targetPath,
     quality: 60,
   );
-
-  print(file.lengthSync());
-  print(result.lengthSync());
-
   return result;
 }
