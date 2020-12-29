@@ -59,6 +59,9 @@ dependencies:
   flutter_local_notifications:
   cached_network_image:
   photo_view:
+  flutter_native_splash: 0.1.9
+  flutter_spinkit: 4.1.2+1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -71,6 +74,11 @@ flutter_icons:
   image_path_android: "assets/launcher/icon.png"
   adaptive_icon_background: "assets/launcher/launcher_bg.png"
   adaptive_icon_foreground: "assets/launcher/launcher_fg.png"
+
+flutter_native_splash:
+  image: assets/launcher/icon.png
+  android_disable_fullscreen: true
+  color: '6b8eef'
 
 # The following section is specific to Flutter.
 flutter:
