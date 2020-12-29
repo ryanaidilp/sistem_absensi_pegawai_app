@@ -1,4 +1,5 @@
 import 'package:spo_balaesang/models/user.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 
 class Outstation {
   const Outstation(
@@ -22,13 +23,15 @@ class Outstation {
 
   factory Outstation.fromJson(Map<String, dynamic> json) {
     return Outstation(
-        id: json['id'] as int,
-        title: json['title'] as String,
-        description: json['description'] as String,
-        isApproved: json['is_approved'] as bool,
-        photo: json['photo'] as String,
-        dueDate: DateTime.parse(json['due_date']),
-        startDate: DateTime.parse(json['start_date']),
-        user: json['user'] != null ? User.fromJson(json['user']) : null);
+        id: json[OUTSTATION_ID_FIELD] as int,
+        title: json[OUTSTATION_TITLE_FIELD] as String,
+        description: json[OUTSTATION_DESCRIPTION_FIELD] as String,
+        isApproved: json[OUTSTATION_IS_APPROVED_FIELD] as bool,
+        photo: json[OUTSTATION_PHOTO_FIELD] as String,
+        dueDate: DateTime.parse(json[OUTSTATION_DUE_DATE_FIELD]),
+        startDate: DateTime.parse(json[OUTSTATION_START_DATE_FIELD]),
+        user: json[OUTSTATION_USER_FIELD] != null
+            ? User.fromJson(json[OUTSTATION_USER_FIELD])
+            : null);
   }
 }

@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/forgot_pass_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -229,14 +230,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                             jsonDecode(response.body);
                                         if (response.statusCode == 200) {
                                           prefs.setString(
-                                              'token',
+                                              PREFS_TOKEN_KEY,
+                                              jsonEncode(result[JSON_DATA_FIELD]
+                                                  [PREFS_TOKEN_KEY]));
+                                          prefs.setString(
+                                              PREFS_USER_KEY,
                                               jsonEncode(
-                                                  result['data']['token']));
-                                          prefs.setString('user',
-                                              jsonEncode(result['data']));
-                                          print(result['data']['token']);
+                                                  result[JSON_DATA_FIELD]));
                                           OneSignal.shared.setExternalUserId(
-                                              result['data']['id'].toString());
+                                              result[JSON_DATA_FIELD]
+                                                      [USER_ID_FIELD]
+                                                  .toString());
                                           Navigator.pushAndRemoveUntil(
                                               context,
                                               MaterialPageRoute(
@@ -294,7 +298,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      'v0.1.0',
+                      'v4.1.3',
                       style: TextStyle(
                           color: Colors.grey,
                           fontSize: 12.0,

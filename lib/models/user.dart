@@ -1,4 +1,5 @@
 import 'package:spo_balaesang/models/presence.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 
 class User {
   const User(
@@ -34,25 +35,25 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-        id: json['id'] as int,
-        nip: json['nip'] as String,
-        name: json['name'] as String,
-        phone: json['phone'] as String,
-        gender: json['gender'] as String,
-        department: json['department'] as String,
-        status: json['status'] as String,
-        position: json['position'] as String,
-        unreadNotification: json['unread_notifications'] as int,
-        holiday: json['holiday'] as Map<String, dynamic>,
-        isWeekend: json['is_weekend'] as bool,
-        token: json['token'] as String,
-        nextPresence: json['next_presence'] != null
-            ? Presence.fromJson(
-                json['next_presence']['data'] as Map<String, dynamic>)
+        id: json[USER_ID_FIELD] as int,
+        nip: json[USER_NIP_FIELD] as String,
+        name: json[USER_NAME_FIELD] as String,
+        phone: json[USER_PHONE_FIELD] as String,
+        gender: json[USER_GENDER_FIELD] as String,
+        department: json[USER_DEPARTMENT_FIELD] as String,
+        status: json[USER_STATUS_FIELD] as String,
+        position: json[USER_POSITION_FIELD] as String,
+        unreadNotification: json[USER_UNREAD_NOTIFICATION_COUNT_FIELD] as int,
+        holiday: json[USER_HOLIDAY_FIELD] as Map<String, dynamic>,
+        isWeekend: json[USER_IS_WEEKEND_FIELD] as bool,
+        token: json[USER_TOKEN_FIELD] as String,
+        nextPresence: json[USER_NEXT_PRESENCE_FIELD] != null
+            ? Presence.fromJson(json[USER_NEXT_PRESENCE_FIELD][JSON_DATA_FIELD]
+                as Map<String, dynamic>)
             : null,
-        presences: ((json['presence'] != null) ||
-                (json['presence'] as List<dynamic>).isNotEmpty)
-            ? (json['presence'] as List<dynamic>)
+        presences: ((json[USER_PRESENCES_FIELD] != null) &&
+                (json[USER_PRESENCES_FIELD] as List<dynamic>).isNotEmpty)
+            ? (json[USER_PRESENCES_FIELD] as List<dynamic>)
                 .map((json) => Presence.fromJson(json))
                 .toList()
             : []);

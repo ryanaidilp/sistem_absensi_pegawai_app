@@ -20,6 +20,7 @@ import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/employee_list_screen.dart';
 import 'package:spo_balaesang/screen/notification_list_screen.dart';
 import 'package:spo_balaesang/screen/presence_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -35,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   User user;
   List<Employee> _users;
   bool isLoading = false;
+  double _percentage = 0;
 
   @override
   void setState(fn) {
@@ -185,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
             context,
             true);
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        var data = jsonDecode(prefs.getString('user'));
+        var data = jsonDecode(prefs.getString(PREFS_USER_KEY));
         _user = User.fromJson(data);
       }
       OneSignal.shared.setExternalUserId(_user.id.toString());
@@ -564,12 +566,85 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Center(
             child: Column(
               children: <Widget>[
-                Text(
-                  'Libur Nasional. ${DateFormat('EEEE, d MMMM y').format(DateTime.parse(user.holiday['date']))}',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      DateFormat.EEEE().format(DateTime.now()),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(width: 5.0),
+                    const Text('|'),
+                    const SizedBox(width: 5.0),
+                    Text(
+                      DateFormat.yMMMd()
+                          .format(DateTime.parse(user.holiday['date'])),
+                    ),
+                    const SizedBox(width: 5.0),
+                    const Text('|'),
+                    const SizedBox(width: 5.0),
+                    Text(
+                      'Libur',
+                    ),
+                  ],
                 ),
-                SizedBox(height: 10.0),
-                Text('${user.holiday['name']}'),
+                Divider(
+                  thickness: 1.0,
+                  color: Colors.black26,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Text(
+                          'JENIS LIBUR :',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text('Libur Nasional'),
+                        const SizedBox(height: 10.0),
+                        const Text(
+                          'NAMA LIBUR :',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 2.0),
+                        Text('${user.holiday['name']}'),
+                        const SizedBox(height: 10.0),
+                        const Text(
+                          'STATUS KEHADIRAN :',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 2.0),
+                        Text(
+                          'Cuti',
+                          style: TextStyle(color: _checkStatusColor('Izin')),
+                        ),
+                        const SizedBox(height: 10.0),
+                        Text(
+                          'CATATAN :',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 2.0),
+                        Text('-')
+                      ],
+                    ),
+                    Expanded(
+                      child: Column(children: <Widget>[
+                        Icon(Icons.calendar_today_rounded,
+                            color: Colors.blueAccent, size: 72),
+                        const SizedBox(height: 2.0),
+                        Text(
+                          'LIBUR',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueAccent,
+                          ),
+                        )
+                      ]),
+                    )
+                  ],
+                ),
               ],
             ),
           ),
@@ -583,13 +658,91 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.all(8.0),
           child: Center(
             child: Column(
-              children: const <Widget>[
-                Text(
-                  'Akhir Pekan',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0),
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      DateFormat.EEEE().format(DateTime.now()),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(width: 5.0),
+                    const Text('|'),
+                    const SizedBox(width: 5.0),
+                    Text(
+                      DateFormat.yMMMd().format(DateTime.now()),
+                    ),
+                    const SizedBox(width: 5.0),
+                    const Text('|'),
+                    const SizedBox(width: 5.0),
+                    Text(
+                      'Akhir Pekan',
+                    ),
+                  ],
                 ),
-                SizedBox(height: 10.0),
-                Text('Tidak Ada Absen hari ini'),
+                Divider(
+                  thickness: 1.0,
+                  color: Colors.black26,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Text(
+                          'JENIS LIBUR :',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text('Akhir Pekan'),
+                        const SizedBox(height: 10.0),
+                        const Text(
+                          'NAMA LIBUR :',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 2.0),
+                        Text('Akhir Pekan'),
+                        const SizedBox(height: 10.0),
+                        const Text(
+                          'STATUS KEHADIRAN :',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 2.0),
+                        Text(
+                          'Cuti',
+                          style: TextStyle(color: _checkStatusColor('Izin')),
+                        ),
+                        const SizedBox(height: 10.0),
+                        Text(
+                          'CATATAN :',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 2.0),
+                        Text(
+                          'Tidak Ada Presensi Hari Ini',
+                          style: TextStyle(fontSize: 12.0),
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: Column(children: <Widget>[
+                        Icon(
+                          Icons.calendar_today_rounded,
+                          color: Colors.blueAccent,
+                          size: 72,
+                        ),
+                        const SizedBox(height: 2.0),
+                        Text(
+                          'Akhir Pekan',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueAccent,
+                          ),
+                        )
+                      ]),
+                    )
+                  ],
+                ),
               ],
             ),
           ),
@@ -602,13 +755,95 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Center(
           child: Column(
-            children: const <Widget>[
-              Text(
-                'Selesai',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0),
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    DateFormat.EEEE().format(DateTime.now()),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(width: 5.0),
+                  const Text('|'),
+                  const SizedBox(width: 5.0),
+                  Text(
+                    DateFormat.yMMMd().format(DateTime.now()),
+                  ),
+                  const SizedBox(width: 5.0),
+                  const Text('|'),
+                  const SizedBox(width: 5.0),
+                  Text(
+                    'Selesai',
+                  ),
+                ],
               ),
-              SizedBox(height: 10.0),
-              Text('Semua presensi hari ini telah selesai!'),
+              Divider(
+                thickness: 1.0,
+                color: Colors.black26,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        'SKEMA ABSENSI :',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text('-'),
+                      const SizedBox(height: 10.0),
+                      const Text(
+                        'JADWAL ABSENSI :',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 2.0),
+                      Text('-'),
+                      const SizedBox(height: 10.0),
+                      const Text(
+                        'STATUS KEHADIRAN :',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 2.0),
+                      Text(
+                        'Cuti',
+                        style: TextStyle(color: _checkStatusColor('Izin')),
+                      ),
+                      const SizedBox(height: 10.0),
+                      Text(
+                        'CATATAN :',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 2.0),
+                      Text(
+                        'Semua Presensi Sudah Selesai',
+                        style: TextStyle(fontSize: 10.0),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: Column(children: <Widget>[
+                      Text(
+                        NumberFormat.decimalPattern('id_ID')
+                                .format(_percentage) +
+                            '%',
+                        style: TextStyle(
+                          fontSize: 32,
+                          color: Colors.blueAccent,
+                        ),
+                      ),
+                      const SizedBox(height: 2.0),
+                      Text(
+                        'KEHADIRAN',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent,
+                        ),
+                      )
+                    ]),
+                  )
+                ],
+              ),
             ],
           ),
         ),
@@ -641,6 +876,13 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Future.wait([_getUser(), _getAllEmployee()]);
+    _percentage = user != null
+        ? (user.presences
+                    .where((element) => element.status != 'Tidak Hadir')
+                    .length /
+                4) *
+            100
+        : 0;
   }
 
   @override
