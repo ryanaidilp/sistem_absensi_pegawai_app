@@ -89,7 +89,6 @@ class _PresenceScreenState extends State<PresenceScreen> {
         'photo': _base64Image,
         'file_name': _fileName
       };
-      print(jsonEncode(data));
       Response response = await dataRepo.presence(data);
       Map<String, dynamic> _res = jsonDecode(response.body);
       if (response.statusCode == 200) {
@@ -262,7 +261,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
                 onPressed: _openCamera,
                 color: Colors.blueAccent,
                 textColor: Colors.white,
-                child: Text('Ambil Foto'),
+                child: Text(_base64Image == null ? 'Ambil Foto' : 'Ubah Foto'),
               ),
             ],
           ),

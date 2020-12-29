@@ -8,6 +8,7 @@ import 'package:spo_balaesang/models/employee.dart';
 import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/network/api.dart';
 import 'package:spo_balaesang/network/api_service.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 
 class DataRepository {
   DataRepository({@required this.apiService});
@@ -21,15 +22,16 @@ class DataRepository {
       final Map<String, dynamic> _data =
           await apiService.getEndpointData(endpoint: Endpoint.users);
       final List<dynamic> _result = _data['data'];
-      if (prefs.containsKey('employee')) {
-        prefs.remove('employee');
+      if (prefs.containsKey(PREFS_EMPLOYEE_KEY)) {
+        prefs.remove(PREFS_EMPLOYEE_KEY);
         prefs.reload();
       }
-      prefs.setString('employee', jsonEncode(_data));
+      prefs.setString(PREFS_EMPLOYEE_KEY, jsonEncode(_data));
       employee =
           _result.map((dynamic json) => Employee.fromJson(json)).toList();
     } on SocketException {
-      Map<String, dynamic> data = jsonDecode(prefs.getString('employee'));
+      Map<String, dynamic> data =
+          jsonDecode(prefs.getString(PREFS_EMPLOYEE_KEY));
       final List<dynamic> _data = data['data'];
       employee = _data.map((dynamic json) => Employee.fromJson(json)).toList();
     } catch (e) {
@@ -44,9 +46,9 @@ class DataRepository {
     try {
       final Map<String, dynamic> _data =
           await apiService.getEndpointData(endpoint: Endpoint.my);
-      prefs.remove('user');
+      prefs.remove(PREFS_USER_KEY);
       prefs.reload();
-      prefs.setString('user', jsonEncode(_data['data']));
+      prefs.setString(PREFS_USER_KEY, jsonEncode(_data['data']));
       user = User.fromJson(_data['data']);
     } on SocketException {
       return null;
@@ -227,7 +229,6 @@ class DataRepository {
     try {
       var response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.sendNotifications, data: data);
-      print(response.body);
       result = jsonDecode(response.body);
     } catch (e) {
       print(e.toString());

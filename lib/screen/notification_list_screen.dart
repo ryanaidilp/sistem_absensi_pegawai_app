@@ -10,6 +10,7 @@ import 'package:spo_balaesang/models/notification.dart';
 import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/create_notification_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
 class NotificationListScreen extends StatefulWidget {
@@ -26,7 +27,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
 
   Future<void> getUser() async {
     var sp = await SharedPreferences.getInstance();
-    var _data = sp.get('user');
+    var _data = sp.get(PREFS_USER_KEY);
     Map<String, dynamic> _json = jsonDecode(_data);
 
     setState(() {
