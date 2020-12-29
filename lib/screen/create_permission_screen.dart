@@ -89,8 +89,8 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: _dueDate,
-        firstDate: DateTime.now(),
-        lastDate: DateTime(2025));
+        firstDate: DateTime.now().subtract(Duration(days: 7)),
+        lastDate: DateTime(DateTime.now().year + 5));
     if (picked != null) {
       setState(() {
         _dueDate = picked;
@@ -100,10 +100,11 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
 
   _selectStartDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: _startDate,
-        firstDate: DateTime.now(),
-        lastDate: DateTime(2025));
+      context: context,
+      initialDate: _startDate,
+      firstDate: DateTime.now().subtract(Duration(days: 7)),
+      lastDate: DateTime(DateTime.now().year + 5),
+    );
     if (picked != null) {
       setState(() {
         _startDate = picked;
@@ -282,7 +283,8 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
                     onPressed: _openCamera,
                     color: Colors.blueAccent,
                     textColor: Colors.white,
-                    child: Text('Ambil Foto'),
+                    child:
+                        Text(_base64Image == null ? 'Ambil Foto' : 'Ubah Foto'),
                   ),
                   RaisedButton(
                     onPressed: _uploadData,
