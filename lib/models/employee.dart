@@ -1,4 +1,5 @@
 import 'package:spo_balaesang/models/presence.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 
 class Employee {
   const Employee(
@@ -22,15 +23,15 @@ class Employee {
 
   factory Employee.fromJson(Map<String, dynamic> json) {
     return Employee(
-        nip: json['nip'] as String,
-        name: json['name'] as String,
-        phone: json['phone'] as String,
-        gender: json['gender'] as String,
-        department: json['department'] as String,
-        status: json['status'] as String,
-        position: json['position'] as String,
-        presences: json['presence'] != null
-            ? (json['presence'] as List<dynamic>)
+        nip: json[USER_NIP_FIELD] as String,
+        name: json[USER_NAME_FIELD] as String,
+        phone: json[USER_PHONE_FIELD] as String,
+        gender: json[USER_GENDER_FIELD] as String,
+        department: json[USER_DEPARTMENT_FIELD] as String,
+        status: json[USER_STATUS_FIELD] as String,
+        position: json[USER_POSITION_FIELD] as String,
+        presences: json[USER_PRESENCES_FIELD] != null
+            ? (json[USER_PRESENCES_FIELD] as List<dynamic>)
                 .map((json) => Presence.fromJson(json))
                 .toList()
             : null);

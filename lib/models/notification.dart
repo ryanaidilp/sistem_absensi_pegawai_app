@@ -1,3 +1,5 @@
+import 'package:spo_balaesang/utils/app_const.dart';
+
 class UserNotification {
   const UserNotification(
       {this.id,
@@ -14,10 +16,10 @@ class UserNotification {
 
   factory UserNotification.fromJson(Map<String, dynamic> json) {
     return UserNotification(
-        id: json['id'] as String,
-        notifiableId: json['notifiable_id'] as int,
-        notifiableType: json['notifiable_type'] as String,
-        data: json['data'] as Map<String, dynamic>,
-        isRead: json['is_read'] as bool);
+        id: json[NOTIFICATION_ID_FIELD] as String,
+        notifiableId: json[NOTIFICATION_NOTIFIABLE_ID_FIELD] as int,
+        notifiableType: json[NOTIFICATION_NOTIFIABLE_TYPE_FIELD] as String,
+        data: json[JSON_DATA_FIELD] as Map<String, dynamic>,
+        isRead: json[NOTIFICATION_IS_READ_FIELD] as bool);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:spo_balaesang/models/user.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 
 class AbsentPermission {
   const AbsentPermission(
@@ -22,13 +23,15 @@ class AbsentPermission {
 
   factory AbsentPermission.fromJson(Map<String, dynamic> json) {
     return AbsentPermission(
-        id: json['id'] as int,
-        title: json['title'] as String,
-        description: json['description'] as String,
-        isApproved: json['is_approved'] as bool,
-        photo: json['photo'] as String,
-        dueDate: DateTime.parse(json['due_date']),
-        startDate: DateTime.parse(json['start_date']),
-        user: json['user'] != null ? User.fromJson(json['user']) : null);
+        id: json[ABSENT_PERMISSION_ID_FIELD] as int,
+        title: json[ABSENT_PERMISSION_TITLE_FIELD] as String,
+        description: json[ABSENT_PERMISSION_DESCRIPTION_FIELD] as String,
+        isApproved: json[ABSENT_PERMISSION_IS_APPROVED_FIELD] as bool,
+        photo: json[ABSENT_PERMISSION_PHOTO_FIELD] as String,
+        dueDate: DateTime.parse(json[ABSENT_PERMISSION_DUE_DATE_FIELD]),
+        startDate: DateTime.parse(json[ABSENT_PERMISSION_START_DATE_FIELD]),
+        user: json[ABSENT_PERMISSION_USER_FIELD] != null
+            ? User.fromJson(json[ABSENT_PERMISSION_USER_FIELD])
+            : null);
   }
 }
