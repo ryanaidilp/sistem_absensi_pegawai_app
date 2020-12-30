@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/absent_permission.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
@@ -154,10 +155,9 @@ class _PermissionListScreenState extends State<PermissionListScreen> {
                     SizedBox(height: 5.0),
                     InkWell(
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (_) => ImageDetailScreen(
-                                  imageUrl: permission.photo,
-                                )));
+                        Get.to(ImageDetailScreen(
+                          imageUrl: permission.photo,
+                        ));
                       },
                       child: Hero(
                         tag: 'image',
@@ -208,8 +208,7 @@ class _PermissionListScreenState extends State<PermissionListScreen> {
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.blueAccent,
           onPressed: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => CreatePermissionScreen()));
+            Get.to(CreatePermissionScreen());
           },
           child: Icon(Icons.add),
         ),

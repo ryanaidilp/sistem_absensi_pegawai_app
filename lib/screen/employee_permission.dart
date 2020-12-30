@@ -5,7 +5,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/absent_permission.dart';
@@ -62,20 +63,16 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
         'is_approved': !permission.isApproved,
         'permission_id': permission.id
       };
-      Response response = await dataRepo.approvePermission(data);
+      http.Response response = await dataRepo.approvePermission(data);
       Map<String, dynamic> _res = jsonDecode(response.body);
       print(response.statusCode);
       if (response.statusCode == 200) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], context, false);
-        Timer(
-            Duration(seconds: 5),
-            () => Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => BottomNavScreen()),
-                (route) => false));
+        showAlertDialog("success", "Sukses", _res['message'], false);
+        Timer(Duration(seconds: 5), () => Get.off(BottomNavScreen()));
       } else {
         if (pd.isShowing()) pd.hide();
-        showErrorDialog(context, _res);
+        showErrorDialog(_res);
       }
     } catch (e) {
       pd.hide();
@@ -212,10 +209,9 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
                       SizedBox(height: 5.0),
                       InkWell(
                         onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) => ImageDetailScreen(
-                                    imageUrl: permission.photo,
-                                  )));
+                          Get.to(ImageDetailScreen(
+                            imageUrl: permission.photo,
+                          ));
                         },
                         child: Hero(
                           tag: 'image',

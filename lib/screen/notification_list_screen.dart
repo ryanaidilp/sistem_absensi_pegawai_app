@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -69,15 +70,15 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     try {
       pd.show();
       Map<String, dynamic> data = {'notification_id': id};
-      Response response = await dataRepo.readNotification(data);
+      http.Response response = await dataRepo.readNotification(data);
       Map<String, dynamic> _res = jsonDecode(response.body);
       if (response.statusCode == 200) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], context, true);
+        showAlertDialog("success", "Sukses", _res['message'], true);
         _fetchNotificationsData();
       } else {
         if (pd.isShowing()) pd.hide();
-        showErrorDialog(context, _res);
+        showErrorDialog(_res);
       }
     } catch (e) {
       print(e);
@@ -92,11 +93,11 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
       Map<String, dynamic> _res = await dataRepo.readAllNotifications();
       if (_res['success']) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], context, true);
+        showAlertDialog("success", "Sukses", _res['message'], true);
         _fetchNotificationsData();
       } else {
         if (pd.isShowing()) pd.hide();
-        showErrorDialog(context, _res);
+        showErrorDialog(_res);
       }
     } catch (e) {
       print(e);
@@ -111,11 +112,11 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
       Map<String, dynamic> _res = await dataRepo.deleteAllNotifications();
       if (_res['success']) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], context, true);
+        showAlertDialog("success", "Sukses", _res['message'], true);
         _fetchNotificationsData();
       } else {
         if (pd.isShowing()) pd.hide();
-        showErrorDialog(context, _res);
+        showErrorDialog(_res);
       }
     } catch (e) {
       print(e);
@@ -247,8 +248,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
       floatingActionButton: _user?.position == 'Camat'
           ? FloatingActionButton(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => CreateNotificationScreen()));
+                Get.to(CreateNotificationScreen());
               },
               child: Icon(Icons.add),
               backgroundColor: Colors.blueAccent,

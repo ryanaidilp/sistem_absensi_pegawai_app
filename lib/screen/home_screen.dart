@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -95,9 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.grey[300],
             child: InkWell(
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) =>
-                        EmployeeListScreen(employees: this._users)));
+                Get.to(EmployeeListScreen(employees: this._users));
               },
               splashColor: Colors.white,
               borderRadius: BorderRadius.circular(100),
@@ -181,11 +180,11 @@ class _HomeScreenState extends State<HomeScreen> {
       User _user = await dataRepo.getMyData();
       if (_user == null) {
         showAlertDialog(
-            'failed',
-            'Kesalahan',
-            'Pastikan anda terhubung ke internet lalu tekan tombol refresh.',
-            context,
-            true);
+          'failed',
+          'Kesalahan',
+          'Pastikan anda terhubung ke internet lalu tekan tombol refresh.',
+          true,
+        );
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         var data = jsonDecode(prefs.getString(PREFS_USER_KEY));
         _user = User.fromJson(data);
@@ -423,11 +422,7 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Colors.green[300],
           child: InkWell(
             onTap: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => PresenceScreen()))
-                  .then((value) {
-                _getUser();
-              });
+              Get.to(PresenceScreen()).then((value) => _getUser());
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -451,6 +446,34 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  String _checkPresenceStatus(double percentage) {
+    if (percentage >= 25 && percentage < 50) {
+      return 'Buruk';
+    } else if (percentage >= 50 && percentage < 75) {
+      return 'Cukup Baik';
+    } else if (percentage >= 75 && percentage < 85) {
+      return 'Baik';
+    } else if (percentage >= 85 && percentage <= 100) {
+      return 'Sangat Baik';
+    }
+
+    return 'Sangat Buruk';
+  }
+
+  Color _checkPresenceStatusColor(double percentage) {
+    if (percentage >= 25 && percentage < 50) {
+      return Colors.red;
+    } else if (percentage >= 50 && percentage < 75) {
+      return Colors.orange;
+    } else if (percentage >= 75 && percentage < 85) {
+      return Colors.blue;
+    } else if (percentage >= 85 && percentage <= 100) {
+      return Colors.green;
+    }
+
+    return Colors.red;
   }
 
   Widget _buildTimerSection() {
@@ -806,8 +829,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 2.0),
                       Text(
-                        'Cuti',
-                        style: TextStyle(color: _checkStatusColor('Izin')),
+                        _checkPresenceStatus(_percentage),
+                        style: TextStyle(
+                            color: _checkPresenceStatusColor(_percentage)),
                       ),
                       const SizedBox(height: 10.0),
                       Text(
@@ -817,7 +841,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 2.0),
                       Text(
                         'Semua Presensi Sudah Selesai',
-                        style: TextStyle(fontSize: 10.0),
+                        style: TextStyle(fontSize: 12.0),
                       ),
                     ],
                   ),
@@ -829,7 +853,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             '%',
                         style: TextStyle(
                           fontSize: 32,
-                          color: Colors.blueAccent,
+                          color: _checkPresenceStatusColor(_percentage),
                         ),
                       ),
                       const SizedBox(height: 2.0),
@@ -837,7 +861,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         'KEHADIRAN',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.blueAccent,
+                          color: Colors.black,
                         ),
                       )
                     ]),
@@ -876,7 +900,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Future.wait([_getUser(), _getAllEmployee()]);
-    _percentage = user != null
+    _percentage = (user != null && user.presences != null)
         ? (user.presences
                     .where((element) => element.status != 'Tidak Hadir')
                     .length /
@@ -903,9 +927,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(
-                            builder: (_) => NotificationListScreen()))
+                    Get.to(NotificationListScreen())
                         .then((value) => _getUser());
                   },
                 ),
@@ -942,10 +964,10 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.white,
           ),
           onPressed: () async {
-            ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+            ProgressDialog pd = ProgressDialog(context);
             var showing = await pd.show();
             try {
-              Future.wait([_getUser(), _getAllEmployee()]);
+              await Future.wait([_getUser(), _getAllEmployee(pd: pd)]);
             } catch (e) {
               print(e);
             } finally {
