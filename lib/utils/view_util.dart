@@ -1,78 +1,89 @@
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
-Future showAlertDialog(String type, String title, String content,
-    BuildContext context, bool dismissible) async {
-  return showDialog(
-      context: context,
-      barrierDismissible: dismissible,
-      builder: (_) {
-        List<Widget> actions = type == 'success'
-            ? []
-            : [
-                FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('OK'))
-              ];
-        var color = type == 'success' ? Colors.green : Colors.red;
-        var icon = type == 'success' ? Icons.check_circle : Icons.dangerous;
-        return AlertDialog(
-          title: Center(child: Text(title)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Icon(
-                icon,
-                color: color,
-                size: 72,
+Future showAlertDialog(
+    String type, String title, String content, bool dismissible) async {
+  final List<Widget> actions = type == 'success'
+      ? []
+      : [
+          FlatButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: Text(
+              'OK',
+              style: TextStyle(
+                color: Colors.blueAccent,
               ),
-              Center(child: Text(content)),
-            ],
+            ),
+          )
+        ];
+  final color = type == 'success' ? Colors.green : Colors.red;
+  final icon = type == 'success' ? Icons.check_circle : Icons.dangerous;
+  return Get.defaultDialog(
+      title: title,
+      content: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          Icon(
+            icon,
+            color: color,
+            size: 72,
           ),
-          actions: actions,
-        );
-      });
+          const SizedBox(height: 10.0),
+          Center(
+              child: Text(
+            content,
+            textAlign: TextAlign.center,
+          )),
+        ],
+      ),
+      actions: actions,
+      barrierDismissible: dismissible);
 }
 
-Future showErrorDialog(BuildContext context, Map<String, dynamic> json) {
-  return showDialog(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          title: Column(
-            children: const <Widget>[
-              Icon(
-                Icons.dangerous,
-                color: Colors.red,
-                size: 72.0,
-              ),
-              Text('Gagal')
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(json['message']),
-              SizedBox(height: 10.0),
-              Column(
-                  children: (json['errors'] as Map<String, dynamic>)
-                      .entries
-                      .map((e) => Text(e.value[0]))
-                      .toList()),
-            ],
-          ),
-          actions: [
-            FlatButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Ok'))
+Future showErrorDialog(Map<String, dynamic> json) {
+  return Get.defaultDialog(
+    title: 'Gagal',
+    content: Column(
+      children: <Widget>[
+        const Icon(
+          Icons.dangerous,
+          color: Colors.red,
+          size: 72.0,
+        ),
+        const SizedBox(height: 10.0),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(
+              json['message'],
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10.0),
+            Column(
+                children: (json['errors'] as Map<String, dynamic>)
+                    .entries
+                    .map((e) => Text(e.value[0]))
+                    .toList()),
           ],
-        );
-      });
+        ),
+      ],
+    ),
+    cancel: FlatButton(
+      onPressed: () {
+        Get.back();
+      },
+      child: Text(
+        'OK',
+        style: TextStyle(
+          color: Colors.blueAccent,
+        ),
+      ),
+    ),
+  );
 }
 
 List<PageViewModel> onBoardingScreens = [
@@ -97,8 +108,8 @@ List<PageViewModel> onBoardingScreens = [
             TextStyle(fontSize: 12.0, fontWeight: FontWeight.normal)),
   ),
   PageViewModel(
-    title: "Izin Absen",
-    body: "Ajukan izin absen melalui aplikasi.",
+    title: "Izin Absen & Dinas Luar",
+    body: "Ajukan izin absen dan dinas luar melalui aplikasi.",
     image: Center(
         child: Container(
       child: FlareActor(
