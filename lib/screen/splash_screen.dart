@@ -158,8 +158,9 @@ class _SplashScreenState extends State<SplashScreen> {
                     children: <Widget>[
                       Image.asset(
                         'assets/launcher/icon.png',
-                        width: MediaQuery.of(context).size.width * 0.3,
+                        width: Get.width * 0.3,
                       ),
+                      const SizedBox(height: 4.0),
                       Text(
                         'SiAP Balaesang',
                         style: TextStyle(
@@ -186,7 +187,7 @@ class _SplashScreenState extends State<SplashScreen> {
                                 color: Colors.white,
                                 fontWeight: FontWeight.w700)),
                         const SizedBox(width: 2.0),
-                        Text('v4.1.3', style: TextStyle(color: Colors.white)),
+                        Text('v4.1.4', style: TextStyle(color: Colors.white)),
                         const Spacer()
                       ],
                     ),
