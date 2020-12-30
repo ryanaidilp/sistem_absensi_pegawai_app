@@ -41,7 +41,6 @@ class _PresenceScreenState extends State<PresenceScreen> {
           'failure',
           'Lokasi tidak ditemukan.',
           'Pastikan anda sudah menyalakan akses lokasi dan mengizinkan aplikasi untuk mengakses lokasi anda',
-          context,
           false);
     } else {
       var picture = await ImagePicker().getImage(source: ImageSource.camera);
@@ -70,7 +69,6 @@ class _PresenceScreenState extends State<PresenceScreen> {
             'failure',
             'Gagal',
             'Lokasi tidak ditemukan.\nPastikan lokasi sudah diaktifkan!',
-            context,
             false);
       }
     });
@@ -93,7 +91,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
       Map<String, dynamic> _res = jsonDecode(response.body);
       if (response.statusCode == 200) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], context, false);
+        showAlertDialog("success", "Sukses", _res['message'], false);
         Timer(
             Duration(seconds: 5),
             () => Navigator.of(context).pushAndRemoveUntil(
@@ -102,7 +100,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
       } else {
         this.controller?.resumeCamera();
         if (pd.isShowing()) pd.hide();
-        showErrorDialog(context, _res);
+        showErrorDialog(_res);
       }
     } catch (e) {
       print(e.toString());
