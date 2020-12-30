@@ -181,11 +181,11 @@ class _HomeScreenState extends State<HomeScreen> {
       User _user = await dataRepo.getMyData();
       if (_user == null) {
         showAlertDialog(
-            'failed',
-            'Kesalahan',
-            'Pastikan anda terhubung ke internet lalu tekan tombol refresh.',
-            context,
-            true);
+          'failed',
+          'Kesalahan',
+          'Pastikan anda terhubung ke internet lalu tekan tombol refresh.',
+          true,
+        );
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         var data = jsonDecode(prefs.getString(PREFS_USER_KEY));
         _user = User.fromJson(data);
@@ -905,7 +905,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Future.wait([_getUser(), _getAllEmployee()]);
-    _percentage = user != null
+    _percentage = (user != null && user.presences != null)
         ? (user.presences
                     .where((element) => element.status != 'Tidak Hadir')
                     .length /
@@ -971,10 +971,10 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.white,
           ),
           onPressed: () async {
-            ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+            ProgressDialog pd = ProgressDialog(context);
             var showing = await pd.show();
             try {
-              await Future.wait([_getUser(), _getAllEmployee()]);
+              await Future.wait([_getUser(), _getAllEmployee(pd: pd)]);
             } catch (e) {
               print(e);
             } finally {
