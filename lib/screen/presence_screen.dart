@@ -7,7 +7,8 @@ import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -87,16 +88,12 @@ class _PresenceScreenState extends State<PresenceScreen> {
         'photo': _base64Image,
         'file_name': _fileName
       };
-      Response response = await dataRepo.presence(data);
+      http.Response response = await dataRepo.presence(data);
       Map<String, dynamic> _res = jsonDecode(response.body);
       if (response.statusCode == 200) {
         pd.hide();
         showAlertDialog("success", "Sukses", _res['message'], false);
-        Timer(
-            Duration(seconds: 5),
-            () => Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => BottomNavScreen()),
-                (route) => false));
+        Timer(Duration(seconds: 5), () => Get.off(BottomNavScreen()));
       } else {
         this.controller?.resumeCamera();
         if (pd.isShowing()) pd.hide();

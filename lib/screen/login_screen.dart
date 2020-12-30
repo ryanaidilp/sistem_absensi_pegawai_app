@@ -4,7 +4,8 @@ import 'dart:io';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -175,12 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     margin: EdgeInsets.only(right: 20.0, bottom: 20.0),
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => ForgotPassScreen(),
-                              fullscreenDialog: true),
-                        );
+                        Get.to(ForgotPassScreen(), fullscreenDialog: true);
                       },
                       child: Text(
                         'Lupa Password?',
@@ -224,7 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         final dataRepository =
                                             Provider.of<DataRepository>(context,
                                                 listen: false);
-                                        Response response =
+                                        http.Response response =
                                             await dataRepository.login(data);
                                         final Map<String, dynamic> result =
                                             jsonDecode(response.body);
@@ -241,12 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               result[JSON_DATA_FIELD]
                                                       [USER_ID_FIELD]
                                                   .toString());
-                                          Navigator.pushAndRemoveUntil(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      BottomNavScreen()),
-                                              (route) => false);
+                                          Get.off(BottomNavScreen());
                                         } else {
                                           showErrorDialog(result);
                                         }
