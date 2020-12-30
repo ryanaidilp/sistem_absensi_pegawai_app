@@ -453,6 +453,34 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  String _checkPresenceStatus(double percentage) {
+    if (percentage >= 25 && percentage < 50) {
+      return 'Buruk';
+    } else if (percentage >= 50 && percentage < 75) {
+      return 'Cukup Baik';
+    } else if (percentage >= 75 && percentage < 85) {
+      return 'Baik';
+    } else if (percentage >= 85 && percentage <= 100) {
+      return 'Sangat Baik';
+    }
+
+    return 'Sangat Buruk';
+  }
+
+  Color _checkPresenceStatusColor(double percentage) {
+    if (percentage >= 25 && percentage < 50) {
+      return Colors.red;
+    } else if (percentage >= 50 && percentage < 75) {
+      return Colors.orange;
+    } else if (percentage >= 75 && percentage < 85) {
+      return Colors.blue;
+    } else if (percentage >= 85 && percentage <= 100) {
+      return Colors.green;
+    }
+
+    return Colors.red;
+  }
+
   Widget _buildTimerSection() {
     if (isLoading) {
       return _buildShimmerSection(MediaQuery.of(context).size.width * 0.8, 60);
@@ -806,8 +834,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 2.0),
                       Text(
-                        'Cuti',
-                        style: TextStyle(color: _checkStatusColor('Izin')),
+                        _checkPresenceStatus(_percentage),
+                        style: TextStyle(
+                            color: _checkPresenceStatusColor(_percentage)),
                       ),
                       const SizedBox(height: 10.0),
                       Text(
@@ -817,7 +846,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 2.0),
                       Text(
                         'Semua Presensi Sudah Selesai',
-                        style: TextStyle(fontSize: 10.0),
+                        style: TextStyle(fontSize: 12.0),
                       ),
                     ],
                   ),
@@ -829,7 +858,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             '%',
                         style: TextStyle(
                           fontSize: 32,
-                          color: Colors.blueAccent,
+                          color: _checkPresenceStatusColor(_percentage),
                         ),
                       ),
                       const SizedBox(height: 2.0),
@@ -837,7 +866,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         'KEHADIRAN',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.blueAccent,
+                          color: Colors.black,
                         ),
                       )
                     ]),
@@ -945,7 +974,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ProgressDialog pd = ProgressDialog(context, isDismissible: false);
             var showing = await pd.show();
             try {
-              Future.wait([_getUser(), _getAllEmployee()]);
+              await Future.wait([_getUser(), _getAllEmployee()]);
             } catch (e) {
               print(e);
             } finally {
