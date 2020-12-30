@@ -248,7 +248,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                       BottomNavScreen()),
                                               (route) => false);
                                         } else {
-                                          showErrorDialog(context, result);
+                                          showErrorDialog(result);
                                         }
                                       } on SocketException catch (e) {
                                         print(e.message);
@@ -298,14 +298,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      'v4.1.3',
+                      'v4.1.4',
                       style: TextStyle(
                           color: Colors.grey,
                           fontSize: 12.0,
                           fontWeight: FontWeight.w500),
                     ),
                     Text(
-                      'Sistem Presensi Online by Banua Coders ',
+                      'Sistem Absensi Pegawai Online by Banua Coders ',
                       style: TextStyle(
                           color: Colors.grey,
                           fontSize: 12.0,
