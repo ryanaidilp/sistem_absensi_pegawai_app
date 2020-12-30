@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
@@ -145,21 +146,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       'new_pass': _newPassCtrl.value.text,
                       'new_pass_conf': _newPass2Ctrl.value.text
                     };
-                    final Response response = await dataRepo.changePass(data);
+                    final http.Response response =
+                        await dataRepo.changePass(data);
                     final Map<String, dynamic> _res = jsonDecode(response.body);
                     if (response.statusCode == 200) {
                       pd.hide();
                       showAlertDialog(
-                          'success', "Sukses", _res['message'], context, false);
-                      Timer(
-                          Duration(seconds: 1),
-                          () => Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                  builder: (_) => BottomNavScreen()),
-                              (route) => false));
+                          'success', "Sukses", _res['message'], false);
+                      Timer(Duration(seconds: 1),
+                          () => Get.off(BottomNavScreen()));
                     } else {
                       pd.hide();
-                      showErrorDialog(context, _res);
+                      showErrorDialog(_res);
                     }
                   } catch (e) {
                     pd.hide();

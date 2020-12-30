@@ -54,52 +54,57 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
 
   Future<void> logout() async {
     try {
-      showDialog(
-          context: context,
-          builder: (_) {
-            return AlertDialog(
-              title: Column(
-                children: <Widget>[
-                  Icon(
-                    Icons.dangerous,
-                    color: Colors.red,
-                    size: 72,
-                  ),
-                  Text('Keluar'),
-                ],
-              ),
-              content: Text('Apakah anda yakin ingin keluar dari aplikasi?'),
-              actions: [
-                FlatButton(
-                    onPressed: () async {
-                      Navigator.of(context).pop();
-                      final ProgressDialog pd =
-                          ProgressDialog(context, isDismissible: false);
-                      pd.show();
-                      final dataRepo =
-                          Provider.of<DataRepository>(context, listen: false);
-                      final Map<String, dynamic> _response =
-                          await dataRepo.logout();
-                      if (_response['success']) {
-                        SharedPreferences prefs =
-                            await SharedPreferences.getInstance();
-                        prefs.remove(PREFS_TOKEN_KEY);
-                        prefs.remove(PREFS_USER_KEY);
-                        prefs.remove(PREFS_ALARM_KEY);
-                        pd.hide();
-                        OneSignal.shared.removeExternalUserId();
-                        Get.off(LoginScreen());
-                      }
-                    },
-                    child: Text('Ya')),
-                FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Tidak')),
+      Get.defaultDialog(
+          title: 'Keluar',
+          content: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: <Widget>[
+                Icon(
+                  Icons.dangerous,
+                  color: Colors.red,
+                  size: 72,
+                ),
+                const SizedBox(height: 10.0),
+                Text('Apakah anda yakin ingin keluar dari aplikasi?'),
               ],
-            );
-          });
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+                onPressed: () async {
+                  Get.back();
+                  final ProgressDialog pd =
+                      ProgressDialog(context, isDismissible: false);
+                  pd.show();
+                  final dataRepo =
+                      Provider.of<DataRepository>(context, listen: false);
+                  final Map<String, dynamic> _response =
+                      await dataRepo.logout();
+                  if (_response['success']) {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    prefs.remove(PREFS_TOKEN_KEY);
+                    prefs.remove(PREFS_USER_KEY);
+                    prefs.remove(PREFS_ALARM_KEY);
+                    pd.hide();
+                    OneSignal.shared.removeExternalUserId();
+                    Get.off(LoginScreen());
+                  }
+                },
+                child: Text('Ya',
+                    style: TextStyle(
+                      color: Colors.blueAccent,
+                    ))),
+            FlatButton(
+                onPressed: () {
+                  Get.back();
+                },
+                child: Text('Tidak',
+                    style: TextStyle(
+                      color: Colors.blueAccent,
+                    ))),
+          ]);
     } catch (e) {
       print(e.toString());
     }
@@ -115,11 +120,11 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
     if (value) {
       _presences.forEach(_setAlarm);
       showAlertDialog(
-          'success', 'Sukses', 'Berhasil mengaktifkan alarm!', context, true);
+          'success', 'Sukses', 'Berhasil mengaktifkan alarm!', true);
     } else {
       await flutterLocalNotificationsPlugin.cancelAll();
       showAlertDialog(
-          'success', 'Sukses', 'Berhasil menonaktifkan alarm!', context, true);
+          'success', 'Sukses', 'Berhasil menonaktifkan alarm!', true);
     }
   }
 
@@ -179,8 +184,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
           elevation: 2.0,
           child: InkWell(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => EmployeePermissionScreen()));
+              Get.to(EmployeePermissionScreen());
             },
             child: ListTile(
               leading: Icon(
@@ -204,8 +208,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
           elevation: 2.0,
           child: InkWell(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => EmployeeOutstationScreen()));
+              Get.to(EmployeeOutstationScreen());
             },
             child: ListTile(
               leading: Icon(
@@ -290,8 +293,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => PermissionListScreen()));
+                    Get.to(PermissionListScreen());
                   },
                   child: ListTile(
                     leading: Icon(
@@ -315,8 +317,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => OutstationListScreen()));
+                    Get.to(OutstationListScreen());
                   },
                   child: ListTile(
                     leading: Icon(
@@ -349,8 +350,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => ChangePasswordScreen()));
+                    Get.to(ChangePasswordScreen());
                   },
                   child: ListTile(
                     leading: Icon(

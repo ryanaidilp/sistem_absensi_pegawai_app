@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -55,15 +56,11 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
       Map<String, dynamic> _res = await dataRepo.permission(data);
       if (_res['success']) {
         pd.hide();
-        showAlertDialog('success', "Sukses", _res['message'], context, false);
-        Timer(
-            Duration(seconds: 5),
-            () => Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => BottomNavScreen()),
-                (route) => false));
+        showAlertDialog('success', "Sukses", _res['message'], false);
+        Timer(Duration(seconds: 5), () => Get.off(BottomNavScreen()));
       } else {
         if (pd.isShowing()) pd.hide();
-        showErrorDialog(context, _res);
+        showErrorDialog(_res);
       }
     } catch (e) {
       print(e.toString());
