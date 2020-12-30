@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/outstation.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
@@ -157,10 +158,9 @@ class _OutstationListScreenState extends State<OutstationListScreen> {
                     SizedBox(height: 5.0),
                     InkWell(
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (_) => ImageDetailScreen(
-                                  imageUrl: outstation.photo,
-                                )));
+                        Get.to(ImageDetailScreen(
+                          imageUrl: outstation.photo,
+                        ));
                       },
                       child: Hero(
                         tag: 'image',
@@ -212,8 +212,7 @@ class _OutstationListScreenState extends State<OutstationListScreen> {
           backgroundColor: Colors.blueAccent,
           child: Icon(Icons.add),
           onPressed: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => CreateOutstationScreen()));
+            Get.to(CreateOutstationScreen());
           },
         ),
         body: _buildBody());

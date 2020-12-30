@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
@@ -30,11 +31,7 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
       if (_res['success']) {
         pd.hide();
         showAlertDialog('success', "Sukses", _res['message'], false);
-        Timer(
-            Duration(seconds: 5),
-            () => Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => BottomNavScreen()),
-                (route) => false));
+        Timer(Duration(seconds: 5), () => Get.off(BottomNavScreen()));
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);

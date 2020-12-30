@@ -97,31 +97,38 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkGps() async {
     if (!(await Geolocator().isLocationServiceEnabled())) {
-      showDialog<Widget>(
-          context: context,
-          builder: (_) {
-            return AlertDialog(
-              title: const Text('Tidak dapat mendeteksi lokasi saat ini!'),
-              content: const Text('Pastikan GPS sudah aktif dan coba lagi!'),
-              actions: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    const AndroidIntent intent = AndroidIntent(
-                        action: 'android.settings.LOCATION_SOURCE_SETTINGS');
-                    intent.launch();
-                    Navigator.of(_).pop();
-                  },
-                  child: const Text('Ok'),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    Navigator.of(_).pop();
-                  },
-                  child: const Text('Tidak'),
-                ),
-              ],
-            );
-          });
+      Get.defaultDialog(
+        title: 'Tidak dapat mendeteksi lokasi saat ini!',
+        content: Center(
+          child: const Text(
+            'Pastikan GPS sudah aktif dan coba lagi!',
+            textAlign: TextAlign.center,
+          ),
+        ),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: () {
+              const AndroidIntent intent = AndroidIntent(
+                  action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+              intent.launch();
+              Get.back();
+            },
+            child: const Text('OK',
+                style: TextStyle(
+                  color: Colors.blueAccent,
+                )),
+          ),
+          FlatButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: const Text('TIDAK',
+                style: TextStyle(
+                  color: Colors.blueAccent,
+                )),
+          ),
+        ],
+      );
     }
   }
 

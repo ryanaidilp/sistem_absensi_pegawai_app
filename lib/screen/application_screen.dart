@@ -184,8 +184,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
           elevation: 2.0,
           child: InkWell(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => EmployeePermissionScreen()));
+              Get.to(EmployeePermissionScreen());
             },
             child: ListTile(
               leading: Icon(
@@ -209,8 +208,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
           elevation: 2.0,
           child: InkWell(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => EmployeeOutstationScreen()));
+              Get.to(EmployeeOutstationScreen());
             },
             child: ListTile(
               leading: Icon(
@@ -295,8 +293,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => PermissionListScreen()));
+                    Get.to(PermissionListScreen());
                   },
                   child: ListTile(
                     leading: Icon(
@@ -320,8 +317,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => OutstationListScreen()));
+                    Get.to(OutstationListScreen());
                   },
                   child: ListTile(
                     leading: Icon(
@@ -354,8 +350,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => ChangePasswordScreen()));
+                    Get.to(ChangePasswordScreen());
                   },
                   child: ListTile(
                     leading: Icon(

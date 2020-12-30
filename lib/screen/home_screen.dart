@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -95,9 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.grey[300],
             child: InkWell(
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) =>
-                        EmployeeListScreen(employees: this._users)));
+                Get.to(EmployeeListScreen(employees: this._users));
               },
               splashColor: Colors.white,
               borderRadius: BorderRadius.circular(100),
@@ -423,11 +422,7 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Colors.green[300],
           child: InkWell(
             onTap: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => PresenceScreen()))
-                  .then((value) {
-                _getUser();
-              });
+              Get.to(PresenceScreen()).then((value) => _getUser());
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -932,9 +927,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(
-                            builder: (_) => NotificationListScreen()))
+                    Get.to(NotificationListScreen())
                         .then((value) => _getUser());
                   },
                 ),
