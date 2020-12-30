@@ -73,11 +73,11 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
       Map<String, dynamic> _res = jsonDecode(response.body);
       if (response.statusCode == 200) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], context, true);
+        showAlertDialog("success", "Sukses", _res['message'], true);
         _fetchNotificationsData();
       } else {
         if (pd.isShowing()) pd.hide();
-        showErrorDialog(context, _res);
+        showErrorDialog(_res);
       }
     } catch (e) {
       print(e);
@@ -92,11 +92,11 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
       Map<String, dynamic> _res = await dataRepo.readAllNotifications();
       if (_res['success']) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], context, true);
+        showAlertDialog("success", "Sukses", _res['message'], true);
         _fetchNotificationsData();
       } else {
         if (pd.isShowing()) pd.hide();
-        showErrorDialog(context, _res);
+        showErrorDialog(_res);
       }
     } catch (e) {
       print(e);
@@ -111,11 +111,11 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
       Map<String, dynamic> _res = await dataRepo.deleteAllNotifications();
       if (_res['success']) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], context, true);
+        showAlertDialog("success", "Sukses", _res['message'], true);
         _fetchNotificationsData();
       } else {
         if (pd.isShowing()) pd.hide();
-        showErrorDialog(context, _res);
+        showErrorDialog(_res);
       }
     } catch (e) {
       print(e);

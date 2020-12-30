@@ -150,7 +150,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     if (response.statusCode == 200) {
                       pd.hide();
                       showAlertDialog(
-                          'success', "Sukses", _res['message'], context, false);
+                          'success', "Sukses", _res['message'], false);
                       Timer(
                           Duration(seconds: 1),
                           () => Navigator.of(context).pushAndRemoveUntil(
@@ -159,7 +159,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               (route) => false));
                     } else {
                       pd.hide();
-                      showErrorDialog(context, _res);
+                      showErrorDialog(_res);
                     }
                   } catch (e) {
                     pd.hide();

@@ -67,7 +67,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
       print(response.statusCode);
       if (response.statusCode == 200) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], context, false);
+        showAlertDialog("success", "Sukses", _res['message'], false);
         Timer(
             Duration(seconds: 5),
             () => Navigator.of(context).pushAndRemoveUntil(
@@ -75,7 +75,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
                 (route) => false));
       } else {
         if (pd.isShowing()) pd.hide();
-        showErrorDialog(context, _res);
+        showErrorDialog(_res);
       }
     } catch (e) {
       pd.hide();

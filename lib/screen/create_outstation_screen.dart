@@ -55,7 +55,7 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
       Map<String, dynamic> _res = await dataRepo.outstation(data);
       if (_res['success']) {
         pd.hide();
-        showAlertDialog('success', "Sukses", _res['message'], context, false);
+        showAlertDialog('success', "Sukses", _res['message'], false);
         Timer(
             Duration(seconds: 5),
             () => Navigator.of(context).pushAndRemoveUntil(
@@ -63,7 +63,7 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
                 (route) => false));
       } else {
         if (pd.isShowing()) pd.hide();
-        showErrorDialog(context, _res);
+        showErrorDialog(_res);
       }
     } catch (e) {
       print(e.toString());

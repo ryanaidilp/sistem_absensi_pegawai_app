@@ -29,7 +29,7 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
       Map<String, dynamic> _res = await dataRepo.sendNotification(data);
       if (_res['success']) {
         pd.hide();
-        showAlertDialog('success', "Sukses", _res['message'], context, false);
+        showAlertDialog('success', "Sukses", _res['message'], false);
         Timer(
             Duration(seconds: 5),
             () => Navigator.of(context).pushAndRemoveUntil(
@@ -37,7 +37,7 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
                 (route) => false));
       } else {
         if (pd.isShowing()) pd.hide();
-        showErrorDialog(context, _res);
+        showErrorDialog(_res);
       }
     } catch (e) {
       print(e.toString());
