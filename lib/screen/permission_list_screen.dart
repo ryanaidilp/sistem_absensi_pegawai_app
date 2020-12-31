@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/absent_permission.dart';
@@ -49,7 +50,12 @@ class _PermissionListScreenState extends State<PermissionListScreen> {
   }
 
   Widget _buildBody() {
-    if (_isLoading) return Center(child: CircularProgressIndicator());
+    if (_isLoading)
+      return Center(
+          child: SpinKitWanderingCubes(
+        size: 45,
+        color: Colors.blueAccent,
+      ));
 
     if (_permissions.isEmpty)
       return Center(
@@ -57,10 +63,10 @@ class _PermissionListScreenState extends State<PermissionListScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                width: 150,
-                height: 150,
+                width: Get.width * 0.5,
+                height: Get.height * 0.3,
                 child: FlareActor(
-                  'assets/flare/empty.flr',
+                  'assets/flare/not_found.flr',
                   fit: BoxFit.contain,
                   animation: 'empty',
                   alignment: Alignment.center,
@@ -171,7 +177,10 @@ class _PermissionListScreenState extends State<PermissionListScreen> {
                                       'assets/images/upload_placeholder.png'),
                                   Center(
                                     child: SizedBox(
-                                      child: CircularProgressIndicator(),
+                                      child: SpinKitFadingGrid(
+                                        size: 25,
+                                        color: Colors.blueAccent,
+                                      ),
                                       width: 25.0,
                                       height: 25.0,
                                     ),
