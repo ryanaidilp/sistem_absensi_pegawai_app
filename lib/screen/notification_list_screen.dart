@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
@@ -125,17 +126,22 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   }
 
   Widget _buildBody() {
-    if (_isLoading) return Center(child: CircularProgressIndicator());
+    if (_isLoading)
+      return Center(
+          child: SpinKitChasingDots(
+        size: 45,
+        color: Colors.blueAccent,
+      ));
     if (notifications.isEmpty)
       return Center(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                width: 150,
-                height: 150,
+                width: Get.width * 0.5,
+                height: Get.height * 0.3,
                 child: FlareActor(
-                  'assets/flare/empty.flr',
+                  'assets/flare/not_found.flr',
                   fit: BoxFit.contain,
                   animation: 'empty',
                   alignment: Alignment.center,
