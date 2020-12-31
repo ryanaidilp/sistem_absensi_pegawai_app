@@ -98,10 +98,10 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkGps() async {
     if (!(await Geolocator().isLocationServiceEnabled())) {
       Get.defaultDialog(
-        title: 'Tidak dapat mendeteksi lokasi saat ini!',
+        title: 'Perhatian',
         content: Center(
           child: const Text(
-            'Pastikan GPS sudah aktif dan coba lagi!',
+            'Tidak dapat mendeteksi lokasi saat ini! Pastikan GPS sudah aktif dan coba lagi!',
             textAlign: TextAlign.center,
           ),
         ),
@@ -194,7 +194,7 @@ class _SplashScreenState extends State<SplashScreen> {
                                 color: Colors.white,
                                 fontWeight: FontWeight.w700)),
                         const SizedBox(width: 2.0),
-                        Text('v4.1.4', style: TextStyle(color: Colors.white)),
+                        Text('v4.1.5', style: TextStyle(color: Colors.white)),
                         const Spacer()
                       ],
                     ),

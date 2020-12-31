@@ -289,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      'v4.1.4',
+                      'v4.1.5',
                       style: TextStyle(
                           color: Colors.grey,
                           fontSize: 12.0,
