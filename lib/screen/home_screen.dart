@@ -192,6 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
       OneSignal.shared.setExternalUserId(_user.id.toString());
       setState(() {
         user = _user;
+        _countAttendancePercentage();
       });
     } catch (e) {
       print(e.toString());
@@ -199,6 +200,56 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  void _countAttendancePercentage() {
+    double sum = 0;
+    if (user == null) {
+      return;
+    }
+
+    if (user.presences == null) {
+      return;
+    }
+
+    if (user.presences.isEmpty) {
+      _percentage = 0;
+    }
+
+    user.presences.forEach((presence) {
+      switch (presence.status) {
+        case 'Tepat Waktu':
+        case 'Dinas Luar':
+          sum += 25;
+          break;
+        case 'Terlambat':
+          sum += 6.25;
+          break;
+        case 'Izin':
+          sum += 12.5;
+          break;
+        default:
+          sum += 0;
+          break;
+      }
+    });
+
+    _percentage = sum;
+  }
+
+  double _checkPresence(String status) {
+    switch (status) {
+      case 'Tepat Waktu':
+      case 'Dinas Luar':
+        return 100;
+      case 'Terlambat':
+        return 25;
+        break;
+      case 'Izin':
+        return 50;
+      default:
+        return 0;
     }
   }
 
@@ -315,7 +366,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
-              '${presence.status}',
+              '${presence.status} (${NumberFormat.decimalPattern('id_ID').format(_checkPresence(presence.status))}%)',
               style: TextStyle(color: color),
             ),
             dense: true,
@@ -900,13 +951,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Future.wait([_getUser(), _getAllEmployee()]);
-    _percentage = (user != null && user.presences != null)
-        ? (user.presences
-                    .where((element) => element.status != 'Tidak Hadir')
-                    .length /
-                4) *
-            100
-        : 0;
   }
 
   @override
