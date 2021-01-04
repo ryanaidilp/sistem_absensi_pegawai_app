@@ -48,8 +48,8 @@ android {
         applicationId "com.banuacoders.siap"
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 24
-        versionName '4.1.5'
+        versionCode 25
+        versionName '4.1.6'
     }
 
     signingConfigs {
