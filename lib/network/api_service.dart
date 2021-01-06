@@ -20,10 +20,14 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> getEndpointData(
-      {@required Endpoint endpoint}) async {
+      {@required Endpoint endpoint, Map<String, String> query}) async {
     final url = api.endpointUri(endpoint);
     await _getToken();
-    final response = await http.get(url.toString(), headers: _setHeaders());
+    Uri uri = Uri.parse(url);
+    if (query != null) {
+      uri = uri.replace(queryParameters: query);
+    }
+    final response = await http.get(uri, headers: _setHeaders());
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
       if (data['success']) {
