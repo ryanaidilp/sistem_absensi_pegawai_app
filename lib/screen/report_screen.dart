@@ -558,7 +558,7 @@ class _ReportScreenState extends State<ReportScreen> {
     }
 
     if (_selectedEvents.isEmpty) {
-      if (_selectedHolidays != null) {
+      if (_selectedHolidays != null && _selectedHolidays.isNotEmpty) {
         return Column(
           children: _selectedHolidays
               .map((Holiday holiday) => Card(
