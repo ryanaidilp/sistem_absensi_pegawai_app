@@ -13,9 +13,11 @@ import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/change_pass_screen.dart';
 import 'package:spo_balaesang/screen/employee_outstation.dart';
 import 'package:spo_balaesang/screen/employee_permission.dart';
+import 'package:spo_balaesang/screen/forgot_pass_screen.dart';
 import 'package:spo_balaesang/screen/login_screen.dart';
 import 'package:spo_balaesang/screen/outstation_list_screen.dart';
 import 'package:spo_balaesang/screen/permission_list_screen.dart';
+import 'package:spo_balaesang/screen/report_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
@@ -293,6 +295,30 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
+                    Get.to(ReportScreen());
+                  },
+                  child: ListTile(
+                    leading: Icon(
+                      Icons.bar_chart_rounded,
+                      color: Colors.deepOrangeAccent,
+                      size: 32.0,
+                    ),
+                    title: Text(
+                      'Statistik',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      'Lihat statistik presensi anda',
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10.0),
+              Card(
+                elevation: 2.0,
+                child: InkWell(
+                  onTap: () {
                     Get.to(PermissionListScreen());
                   },
                   child: ListTile(
@@ -350,6 +376,30 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
+                    Get.to(ForgotPassScreen());
+                  },
+                  child: ListTile(
+                    leading: Icon(
+                      Icons.warning,
+                      color: Colors.pink,
+                      size: 32.0,
+                    ),
+                    title: Text(
+                      'Lapor',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      'Lapor kendala & pelanggaran',
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10.0),
+              Card(
+                elevation: 2.0,
+                child: InkWell(
+                  onTap: () {
                     Get.to(ChangePasswordScreen());
                   },
                   child: ListTile(
@@ -381,7 +431,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                     child: ListTile(
                       leading: Icon(
                         Icons.exit_to_app_rounded,
-                        color: Colors.red,
+                        color: Colors.red[800],
                         size: 32.0,
                       ),
                       title: Text(
