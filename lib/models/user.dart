@@ -1,3 +1,4 @@
+import 'package:spo_balaesang/models/holiday.dart';
 import 'package:spo_balaesang/models/presence.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 
@@ -30,7 +31,7 @@ class User {
   final String token;
   final Presence nextPresence;
   final List<Presence> presences;
-  final Map<String, dynamic> holiday;
+  final Holiday holiday;
   final bool isWeekend;
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -44,7 +45,9 @@ class User {
         status: json[USER_STATUS_FIELD] as String,
         position: json[USER_POSITION_FIELD] as String,
         unreadNotification: json[USER_UNREAD_NOTIFICATION_COUNT_FIELD] as int,
-        holiday: json[USER_HOLIDAY_FIELD] as Map<String, dynamic>,
+        holiday: json[USER_HOLIDAY_FIELD] == null
+            ? null
+            : Holiday.fromJson(json[USER_HOLIDAY_FIELD]),
         isWeekend: json[USER_IS_WEEKEND_FIELD] as bool,
         token: json[USER_TOKEN_FIELD] as String,
         nextPresence: json[USER_NEXT_PRESENCE_FIELD] != null
