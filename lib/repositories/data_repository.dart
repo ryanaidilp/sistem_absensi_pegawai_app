@@ -190,6 +190,21 @@ class DataRepository {
     return data;
   }
 
+  Future<Map<String, dynamic>> getStatistics(DateTime date) async {
+    Map<String, dynamic> data;
+    try {
+      data = await apiService.getEndpointData(
+          endpoint: Endpoint.statistics,
+          query: {
+            'year': date.year.toString(),
+            'month': date.month.toString()
+          });
+    } catch (e) {
+      print(e.toString());
+    }
+    return data;
+  }
+
   Future<Response> readNotification(Map<String, dynamic> data) async {
     Response response;
     try {
