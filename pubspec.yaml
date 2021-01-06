@@ -21,6 +21,10 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  flutter_cupertino_date_picker:
+    git: https://github.com/daveleenew/flutter-cupertino-date-picker.git
+  percent_indicator: 2.1.9
+  table_calendar: 2.3.3
   flutter:
     sdk: flutter
 

@@ -86,6 +86,29 @@ Future showErrorDialog(Map<String, dynamic> json) {
   );
 }
 
+Color percentageLabelColor(double percentage) {
+  if (percentage < 50) {
+    return Colors.black87;
+  }
+  return Colors.white;
+}
+
+Color checkStatusColor(String status) {
+  switch (status) {
+    case 'Tidak Hadir':
+      return Colors.red;
+    case 'Tepat Waktu':
+      return Colors.green;
+    case 'Terlambat':
+      return Colors.orange;
+    case 'Dinas Luar':
+    case 'Izin':
+      return Colors.blue;
+    default:
+      return Colors.red;
+  }
+}
+
 List<PageViewModel> onBoardingScreens = [
   PageViewModel(
     title: "QR Code",

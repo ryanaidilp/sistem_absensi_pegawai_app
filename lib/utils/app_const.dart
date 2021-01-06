@@ -1,4 +1,5 @@
 // Shared Preferences Keys
+
 const String PREFS_TOKEN_KEY = 'token';
 const String PREFS_USER_KEY = 'user';
 const String PREFS_EMPLOYEE_KEY = 'employee';
@@ -64,3 +65,30 @@ const String NOTIFICATION_IS_READ_FIELD = 'is_read';
 const String LOCATION_LATITUDE_FIELD = 'latitude';
 const String LOCATION_LONGITUDE_FIELD = 'longitude';
 const String LOCATION_ADDRESS_FIELD = 'address';
+
+// Absent Report
+const String REPORT_ATTENDANCE_PERCENTAGE_FIELD = 'attendance_percentage';
+const String REPORT_DAY_FIELD = 'day';
+const String REPORT_LATE_COUNT_FIELD = 'late_count';
+const String REPORT_PERCENTAGE_FIELD = 'percentage';
+const String ABSENT_REPORT_YEARLY_FIELD = 'yearly';
+const String ABSENT_REPORT_MONTHLY_FIELD = 'monthly';
+const String ABSENT_REPORT_DAILY_FIELD = 'daily';
+const String ABSENT_REPORT_HOLIDAYS_FIELD = 'holidays';
+
+// DailyData (Report)
+const String DAILY_DATE_FIELD = 'date';
+const String DAILY_PRESENCES_FIELD = 'attendances';
+const String DAILY_DATA_ATTEND_TIME_FIELD = 'attend_time';
+const String DAILY_DATA_ATTEND_TYPE_FIELD = 'absent_type';
+const String DAILY_DATA_ATTEND_STATUS_FIELD = 'attend_status';
+
+// Yearly
+const String YEARLY_ABSENT_FIELD = 'absent';
+const String YEARLY_ABSENT_PERMISSION_FIELD = 'absent_permission';
+const String YEARLY_OUTSTATION_FIELD = 'outstation';
+
+// Holiday
+const String HOLIDAY_DATE_FIELD = 'date';
+const String HOLIDAY_NAME_FIELD = 'name';
+const String HOLIDAY_DESCRIPTION_FIELD = 'description';
