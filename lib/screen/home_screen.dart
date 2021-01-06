@@ -327,22 +327,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Color _checkStatusColor(String status) {
-    switch (status) {
-      case 'Tidak Hadir':
-        return Colors.red;
-      case 'Tepat Waktu':
-        return Colors.green;
-      case 'Terlambat':
-        return Colors.orange;
-      case 'Dinas Luar':
-      case 'Izin':
-        return Colors.blue;
-      default:
-        return Colors.red;
-    }
-  }
-
   List<Widget> _buildPresenceSection() {
     if (isLoading) {
       return [
@@ -358,7 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     if (user != null && user.presences.isNotEmpty) {
       return user.presences.map((presence) {
-        var color = _checkStatusColor(presence.status);
+        var color = checkStatusColor(presence.status);
         return Card(
           child: ListTile(
             title: Text(
@@ -418,7 +402,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'Tepat Waktu':
         return Column(
           children: <Widget>[
-            Icon(Icons.check, color: _checkStatusColor(status), size: 54),
+            Icon(Icons.check, color: checkStatusColor(status), size: 54),
             Text(
               'Hadir',
               style: TextStyle(color: Colors.blueGrey),
@@ -429,7 +413,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'Terlambat':
         return Column(
           children: <Widget>[
-            Icon(Icons.warning, color: _checkStatusColor(status), size: 54),
+            Icon(Icons.warning, color: checkStatusColor(status), size: 54),
             Text(
               status,
               style: TextStyle(color: Colors.blueGrey),
@@ -441,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return Column(
           children: <Widget>[
             Icon(Icons.calendar_today,
-                size: 54, color: _checkStatusColor(status)),
+                size: 54, color: checkStatusColor(status)),
             Text(
               status,
               style: TextStyle(color: Colors.blueGrey),
@@ -451,7 +435,7 @@ class _HomeScreenState extends State<HomeScreen> {
       default:
         return Column(
           children: <Widget>[
-            Icon(Icons.warning, color: _checkStatusColor(status), size: 54),
+            Icon(Icons.warning, color: checkStatusColor(status), size: 54),
             Text(
               status,
               style: TextStyle(color: Colors.blueGrey),
@@ -605,7 +589,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text(
                         user.nextPresence.status,
                         style: TextStyle(
-                            color: _checkStatusColor(user.nextPresence.status)),
+                            color: checkStatusColor(user.nextPresence.status)),
                       ),
                       const SizedBox(height: 10.0),
                       Text(
@@ -651,8 +635,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Text('|'),
                     const SizedBox(width: 5.0),
                     Text(
-                      DateFormat.yMMMd()
-                          .format(DateTime.parse(user.holiday['date'])),
+                      DateFormat.yMMMd().format(user.holiday.date),
                     ),
                     const SizedBox(width: 5.0),
                     const Text('|'),
@@ -683,7 +666,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 2.0),
-                        Text('${user.holiday['name']}'),
+                        Text('${user.holiday.name}'),
                         const SizedBox(height: 10.0),
                         const Text(
                           'STATUS KEHADIRAN :',
@@ -692,7 +675,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 2.0),
                         Text(
                           'Cuti',
-                          style: TextStyle(color: _checkStatusColor('Izin')),
+                          style: TextStyle(color: checkStatusColor('Izin')),
                         ),
                         const SizedBox(height: 10.0),
                         Text(
@@ -784,7 +767,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 2.0),
                         Text(
                           'Cuti',
-                          style: TextStyle(color: _checkStatusColor('Izin')),
+                          style: TextStyle(color: checkStatusColor('Izin')),
                         ),
                         const SizedBox(height: 10.0),
                         Text(
