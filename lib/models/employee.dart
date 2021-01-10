@@ -10,7 +10,9 @@ class Employee {
       this.department,
       this.status,
       this.position,
-      this.presences});
+      this.presences,
+      this.rank,
+      this.group});
 
   final String nip;
   final String name;
@@ -19,6 +21,8 @@ class Employee {
   final String department;
   final String status;
   final String position;
+  final String rank;
+  final String group;
   final List<Presence> presences;
 
   factory Employee.fromJson(Map<String, dynamic> json) {
@@ -28,6 +32,8 @@ class Employee {
         phone: json[USER_PHONE_FIELD] as String,
         gender: json[USER_GENDER_FIELD] as String,
         department: json[USER_DEPARTMENT_FIELD] as String,
+        rank: json[USER_RANK_FIELD] as String,
+        group: json[USER_GROUP_FIELD] as String,
         status: json[USER_STATUS_FIELD] as String,
         position: json[USER_POSITION_FIELD] as String,
         presences: json[USER_PRESENCES_FIELD] != null
