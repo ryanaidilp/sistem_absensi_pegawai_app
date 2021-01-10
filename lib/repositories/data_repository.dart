@@ -261,4 +261,72 @@ class DataRepository {
     }
     return response;
   }
+
+  Future<Map<String, dynamic>> getAllPaidLeave() async {
+    Map<String, dynamic> data;
+    try {
+      data = await apiService.getEndpointData(endpoint: Endpoint.paidLeave);
+    } catch (e) {
+      print(e.toString());
+    }
+    return data;
+  }
+
+  Future<Map<String, dynamic>> getAllEmployeePaidLeave() async {
+    Map<String, dynamic> data;
+    try {
+      data = await apiService.getEndpointData(
+          endpoint: Endpoint.employeePaidLeave);
+    } catch (e) {
+      print(e.toString());
+    }
+    return data;
+  }
+
+  Future<Response> approvePaidLeave(Map<String, dynamic> data) async {
+    Response response;
+    try {
+      response = await apiService.postEndpointWithToken(
+          endpoint: Endpoint.approvePaidLeave, data: data);
+    } catch (e) {
+      print(e.toString());
+    }
+    return response;
+  }
+
+  Future<Map<String, dynamic>> paidLeave(Map<String, dynamic> data) async {
+    Map<String, dynamic> result;
+    try {
+      var response = await apiService.postEndpointWithToken(
+          endpoint: Endpoint.paidLeave, data: data);
+      result = jsonDecode(response.body);
+    } catch (e) {
+      print(e.toString());
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> getEmployeePresence(DateTime date) async {
+    Map<String, dynamic> data;
+    try {
+      data =
+          await apiService.getEndpointData(endpoint: Endpoint.presence, query: {
+        'date': date.toString(),
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+    return data;
+  }
+
+  Future<Response> cancelAttendance(Map<String, dynamic> data) async {
+    Response response;
+    try {
+      response = await apiService.postEndpointWithToken(
+          endpoint: Endpoint.cancelAttendance, data: data);
+    } catch (e) {
+      print(e.toString());
+    }
+    return response;
+  }
 }
