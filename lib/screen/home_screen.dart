@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -16,13 +17,17 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:spo_balaesang/models/employee.dart';
+import 'package:spo_balaesang/models/presence.dart';
 import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/employee_list_screen.dart';
+import 'package:spo_balaesang/screen/image_detail_screen.dart';
 import 'package:spo_balaesang/screen/notification_list_screen.dart';
 import 'package:spo_balaesang/screen/presence_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
+import 'package:spo_balaesang/widgets/image_error_widget.dart';
+import 'package:spo_balaesang/widgets/next_presence_empty_card.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -30,14 +35,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  double getBigDiameter(BuildContext context) =>
-      MediaQuery.of(context).size.width;
-
   List<String> _images = new List();
   User user;
   List<Employee> _users;
   bool isLoading = false;
   double _percentage = 0;
+  final TextStyle labelTextStyle = TextStyle(color: Colors.grey[600]);
 
   @override
   void setState(fn) {
@@ -221,7 +224,13 @@ class _HomeScreenState extends State<HomeScreen> {
       switch (presence.status) {
         case 'Tepat Waktu':
         case 'Dinas Luar':
+        case 'Cuti Tahunan':
           sum += 25;
+          break;
+        case 'Cuti Bersalin':
+        case 'Cuti Sakit':
+        case 'Cuti Alasan Penting':
+          sum += 24.375;
           break;
         case 'Terlambat':
           sum += 6.25;
@@ -236,21 +245,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     _percentage = sum;
-  }
-
-  double _checkPresence(String status) {
-    switch (status) {
-      case 'Tepat Waktu':
-      case 'Dinas Luar':
-        return 100;
-      case 'Terlambat':
-        return 25;
-        break;
-      case 'Izin':
-        return 50;
-      default:
-        return 0;
-    }
   }
 
   Widget _buildShimmerSection(double width, double height) {
@@ -330,33 +324,126 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> _buildPresenceSection() {
     if (isLoading) {
       return [
-        _buildShimmerSection(MediaQuery.of(context).size.width * 0.9, 60),
+        _buildShimmerSection(Get.width, 250),
         SizedBox(height: 10.0),
-        _buildShimmerSection(MediaQuery.of(context).size.width * 0.9, 60),
+        _buildShimmerSection(Get.width, 250),
         SizedBox(height: 10.0),
-        _buildShimmerSection(MediaQuery.of(context).size.width * 0.9, 60),
+        _buildShimmerSection(Get.width, 250),
         SizedBox(height: 10.0),
-        _buildShimmerSection(MediaQuery.of(context).size.width * 0.9, 60),
+        _buildShimmerSection(Get.width, 250),
         SizedBox(height: 10.0),
       ];
     }
     if (user != null && user.presences.isNotEmpty) {
       return user.presences.map((presence) {
-        var color = checkStatusColor(presence.status);
-        return Card(
-          child: ListTile(
-            title: Text(
-              '${presence.codeType} : ${presence.attendTime.isEmpty ? '-' : presence.attendTime}',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text(
-              '${presence.status} (${NumberFormat.decimalPattern('id_ID').format(_checkPresence(presence.status))}%)',
-              style: TextStyle(color: color),
-            ),
-            dense: true,
-            trailing: Text(
-              '${DateFormat.yMMMd().format(presence.date)}',
-              style: TextStyle(color: Colors.grey, fontSize: 12.0),
+        Color color = checkStatusColor(presence.status);
+        String status =
+            '${presence.status} (${formatPercentage(checkPresencePercentage(presence.status))})';
+        if (presence.status == 'Terlambat') {
+          var duration =
+              calculateLateInMinutes(presence.startTime, presence.attendTime);
+          status =
+              '${presence.status} $duration (${formatPercentage(checkPresencePercentage(presence.status))})';
+        }
+        return Container(
+          margin: const EdgeInsets.only(bottom: 24.0),
+          width: Get.width,
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    presence.codeType,
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  Divider(thickness: 1.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        'Jam Absen',
+                        style: labelTextStyle,
+                      ),
+                      Text(
+                        presence.attendTime.isEmpty ? '-' : presence.attendTime,
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 4.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        'Poin Kehadiran',
+                        style: labelTextStyle,
+                      ),
+                      Text(
+                        '${formatPercentage(checkPresencePercentage(presence.status))}',
+                        style: TextStyle(
+                          color: color,
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 4.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        'Status Kehadiran',
+                        style: labelTextStyle,
+                      ),
+                      Text(
+                        status,
+                        style: TextStyle(
+                          color: color,
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 4.0),
+                  Divider(thickness: 1),
+                  Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.location_on,
+                        color: Colors.grey[600],
+                        size: 20.0,
+                      ),
+                      SizedBox(width: 4.0),
+                      Text('Lokasi', style: labelTextStyle)
+                    ],
+                  ),
+                  SizedBox(height: 4.0),
+                  AutoSizeText(
+                    presence.location.address.isEmpty
+                        ? '-'
+                        : presence.location.address,
+                    maxLines: 3,
+                    minFontSize: 10.0,
+                    maxFontSize: 12.0,
+                    textAlign: TextAlign.justify,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Divider(thickness: 1),
+                  Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.photo,
+                        color: Colors.grey[600],
+                        size: 20.0,
+                      ),
+                      SizedBox(width: 4.0),
+                      Text('Foto Wajah', style: labelTextStyle)
+                    ],
+                  ),
+                  SizedBox(height: 4.0),
+                  _showImage(presence),
+                  SizedBox(height: 8.0),
+                ],
+              ),
             ),
           ),
         );
@@ -374,9 +461,56 @@ class _HomeScreenState extends State<HomeScreen> {
             alignment: Alignment.center,
           ),
         ),
-        Text('Tidak ada absen hari ini!')
+        Text('Tidak ada presensi hari ini!')
       ])
     ];
+  }
+
+  Widget _showImage(Presence presence) {
+    if (presence.photo.isEmpty) {
+      return Image.asset(
+        'assets/images/upload_placeholder.png',
+      );
+    }
+
+    return InkWell(
+      onTap: () {
+        Get.to(ImageDetailScreen(
+          tag: presence.id.toString(),
+          imageUrl: presence.photo,
+        ));
+      },
+      child: Hero(
+        tag: presence.id.toString(),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10.0),
+          child: CachedNetworkImage(
+            placeholder: (_, __) => Container(
+              child: Stack(
+                children: <Widget>[
+                  Image.asset('assets/images/upload_placeholder.png'),
+                  Center(
+                    child: SizedBox(
+                      child: SpinKitFadingGrid(
+                        size: 25,
+                        color: Colors.blueAccent,
+                      ),
+                      width: 25.0,
+                      height: 25.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            imageUrl: presence.photo,
+            fit: BoxFit.cover,
+            errorWidget: (_, __, ___) => ImageErrorWidget(),
+            width: Get.width,
+            height: 250.0,
+          ),
+        ),
+      ),
+    );
   }
 
   int checkTime() {
@@ -421,6 +555,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         );
       case 'Dinas Luar':
+      case 'Cuti Tahunan':
+      case 'Cuti Bersalin':
+      case 'Cuti Alasan Penting':
+      case 'Cuti Sakit':
       case 'Izin':
         return Column(
           children: <Widget>[
@@ -503,21 +641,31 @@ class _HomeScreenState extends State<HomeScreen> {
     } else if (percentage >= 50 && percentage < 75) {
       return Colors.orange;
     } else if (percentage >= 75 && percentage < 85) {
-      return Colors.blue;
+      return Colors.blueAccent;
     } else if (percentage >= 85 && percentage <= 100) {
       return Colors.green;
     }
 
-    return Colors.red;
+    return Colors.red[800];
   }
 
   Widget _buildTimerSection() {
     if (isLoading) {
-      return _buildShimmerSection(MediaQuery.of(context).size.width * 0.8, 60);
+      return _buildShimmerSection(Get.width, 180);
     }
 
     if (user?.nextPresence != null) {
+      String status = user.nextPresence.status;
+      double fontSize = 14;
+      if (status == 'Terlambat') {
+        var duration = calculateLateInMinutes(
+            user.nextPresence.startTime.add(Duration(minutes: 30)),
+            user.nextPresence.attendTime);
+        status += ' $duration';
+        fontSize = 12;
+      }
       return Card(
+        elevation: 4.0,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -587,8 +735,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 2.0),
                       Text(
-                        user.nextPresence.status,
+                        status,
                         style: TextStyle(
+                            fontSize: fontSize,
                             color: checkStatusColor(user.nextPresence.status)),
                       ),
                       const SizedBox(height: 10.0),
@@ -602,8 +751,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           _getUser();
                         },
                         endTime: checkTime(),
-                        emptyWidget: Text(
+                        emptyWidget: AutoSizeText(
                           'Semua absen hari ini telah selesai',
+                          maxFontSize: 12.0,
+                          minFontSize: 10.0,
                         ),
                       ),
                     ],
@@ -618,292 +769,58 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     if (user?.holiday != null) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      DateFormat.EEEE().format(DateTime.now()),
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(width: 5.0),
-                    const Text('|'),
-                    const SizedBox(width: 5.0),
-                    Text(
-                      DateFormat.yMMMd().format(user.holiday.date),
-                    ),
-                    const SizedBox(width: 5.0),
-                    const Text('|'),
-                    const SizedBox(width: 5.0),
-                    Text(
-                      'Libur',
-                    ),
-                  ],
-                ),
-                Divider(
-                  thickness: 1.0,
-                  color: Colors.black26,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        const Text(
-                          'JENIS LIBUR :',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text('Libur Nasional'),
-                        const SizedBox(height: 10.0),
-                        const Text(
-                          'NAMA LIBUR :',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 2.0),
-                        Text('${user.holiday.name}'),
-                        const SizedBox(height: 10.0),
-                        const Text(
-                          'STATUS KEHADIRAN :',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 2.0),
-                        Text(
-                          'Cuti',
-                          style: TextStyle(color: checkStatusColor('Izin')),
-                        ),
-                        const SizedBox(height: 10.0),
-                        Text(
-                          'CATATAN :',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 2.0),
-                        Text('-')
-                      ],
-                    ),
-                    Expanded(
-                      child: Column(children: <Widget>[
-                        Icon(Icons.calendar_today_rounded,
-                            color: Colors.blueAccent, size: 72),
-                        const SizedBox(height: 2.0),
-                        Text(
-                          'LIBUR',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueAccent,
-                          ),
-                        )
-                      ]),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
+      return NextPresenceEmptyCard(
+        color: checkStatusColor('Izin'),
+        topLabel: 'Libur',
+        firstLabel: 'JENIS LIBUR',
+        firstContent: 'Libur Nasional',
+        secondLabel: 'NAMA LIBUR',
+        secondContent: user.holiday.name,
+        thirdLabel: 'STATUS KEHADIRAN',
+        thirdContent: 'Libur',
+        fourthLabel: 'CATATAN',
+        fourthContent: '-',
+        trailingLabel: 'Libur Nasional',
+        trailingTop: Icon(Icons.calendar_today_rounded,
+            color: checkStatusColor('Izin'), size: 72),
       );
     }
 
     if (user.isWeekend) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      DateFormat.EEEE().format(DateTime.now()),
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(width: 5.0),
-                    const Text('|'),
-                    const SizedBox(width: 5.0),
-                    Text(
-                      DateFormat.yMMMd().format(DateTime.now()),
-                    ),
-                    const SizedBox(width: 5.0),
-                    const Text('|'),
-                    const SizedBox(width: 5.0),
-                    Text(
-                      'Akhir Pekan',
-                    ),
-                  ],
-                ),
-                Divider(
-                  thickness: 1.0,
-                  color: Colors.black26,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        const Text(
-                          'JENIS LIBUR :',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text('Akhir Pekan'),
-                        const SizedBox(height: 10.0),
-                        const Text(
-                          'NAMA LIBUR :',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 2.0),
-                        Text('Akhir Pekan'),
-                        const SizedBox(height: 10.0),
-                        const Text(
-                          'STATUS KEHADIRAN :',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 2.0),
-                        Text(
-                          'Cuti',
-                          style: TextStyle(color: checkStatusColor('Izin')),
-                        ),
-                        const SizedBox(height: 10.0),
-                        Text(
-                          'CATATAN :',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 2.0),
-                        Text(
-                          'Tidak Ada Presensi Hari Ini',
-                          style: TextStyle(fontSize: 12.0),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: Column(children: <Widget>[
-                        Icon(
-                          Icons.calendar_today_rounded,
-                          color: Colors.blueAccent,
-                          size: 72,
-                        ),
-                        const SizedBox(height: 2.0),
-                        Text(
-                          'Akhir Pekan',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueAccent,
-                          ),
-                        )
-                      ]),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
+      return NextPresenceEmptyCard(
+        color: checkStatusColor('Izin'),
+        topLabel: 'Akhir Pekan',
+        firstLabel: 'JENIS LIBUR',
+        firstContent: 'Akhir Pekan',
+        secondLabel: 'NAMA LIBUR',
+        secondContent: 'Akhir Pekan',
+        thirdLabel: 'STATUS KEHADIRAN',
+        thirdContent: 'Libur',
+        fourthLabel: 'CATATAN',
+        fourthContent: 'Tidak Ada Presensi Hari Ini',
+        trailingLabel: 'AKHIR PEKAN',
+        trailingTop: Icon(Icons.calendar_today_rounded,
+            color: checkStatusColor('Izin'), size: 72),
       );
     }
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    DateFormat.EEEE().format(DateTime.now()),
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(width: 5.0),
-                  const Text('|'),
-                  const SizedBox(width: 5.0),
-                  Text(
-                    DateFormat.yMMMd().format(DateTime.now()),
-                  ),
-                  const SizedBox(width: 5.0),
-                  const Text('|'),
-                  const SizedBox(width: 5.0),
-                  Text(
-                    'Selesai',
-                  ),
-                ],
-              ),
-              Divider(
-                thickness: 1.0,
-                color: Colors.black26,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const Text(
-                        'SKEMA ABSENSI :',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text('-'),
-                      const SizedBox(height: 10.0),
-                      const Text(
-                        'JADWAL ABSENSI :',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 2.0),
-                      Text('-'),
-                      const SizedBox(height: 10.0),
-                      const Text(
-                        'STATUS KEHADIRAN :',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 2.0),
-                      Text(
-                        _checkPresenceStatus(_percentage),
-                        style: TextStyle(
-                            color: _checkPresenceStatusColor(_percentage)),
-                      ),
-                      const SizedBox(height: 10.0),
-                      Text(
-                        'CATATAN :',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 2.0),
-                      Text(
-                        'Semua Presensi Sudah Selesai',
-                        style: TextStyle(fontSize: 12.0),
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: Column(children: <Widget>[
-                      Text(
-                        NumberFormat.decimalPattern('id_ID')
-                                .format(_percentage) +
-                            '%',
-                        style: TextStyle(
-                          fontSize: 32,
-                          color: _checkPresenceStatusColor(_percentage),
-                        ),
-                      ),
-                      const SizedBox(height: 2.0),
-                      Text(
-                        'KEHADIRAN',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      )
-                    ]),
-                  )
-                ],
-              ),
-            ],
-          ),
+    return NextPresenceEmptyCard(
+      color: checkStatusColor('Izin'),
+      topLabel: 'Selesai',
+      firstLabel: 'SKEMA ABSENSI',
+      firstContent: '-',
+      secondLabel: 'JADWAL ABSENSI',
+      secondContent: '-',
+      thirdLabel: 'STATUS KEHADIRAN',
+      thirdContent: _checkPresenceStatus(_percentage),
+      fourthLabel: 'CATATAN',
+      fourthContent: 'Semua Presensi Sudah Selesai',
+      trailingLabel: 'KEHADIRAN',
+      trailingTop: Text(
+        formatPercentage(_percentage),
+        style: TextStyle(
+          fontSize: 32,
+          color: _checkPresenceStatusColor(_percentage),
         ),
       ),
     );
@@ -979,7 +896,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ],
-          leadingWidth: MediaQuery.of(context).size.width * 0.25,
+          leadingWidth: Get.width * 0.25,
           leading: Image.asset(
             'assets/logo/logo.png',
           ),
@@ -1016,11 +933,15 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           Container(
             padding: EdgeInsets.only(
-                left: 20.0,
-                right: 20.0,
-                bottom: MediaQuery.of(context).size.height * 0.13,
-                top: 5.0),
+                left: 20.0, right: 20.0, bottom: Get.height * 0.13, top: 5.0),
             decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    offset: Offset(0, 5),
+                    blurRadius: 10.0,
+                  )
+                ],
                 color: Colors.blueAccent,
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(40.0),
@@ -1048,16 +969,24 @@ class _HomeScreenState extends State<HomeScreen> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    offset: Offset(0, 5),
+                    blurRadius: 10.0,
+                  )
+                ],
+              ),
               margin: EdgeInsets.only(
-                top: MediaQuery.of(context).size.height * 0.15,
+                top: Get.height * 0.15,
                 left: 20.0,
                 right: 20.0,
               ),
               child: ClipRRect(
                 child: Container(
-                  width: MediaQuery.of(context).size.width,
+                  width: Get.width,
                   child: Card(
-                    elevation: 4.0,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
@@ -1095,7 +1024,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   SliverToBoxAdapter _buildNextPresence() {
     return SliverToBoxAdapter(
-      child: Padding(
+      child: Container(
+        margin: EdgeInsets.only(top: 12.0),
         padding: EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
