@@ -9,6 +9,7 @@ import 'package:spo_balaesang/models/absent_permission.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/create_permission_screen.dart';
 import 'package:spo_balaesang/screen/image_detail_screen.dart';
+import 'package:spo_balaesang/widgets/image_error_widget.dart';
 
 class PermissionListScreen extends StatefulWidget {
   @override
@@ -52,7 +53,7 @@ class _PermissionListScreenState extends State<PermissionListScreen> {
   Widget _buildBody() {
     if (_isLoading)
       return Center(
-          child: SpinKitWanderingCubes(
+          child: SpinKitFadingFour(
         size: 45,
         color: Colors.blueAccent,
       ));
@@ -163,10 +164,11 @@ class _PermissionListScreenState extends State<PermissionListScreen> {
                       onTap: () {
                         Get.to(ImageDetailScreen(
                           imageUrl: permission.photo,
+                          tag: permission.id.toString(),
                         ));
                       },
                       child: Hero(
-                        tag: 'image',
+                        tag: permission.id.toString(),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
                           child: CachedNetworkImage(
@@ -190,9 +192,8 @@ class _PermissionListScreenState extends State<PermissionListScreen> {
                             ),
                             imageUrl: permission.photo,
                             fit: BoxFit.cover,
-                            errorWidget: (_, __, ___) =>
-                                Center(child: Icon(Icons.error)),
-                            width: MediaQuery.of(context).size.width,
+                            errorWidget: (_, __, ___) => ImageErrorWidget(),
+                            width: Get.width,
                             height: 250.0,
                           ),
                         ),
