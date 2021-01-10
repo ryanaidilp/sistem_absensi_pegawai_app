@@ -21,11 +21,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  double getSmallDiameter(BuildContext context) =>
-      MediaQuery.of(context).size.width * 2 / 3;
+  double getSmallDiameter = Get.width * 2 / 3;
 
-  double getBigDiameter(BuildContext context) =>
-      MediaQuery.of(context).size.width * 7 / 8;
+  double getBigDiameter = Get.size.width * 7 / 8;
 
   bool _isLoading = false;
 
@@ -108,11 +106,11 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Stack(
         children: <Widget>[
           Positioned(
-            right: -getSmallDiameter(context) / 3,
-            top: -getSmallDiameter(context) / 3,
+            right: -getSmallDiameter / 3,
+            top: -getSmallDiameter / 3,
             child: Container(
-              width: getSmallDiameter(context),
-              height: getSmallDiameter(context),
+              width: getSmallDiameter,
+              height: getSmallDiameter,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
@@ -123,8 +121,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           Positioned(
-            left: -getBigDiameter(context) / 4,
-            top: -getBigDiameter(context) / 4,
+            left: -getBigDiameter / 4,
+            top: -getBigDiameter / 4,
             child: Container(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -139,8 +137,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
-              width: getBigDiameter(context),
-              height: getBigDiameter(context),
+              width: getBigDiameter,
+              height: getBigDiameter,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
@@ -289,7 +287,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      'v4.1.8',
+                      'v4.2.1',
                       style: TextStyle(
                           color: Colors.grey,
                           fontSize: 12.0,

@@ -175,7 +175,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       )
                     ],
                   ),
-                  flex: 7,
+                  flex: 5,
                 ),
                 Expanded(
                     child: Column(
@@ -194,9 +194,39 @@ class _SplashScreenState extends State<SplashScreen> {
                                 color: Colors.white,
                                 fontWeight: FontWeight.w700)),
                         const SizedBox(width: 2.0),
-                        Text('v4.1.8', style: TextStyle(color: Colors.white)),
+                        Text('v4.2.1', style: TextStyle(color: Colors.white)),
                         const Spacer()
                       ],
+                    ),
+                    const SizedBox(height: 10.0),
+                    Flexible(
+                      child: Container(
+                        width: Get.width * 0.5,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Spacer(),
+                            Image.asset(
+                              'assets/logo/banuacoders.png',
+                              width: Get.width * 0.2,
+                              fit: BoxFit.cover,
+                            ),
+                            Spacer(),
+                            Text('|'),
+                            Spacer(),
+                            Image.asset(
+                              'assets/logo/balaesang.png',
+                              width: Get.width * 0.2,
+                              fit: BoxFit.cover,
+                            ),
+                            Spacer(),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ))
