@@ -17,7 +17,11 @@ enum Endpoint {
   readNotifications,
   deleteNotifications,
   sendNotifications,
-  statistics
+  statistics,
+  paidLeave,
+  employeePaidLeave,
+  approvePaidLeave,
+  cancelAttendance
 }
 
 class API {
@@ -43,5 +47,9 @@ class API {
     Endpoint.deleteNotifications: 'notifications/delete',
     Endpoint.sendNotifications: 'notifications/send',
     Endpoint.statistics: 'statistics',
+    Endpoint.paidLeave: 'paid-leave',
+    Endpoint.employeePaidLeave: 'paid-leave/all',
+    Endpoint.approvePaidLeave: 'paid-leave/approve',
+    Endpoint.cancelAttendance: 'presence/cancel'
   };
 }
