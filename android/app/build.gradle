@@ -49,7 +49,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 30
         versionCode 32
-        versionName '4.2.2'
+        versionName '4.2.3'
     }
 
     signingConfigs {
