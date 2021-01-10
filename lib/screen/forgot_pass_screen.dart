@@ -1,14 +1,14 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ForgotPassScreen extends StatelessWidget {
-  double getSmallDiameter(BuildContext context) =>
-      MediaQuery.of(context).size.width * 2 / 3;
+  final double getSmallDiameter = Get.width * 2 / 3;
 
-  double getBigDiameter(BuildContext context) =>
-      MediaQuery.of(context).size.width * 7 / 8;
+  final double getBigDiameter = Get.width * 7 / 8;
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +18,11 @@ class ForgotPassScreen extends StatelessWidget {
         alignment: Alignment.center,
         children: <Widget>[
           Positioned(
-            right: -getSmallDiameter(context) / 3,
-            top: -getSmallDiameter(context) / 3,
+            right: -getSmallDiameter / 3,
+            top: -getSmallDiameter / 3,
             child: Container(
-              width: getSmallDiameter(context),
-              height: getSmallDiameter(context),
+              width: getSmallDiameter,
+              height: getSmallDiameter,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
@@ -33,8 +33,8 @@ class ForgotPassScreen extends StatelessWidget {
             ),
           ),
           Positioned(
-            left: -getBigDiameter(context) / 4,
-            top: -getBigDiameter(context) / 4,
+            left: -getBigDiameter / 4,
+            top: -getBigDiameter / 4,
             child: Container(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -49,8 +49,8 @@ class ForgotPassScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              width: getBigDiameter(context),
-              height: getBigDiameter(context),
+              width: getBigDiameter,
+              height: getBigDiameter,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
@@ -66,7 +66,8 @@ class ForgotPassScreen extends StatelessWidget {
               children: <Widget>[
                 ClipRRect(
                   child: Container(
-                    margin: EdgeInsets.fromLTRB(5.0, 350, 5.0, 10),
+                    margin:
+                        EdgeInsets.fromLTRB(5.0, Get.height * 0.35, 5.0, 10),
                     padding: EdgeInsets.fromLTRB(10, 0, 10, 25),
                     child: Card(
                       elevation: 6.0,
@@ -74,23 +75,62 @@ class ForgotPassScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           children: <Widget>[
-                            Text(
-                              'Tekan tombol dibawah untuk menghubungi administrator sistem dan melaporkan masalah anda',
-                              style: TextStyle(color: Colors.grey[700]),
-                            ),
                             SizedBox(height: 15.0),
-                            SizedBox(
-                              height: 30.0,
-                              width: MediaQuery.of(context).size.width * 0.4,
-                              child: RaisedButton(
-                                onPressed: () {
-                                  launch('tel:082271343061');
-                                },
-                                color: Colors.blueAccent,
-                                textColor: Colors.white,
-                                child: Text('Hubungi'),
+                            Text(
+                              'Fajrian Aidil Pratama',
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
+                            Text(
+                              'Administrator\nFounder of @BanuaCoders',
+                              style: TextStyle(color: Colors.grey),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 2.0),
+                            Divider(
+                              color: Colors.black26,
+                              thickness: 1,
+                            ),
+                            SizedBox(height: 2.0),
+                            Text(
+                              'Tekan tombol dibawah untuk menghubungi administrator sistem dan melaporkan masalah anda',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                            Wrap(
+                              spacing: 8.0,
+                              children: <Widget>[
+                                IconButton(
+                                  onPressed: () {
+                                    launch('tel:082271343061');
+                                  },
+                                  color: Colors.blueAccent,
+                                  icon: Icon(Icons.phone),
+                                  enableFeedback: true,
+                                  tooltip: 'Hubungi via Telpon',
+                                ),
+                                IconButton(
+                                  onPressed: () async {
+                                    var whatsappUrl =
+                                        "whatsapp://send?phone=6282271343061";
+                                    await canLaunch(whatsappUrl)
+                                        ? launch(whatsappUrl)
+                                        : Get.defaultDialog(
+                                            title: 'Gagal',
+                                            content: Text(
+                                                'WhatsApp tidak ditemukan!'));
+                                  },
+                                  color: Colors.green[600],
+                                  icon: FaIcon(FontAwesomeIcons.whatsapp),
+                                  enableFeedback: true,
+                                  tooltip: 'Hubungi via WA',
+                                ),
+                              ],
+                            )
                           ],
                         ),
                       ),
