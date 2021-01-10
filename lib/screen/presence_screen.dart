@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
+import 'package:spo_balaesang/screen/image_detail_screen.dart';
 import 'package:spo_balaesang/utils/file_util.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
@@ -133,9 +134,25 @@ class _PresenceScreenState extends State<PresenceScreen> {
     }
 
     Uint8List bytes = base64Decode(_base64Image);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10.0),
-      child: Image.memory(bytes),
+    return InkWell(
+      onTap: () {
+        Get.to(ImageDetailScreen(
+          bytes: bytes,
+          tag: 'image',
+        ));
+      },
+      child: Hero(
+        tag: 'image',
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10.0),
+          child: Image.memory(
+            bytes,
+            width: Get.width,
+            height: 250,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
     );
   }
 
@@ -244,7 +261,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
               ),
               SizedBox(height: 10.0),
               Text(
-                '*): Absen akan dibatalkan jika foto tidak sesuai dengan ketentuan.',
+                '*): Absen akan dibatalkan jika foto tidak sesuai dengan ketentuan. Tekan untuk memperbesar.',
                 style: TextStyle(
                     fontSize: 10.0,
                     color: Colors.blueAccent,

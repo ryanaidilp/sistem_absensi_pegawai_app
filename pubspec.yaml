@@ -21,6 +21,7 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  font_awesome_flutter: 8.11.0
   flutter_cupertino_date_picker:
     git: https://github.com/daveleenew/flutter-cupertino-date-picker.git
   percent_indicator: 2.1.9

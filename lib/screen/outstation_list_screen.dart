@@ -9,6 +9,7 @@ import 'package:spo_balaesang/models/outstation.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/create_outstation_screen.dart';
 import 'package:spo_balaesang/screen/image_detail_screen.dart';
+import 'package:spo_balaesang/widgets/image_error_widget.dart';
 
 class OutstationListScreen extends StatefulWidget {
   @override
@@ -166,10 +167,11 @@ class _OutstationListScreenState extends State<OutstationListScreen> {
                       onTap: () {
                         Get.to(ImageDetailScreen(
                           imageUrl: outstation.photo,
+                          tag: outstation.id.toString(),
                         ));
                       },
                       child: Hero(
-                        tag: 'image',
+                        tag: outstation.id.toString(),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
                           child: CachedNetworkImage(
@@ -193,9 +195,8 @@ class _OutstationListScreenState extends State<OutstationListScreen> {
                             ),
                             imageUrl: outstation.photo,
                             fit: BoxFit.cover,
-                            errorWidget: (_, __, ___) =>
-                                Center(child: Icon(Icons.error)),
-                            width: MediaQuery.of(context).size.width,
+                            errorWidget: (_, __, ___) => ImageErrorWidget(),
+                            width: Get.width,
                             height: 250.0,
                           ),
                         ),

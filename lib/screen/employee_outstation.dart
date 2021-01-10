@@ -15,6 +15,7 @@ import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/image_detail_screen.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
+import 'package:spo_balaesang/widgets/image_error_widget.dart';
 
 class EmployeeOutstationScreen extends StatefulWidget {
   @override
@@ -25,6 +26,7 @@ class EmployeeOutstationScreen extends StatefulWidget {
 class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
   List<Outstation> _outstations = List<Outstation>();
   bool _isLoading = false;
+  final TextEditingController _reasonController = TextEditingController();
 
   @override
   void setState(fn) {
@@ -56,7 +58,39 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
     }
   }
 
-  Future<void> approveOutstation(Outstation outstation) async {
+  _approveOutstation(Outstation outstation) {
+    if (outstation.isApproved) {
+      Get.defaultDialog(
+          title: 'Alasan Pembatalan!',
+          content: Flexible(
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              width: Get.width * 0.9,
+              child: TextFormField(
+                controller: _reasonController,
+                decoration: InputDecoration(
+                    labelText: 'Alasan',
+                    focusColor: Colors.blueAccent,
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blueAccent))),
+              ),
+            ),
+          ),
+          confirm: RaisedButton(
+            color: Colors.blueAccent,
+            textColor: Colors.white,
+            onPressed: () {
+              Get.back();
+              _sendData(outstation);
+            },
+            child: Text('OK'),
+          ));
+    } else {
+      _sendData(outstation);
+    }
+  }
+
+  Future<void> _sendData(Outstation outstation) async {
     ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     pd.show();
     try {
@@ -64,7 +98,8 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
       Map<String, dynamic> data = {
         'user_id': outstation.user.id,
         'is_approved': !outstation.isApproved,
-        'outstation_id': outstation.id
+        'outstation_id': outstation.id,
+        'reason': _reasonController.value.text
       };
       http.Response response = await dataRepo.approveOutstation(data);
       Map<String, dynamic> _res = jsonDecode(response.body);
@@ -81,6 +116,12 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
       pd.hide();
       print(e.toString());
     }
+  }
+
+  @override
+  void dispose() {
+    _reasonController.dispose();
+    super.dispose();
   }
 
   @override
@@ -140,7 +181,7 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
                       Row(
                         children: <Widget>[
                           Text(
-                            'Status : ',
+                            'Status              : ',
                             style: TextStyle(fontSize: 12.0),
                           ),
                           Text(
@@ -219,10 +260,11 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
                         onTap: () {
                           Get.to(ImageDetailScreen(
                             imageUrl: outstation.photo,
+                            tag: outstation.id.toString(),
                           ));
                         },
                         child: Hero(
-                          tag: 'image',
+                          tag: outstation.id.toString(),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(10.0),
                             child: CachedNetworkImage(
@@ -246,9 +288,8 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
                               ),
                               imageUrl: outstation.photo,
                               fit: BoxFit.cover,
-                              errorWidget: (_, __, ___) =>
-                                  Center(child: Icon(Icons.error)),
-                              width: MediaQuery.of(context).size.width,
+                              errorWidget: (_, __, ___) => ImageErrorWidget(),
+                              width: Get.width,
                               height: 250.0,
                             ),
                           ),
@@ -260,7 +301,7 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
                           textColor: Colors.white,
                           color: Colors.blueAccent,
                           onPressed: () {
-                            approveOutstation(outstation);
+                            _approveOutstation(outstation);
                           },
                           child: Text(outstation.isApproved
                               ? 'Batal Setujui'

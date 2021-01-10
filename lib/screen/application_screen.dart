@@ -11,12 +11,16 @@ import 'package:spo_balaesang/models/presence.dart';
 import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/change_pass_screen.dart';
+import 'package:spo_balaesang/screen/employee_attendance_screen.dart';
 import 'package:spo_balaesang/screen/employee_outstation.dart';
+import 'package:spo_balaesang/screen/employee_paid_leave_screen.dart';
 import 'package:spo_balaesang/screen/employee_permission.dart';
 import 'package:spo_balaesang/screen/forgot_pass_screen.dart';
 import 'package:spo_balaesang/screen/login_screen.dart';
 import 'package:spo_balaesang/screen/outstation_list_screen.dart';
+import 'package:spo_balaesang/screen/paid_leave_list_screen.dart';
 import 'package:spo_balaesang/screen/permission_list_screen.dart';
+import 'package:spo_balaesang/screen/regulation_screen.dart';
 import 'package:spo_balaesang/screen/report_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
@@ -190,7 +194,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
             },
             child: ListTile(
               leading: Icon(
-                Icons.check,
+                Icons.playlist_add_check_rounded,
                 color: Colors.green,
                 size: 32.0,
               ),
@@ -214,7 +218,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
             },
             child: ListTile(
               leading: Icon(
-                Icons.check,
+                Icons.playlist_add_check_rounded,
                 color: Colors.green,
                 size: 32.0,
               ),
@@ -229,7 +233,91 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
             ),
           ),
         ),
+        SizedBox(height: 10.0),
+        Card(
+          elevation: 2.0,
+          child: InkWell(
+            onTap: () {
+              Get.to(EmployeePaidLeaveScreen());
+            },
+            child: ListTile(
+              leading: Icon(
+                Icons.playlist_add_check_rounded,
+                color: Colors.green,
+                size: 32.0,
+              ),
+              title: Text(
+                'Persetujuan Cuti',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                'Setujui Cuti yang diajukan',
+                style: TextStyle(color: Colors.black87),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 10.0),
+        Card(
+          elevation: 2.0,
+          child: InkWell(
+            onTap: () {
+              Get.to(EmployeeAttendanceScreen());
+            },
+            child: ListTile(
+              dense: false,
+              leading: Icon(
+                Icons.playlist_add_check_rounded,
+                color: Colors.green,
+                size: 32.0,
+              ),
+              title: Text(
+                'Presensi Pegawai',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                'Lihat & konfirmasi kehadiran pegawai',
+                style: TextStyle(color: Colors.black87),
+              ),
+            ),
+          ),
+        ),
         SizedBox(height: 30.0),
+      ],
+    );
+  }
+
+  Widget _buildCutiSection() {
+    if (user?.status == 'Honorer') {
+      return SizedBox();
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        SizedBox(height: 10.0),
+        Card(
+          elevation: 2.0,
+          child: InkWell(
+            onTap: () {
+              Get.to(PaidLeaveListScreen());
+            },
+            child: ListTile(
+              leading: Icon(
+                Icons.card_giftcard_rounded,
+                color: Colors.red,
+                size: 32.0,
+              ),
+              title: Text(
+                'Cuti',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                'Pengajuan dan riwayat Cuti',
+                style: TextStyle(color: Colors.black87),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -241,7 +329,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
         leading: Image.asset('assets/logo/logo.png'),
-        leadingWidth: MediaQuery.of(context).size.width * 0.25,
+        leadingWidth: Get.width * 0.25,
         title: const Text('Aplikasi'),
       ),
       body: SingleChildScrollView(
@@ -362,10 +450,11 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                   ),
                 ),
               ),
+              _buildCutiSection(),
               SizedBox(height: 30.0),
               _buildStakeholderMenu(),
               Text(
-                'Akun',
+                'Bantuan',
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 18.0,
@@ -396,6 +485,38 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 ),
               ),
               SizedBox(height: 10.0),
+              Card(
+                elevation: 2.0,
+                child: InkWell(
+                  onTap: () {
+                    Get.to(RegulationScreen());
+                  },
+                  child: ListTile(
+                    leading: Icon(
+                      Icons.room_preferences,
+                      color: Colors.lime[800],
+                      size: 32.0,
+                    ),
+                    title: Text(
+                      'Rujukan',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      'Daftar aturan yang menjadi rujukan SiAP Balaesang',
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 30.0),
+              Text(
+                'Akun',
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18.0,
+                    color: Colors.blueAccent),
+              ),
+              Divider(thickness: 1.0),
               Card(
                 elevation: 2.0,
                 child: InkWell(
