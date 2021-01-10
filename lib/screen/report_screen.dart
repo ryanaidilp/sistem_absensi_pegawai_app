@@ -1,19 +1,28 @@
+import 'dart:convert';
+
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/models/holiday.dart';
 import 'package:spo_balaesang/models/report/absent_report.dart';
 import 'package:spo_balaesang/models/report/daily.dart';
+import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
+import 'package:spo_balaesang/screen/image_detail_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
+import 'package:spo_balaesang/widgets/image_error_widget.dart';
+import 'package:spo_balaesang/widgets/statistics_card_widget.dart';
+import 'package:spo_balaesang/widgets/user_info_card_widgets.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class ReportScreen extends StatefulWidget {
@@ -32,6 +41,19 @@ class _ReportScreenState extends State<ReportScreen> {
   List<DailyData> _selectedEvents;
   List<Holiday> _selectedHolidays;
   Map<DateTime, List<dynamic>> _holidays = new Map();
+  User _user;
+  TextEditingController _salaryController = TextEditingController();
+  double _salary = 0;
+
+  Future<void> _loadUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    User user = User.fromJson(jsonDecode(prefs.getString(PREFS_USER_KEY)));
+    if (user != null) {
+      setState(() {
+        _user = user;
+      });
+    }
+  }
 
   Future<void> _fetchReportData() async {
     try {
@@ -46,8 +68,15 @@ class _ReportScreenState extends State<ReportScreen> {
             .map((daily) => MapEntry(daily.date, daily.attendances)));
         _holidays.addEntries(absentReport.holidays
             .map((holiday) => MapEntry(holiday.date, <Holiday>[holiday])));
-        _selectedEvents = _events.entries.last.value;
-        _selectedHolidays = _holidays.entries.first.value as List<Holiday>;
+        if (_events.entries.last.key.isAtSameMomentAs(DateTime.now())) {
+          _selectedEvents = _events.entries.last.value;
+        } else {
+          _selectedEvents = [];
+        }
+        _selectedHolidays = _holidays.entries
+            .firstWhere(
+                (element) => element.key.isAtSameMomentAs(DateTime.now()))
+            .value;
       });
     } catch (e) {
       print(e.toString());
@@ -70,8 +99,6 @@ class _ReportScreenState extends State<ReportScreen> {
       else
         _selectedHolidays = [];
 
-      print(_selectedHolidays);
-
       _selectedDate = day;
     });
   }
@@ -82,7 +109,7 @@ class _ReportScreenState extends State<ReportScreen> {
     }
 
     if (percentage >= 50 && percentage < 70) {
-      return Colors.blueAccent;
+      return Colors.indigo;
     }
 
     if (percentage >= 70 && percentage <= 80) {
@@ -94,280 +121,116 @@ class _ReportScreenState extends State<ReportScreen> {
     return Colors.red[800];
   }
 
-  Widget _buildCircularPercentage(
-      double percentage, String header, String suffix, String type) {
-    return CircularPercentIndicator(
-      radius: Get.width * 0.3,
-      linearGradient: LinearGradient(colors: <Color>[
-        _checkAttendancePercentageColor(percentage).withOpacity(1),
-        _checkAttendancePercentageColor(percentage).withOpacity(0.5)
-      ]),
-      animation: true,
-      percent: percentage / 100,
-      lineWidth: 10.0,
-      circularStrokeCap: CircularStrokeCap.round,
-      backgroundColor:
-          _checkAttendancePercentageColor(percentage).withOpacity(0.2),
-      center: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            type,
-            style: TextStyle(
-              fontSize: 10.0,
-              color: Colors.black87,
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                '$percentage',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 24.0,
-                ),
-              ),
-              Text(
-                '%',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14.0,
-                ),
-              )
-            ],
-          ),
-          Text(
-            '/$suffix',
-            style: TextStyle(color: Colors.grey, fontSize: 12.0),
-          )
-        ],
-      ),
-      footer: Text(
-        header.toUpperCase(),
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+  Widget _buildUserInfoSection() {
+    return UserInfoCard(user: _user);
+  }
+
+  Widget _buildStatisticSection(AbsentReport report, DateTime year) {
+    return StatisticCard(
+      report: report,
+      year: year,
+      status: _user?.status,
     );
   }
 
-  Widget _buildLinearPercentage(double percentage, String label, Widget footer,
-      Color color, double width) {
+  Widget _buildSalaryCalculator() {
+    if (_user?.status == 'PNS') {
+      return SizedBox();
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Row(
-          children: <Widget>[
-            SizedBox(width: 2.0),
-            Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 16.0,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 6.0),
-        LinearPercentIndicator(
-          progressColor: color,
-          percent: percentage / 100,
-          width: width,
-          animation: true,
-          lineHeight: 15.0,
-          backgroundColor: color.withOpacity(0.15),
-          center: Text(
-            '$percentage%',
-            style: TextStyle(
-                fontSize: 12.0, color: percentageLabelColor(percentage)),
+        Text(
+          'Kalkulator Gaji : ${DateFormat.yMMMM('id_ID').format(_year)}',
+          style: TextStyle(
+            fontSize: 16.0,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(height: 6.0),
-        Row(
-          children: <Widget>[SizedBox(width: 2.0), footer],
-        )
-      ],
-    );
-  }
-
-  Widget _buildStatisticSection() {
-    return Container(
-      width: Get.width,
-      child: Card(
-        elevation: 3.0,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                'Statistik',
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w600,
+        Divider(),
+        Card(
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                TextFormField(
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  controller: _salaryController,
+                  decoration: InputDecoration(
+                    labelStyle: TextStyle(color: Colors.blueAccent),
+                    border: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blueAccent)),
+                    prefixIcon: Icon(
+                      Icons.money_rounded,
+                      color: Colors.blueAccent,
+                    ),
+                    labelText: 'Jumlah Gaji Bulanan',
+                  ),
+                  maxLines: 1,
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      setState(() {
+                        _salary = double.parse(value);
+                      });
+                    }
+                  },
                 ),
-              ),
-              Divider(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  _buildCircularPercentage(
-                    _absentReport.yearly.attendancePercentage,
-                    '${_year.year}',
-                    'tahun',
-                    'Kehadiran',
-                  ),
-                  _buildCircularPercentage(
-                    _absentReport.monthly.attendancePercentage,
-                    '${DateFormat.MMMM('id_ID').format(_year)}',
-                    'bulan',
-                    'Kehadiran',
-                  )
-                ],
-              ),
-              Divider(color: Colors.black26),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'Terlambat',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14.0,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        children: <Widget>[
-                          Text(
-                            _absentReport.yearly.lateCount.toString(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 32.0,
-                            ),
-                          ),
-                          Text(
-                            ' kali/tahun',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        '|',
-                        style: TextStyle(fontSize: 32.0, color: Colors.black54),
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        children: <Widget>[
-                          Text(
-                            _absentReport.monthly.lateCount.toString(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 32.0,
-                            ),
-                          ),
-                          Text(
-                            ' kali/bulan',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0),
-                          ),
-                        ],
-                      )
-                    ],
-                  )
-                ],
-              ),
-              SizedBox(height: 6.0),
-              Divider(color: Colors.black26),
-              SizedBox(height: 8.0),
-              _buildLinearPercentage(
-                double.parse(_absentReport
-                    .yearly.absent[REPORT_PERCENTAGE_FIELD]
-                    .toString()),
-                'Alpa',
+                SizedBox(height: 2),
+                Divider(color: Colors.black26),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    SizedBox(width: 6.0),
+                    Text('Kehadiran      : '),
                     Text(
-                      _absentReport.yearly.absent[REPORT_DAY_FIELD].toString(),
-                      style: TextStyle(
-                        color: Colors.grey[800],
-                      ),
-                    ),
-                    Text(
-                      ' hari',
-                      style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                      '${formatPercentage(_absentReport.monthly.attendancePercentage)}',
+                      style: TextStyle(fontWeight: FontWeight.w600),
                     )
                   ],
                 ),
-                Colors.red[800],
-                Get.width * 0.85,
-              ),
-              SizedBox(height: 20.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  _buildLinearPercentage(
-                      double.parse(_absentReport
-                          .yearly.absentPermission[REPORT_PERCENTAGE_FIELD]
-                          .toString()),
-                      'Izin',
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        children: <Widget>[
-                          Text(
-                            _absentReport
-                                .yearly.absentPermission[REPORT_DAY_FIELD]
-                                .toString(),
-                            style: TextStyle(
-                              color: Colors.grey[800],
-                            ),
-                          ),
-                          Text(
-                            '/12 hari',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0),
-                          )
-                        ],
-                      ),
-                      Colors.blueAccent[400],
-                      Get.width * 0.4),
-                  _buildLinearPercentage(
-                      double.parse(_absentReport
-                          .yearly.outstation[REPORT_PERCENTAGE_FIELD]
-                          .toString()),
-                      'Dinas Luar',
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            _absentReport.yearly.outstation[REPORT_DAY_FIELD]
-                                .toString(),
-                            style: TextStyle(
-                              color: Colors.grey[800],
-                            ),
-                          ),
-                          Text(
-                            ' hari',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0),
-                          )
-                        ],
-                      ),
-                      Colors.deepOrange[600],
-                      Get.width * 0.4),
-                ],
-              ),
-            ],
+                SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text('Gaji Bulanan  : '),
+                    Text(
+                      '${formatCurrency(_salary)}',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    )
+                  ],
+                ),
+                SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text('Potongan       : '),
+                    Text(
+                      formatCurrency(_countSalaryCuts()),
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    )
+                  ],
+                ),
+                SizedBox(height: 6),
+                Divider(color: Colors.black26),
+                SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text('Total               : '),
+                    Text(
+                      formatCurrency(_countTotalSalary()),
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    )
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
+        Divider(),
+        SizedBox(height: 10.0),
+      ],
     );
   }
 
@@ -389,8 +252,12 @@ class _ReportScreenState extends State<ReportScreen> {
           children: <Widget>[
             Container(
               width: Get.width * 0.6,
-              height: 300,
-              child: const FlareActor('assets/flare/not_found.flr'),
+              height: 200,
+              child: const FlareActor(
+                'assets/flare/failure.flr',
+                animation: 'failure',
+                fit: BoxFit.cover,
+              ),
             ),
             const Text('Gagal memuat data'),
             const SizedBox(height: 20.0),
@@ -407,9 +274,10 @@ class _ReportScreenState extends State<ReportScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        _buildStatisticSection(),
+        _buildStatisticSection(_absentReport, _year),
         Divider(),
         SizedBox(height: 10.0),
+        _buildSalaryCalculator(),
         Text(
           'Kalender Presensi : ',
           style: TextStyle(
@@ -429,9 +297,18 @@ class _ReportScreenState extends State<ReportScreen> {
           ),
         ),
         SizedBox(height: 10.0),
-        _buildEventList()
+        AnimatedSwitcher(
+            duration: Duration(milliseconds: 300), child: _buildEventList())
       ],
     );
+  }
+
+  double _countTotalSalary() {
+    return _salary * _absentReport.monthly.attendancePercentage / 100;
+  }
+
+  double _countSalaryCuts() {
+    return _salary - _countTotalSalary();
   }
 
   double _countAttendancePercentage(List<DailyData> presences) {
@@ -448,7 +325,13 @@ class _ReportScreenState extends State<ReportScreen> {
       switch (presence.attendStatus) {
         case 'Tepat Waktu':
         case 'Dinas Luar':
+        case 'Cuti Tahunan':
           sum += 25;
+          break;
+        case 'Cuti Alasan Penting':
+        case 'Cuti Sakit':
+        case 'Cuti Bersalin':
+          sum += 24.375;
           break;
         case 'Terlambat':
           sum += 6.25;
@@ -465,14 +348,61 @@ class _ReportScreenState extends State<ReportScreen> {
     return sum;
   }
 
+  Widget _showImage(DailyData presence) {
+    if (presence.photo.isEmpty) {
+      return Image.asset(
+        'assets/images/upload_placeholder.png',
+      );
+    }
+
+    return InkWell(
+      onTap: () {
+        Get.to(ImageDetailScreen(
+          tag: presence.photo,
+          imageUrl: presence.photo,
+        ));
+      },
+      child: Hero(
+        tag: presence.photo,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10.0),
+          child: CachedNetworkImage(
+            placeholder: (_, __) => Container(
+              child: Stack(
+                children: <Widget>[
+                  Image.asset('assets/images/upload_placeholder.png'),
+                  Center(
+                    child: SizedBox(
+                      child: SpinKitFadingGrid(
+                        size: 25,
+                        color: Colors.blueAccent,
+                      ),
+                      width: 25.0,
+                      height: 25.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            imageUrl: presence.photo,
+            fit: BoxFit.cover,
+            errorWidget: (_, __, ___) => ImageErrorWidget(),
+            width: Get.width,
+            height: 250.0,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildTableCalendar() {
     return Card(
       child: TableCalendar(
         startingDayOfWeek: StartingDayOfWeek.monday,
         calendarController: _calendarController,
         availableCalendarFormats: <CalendarFormat, String>{
-          CalendarFormat.month: 'Satu minggu',
-          CalendarFormat.twoWeeks: 'Satu bulan',
+          CalendarFormat.month: '1 minggu',
+          CalendarFormat.twoWeeks: '1 bulan',
           CalendarFormat.week: '2 minggu'
         },
         startDay: DateTime(2021),
@@ -510,14 +440,18 @@ class _ReportScreenState extends State<ReportScreen> {
         borderRadius: BorderRadius.circular(6),
         shape: BoxShape.rectangle,
         color: _calendarController.isSelected(date)
-            ? Colors.grey[800]
+            ? _checkAttendancePercentageColor(
+                _countAttendancePercentage(events))
             : _calendarController.isToday(date)
-                ? Colors.indigo
+                ? _calendarController.isSelected(date)
+                    ? _checkAttendancePercentageColor(
+                        _countAttendancePercentage(events))
+                    : Colors.white
                 : Colors.white,
       ),
       child: Center(
         child: Text(
-          '${NumberFormat.percentPattern('id_ID').format(_countAttendancePercentage(events) / 100)}',
+          '${formatPercentage(_countAttendancePercentage(events).toPrecision(0))}',
           style: TextStyle(
             color: _calendarController.isSelected(date)
                 ? Colors.white
@@ -598,27 +532,118 @@ class _ReportScreenState extends State<ReportScreen> {
     }
 
     return Column(
-      children: _selectedEvents
-          .map((event) => Card(
-                margin: const EdgeInsets.symmetric(vertical: 6.0),
-                child: ListTile(
-                  title: Row(
+      children: _selectedEvents.map((event) {
+        String status =
+            '${event.attendStatus} (${formatPercentage(checkPresencePercentage(event.attendStatus))})';
+        if (event.attendStatus == 'Terlambat') {
+          var duration =
+              calculateLateInMinutes(event.startTime, event.attendTime);
+          status =
+              '${event.attendStatus} $duration (${formatPercentage(checkPresencePercentage(event.attendStatus))})';
+        }
+        Color color = checkStatusColor(event.attendStatus);
+        final TextStyle labelTextStyle = TextStyle(color: Colors.grey[600]);
+        return Container(
+          margin: const EdgeInsets.only(bottom: 24.0),
+          width: Get.width,
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    event.attendType,
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  Divider(thickness: 1.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        '${event.attendType} : ',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        'Jam Absen',
+                        style: labelTextStyle,
                       ),
-                      Text('${event.attendTime}')
+                      Text(
+                        event.attendTime.isEmpty ? '-' : event.attendTime,
+                      )
                     ],
                   ),
-                  subtitle: Text(
-                    event.attendStatus,
-                    style:
-                        TextStyle(color: checkStatusColor(event.attendStatus)),
+                  SizedBox(height: 4.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        'Poin Kehadiran',
+                        style: labelTextStyle,
+                      ),
+                      Text(
+                        '${formatPercentage(checkPresencePercentage(event.attendStatus))}',
+                        style: TextStyle(
+                          color: color,
+                        ),
+                      )
+                    ],
                   ),
-                ),
-              ))
-          .toList(),
+                  SizedBox(height: 4.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        'Status Kehadiran',
+                        style: labelTextStyle,
+                      ),
+                      Text(
+                        status,
+                        style: TextStyle(
+                          color: color,
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 4.0),
+                  Divider(thickness: 1),
+                  Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.location_on,
+                        color: Colors.grey[600],
+                        size: 20.0,
+                      ),
+                      SizedBox(width: 4.0),
+                      Text('Lokasi', style: labelTextStyle)
+                    ],
+                  ),
+                  SizedBox(height: 4.0),
+                  AutoSizeText(
+                    event.address.isEmpty ? '-' : event.address,
+                    maxLines: 3,
+                    minFontSize: 10.0,
+                    maxFontSize: 12.0,
+                    textAlign: TextAlign.justify,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Divider(thickness: 1),
+                  Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.photo,
+                        color: Colors.grey[600],
+                        size: 20.0,
+                      ),
+                      SizedBox(width: 4.0),
+                      Text('Foto Wajah', style: labelTextStyle)
+                    ],
+                  ),
+                  SizedBox(height: 4.0),
+                  _showImage(event),
+                  SizedBox(height: 8.0),
+                ],
+              ),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -636,6 +661,7 @@ class _ReportScreenState extends State<ReportScreen> {
     _dataRepo = Provider.of<DataRepository>(context, listen: false);
     _calendarController = CalendarController();
     super.initState();
+    _loadUser();
     _fetchReportData();
   }
 
@@ -667,6 +693,8 @@ class _ReportScreenState extends State<ReportScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              _buildUserInfoSection(),
+              Divider(thickness: 1.0),
               Text(
                 'Pilih Tahun & Bulan : ',
               ),
