@@ -15,6 +15,7 @@ import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/image_detail_screen.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
+import 'package:spo_balaesang/widgets/image_error_widget.dart';
 
 class EmployeePermissionScreen extends StatefulWidget {
   @override
@@ -25,6 +26,7 @@ class EmployeePermissionScreen extends StatefulWidget {
 class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
   List<AbsentPermission> _permissions = List<AbsentPermission>();
   bool _isLoading = false;
+  final TextEditingController _reasonController = TextEditingController();
 
   @override
   void setState(fn) {
@@ -54,7 +56,39 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
     }
   }
 
-  Future<void> approvePermission(AbsentPermission permission) async {
+  _approvePermission(AbsentPermission permission) {
+    if (permission.isApproved) {
+      Get.defaultDialog(
+          title: 'Alasan Pembatalan!',
+          content: Flexible(
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              width: Get.width * 0.9,
+              child: TextFormField(
+                decoration: InputDecoration(
+                    labelText: 'Alasan',
+                    focusColor: Colors.blueAccent,
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blueAccent))),
+                controller: _reasonController,
+              ),
+            ),
+          ),
+          confirm: RaisedButton(
+            color: Colors.blueAccent,
+            textColor: Colors.white,
+            onPressed: () {
+              Get.back();
+              _sendData(permission);
+            },
+            child: Text('OK'),
+          ));
+    } else {
+      _sendData(permission);
+    }
+  }
+
+  Future<void> _sendData(AbsentPermission permission) async {
     ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     pd.show();
     try {
@@ -62,7 +96,8 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
       Map<String, dynamic> data = {
         'user_id': permission.user.id,
         'is_approved': !permission.isApproved,
-        'permission_id': permission.id
+        'permission_id': permission.id,
+        'reason': _reasonController.value.text
       };
       http.Response response = await dataRepo.approvePermission(data);
       Map<String, dynamic> _res = jsonDecode(response.body);
@@ -82,9 +117,15 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
   }
 
   @override
+  void dispose() {
+    _reasonController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
-    super.initState();
     _fetchPermissionData();
+    super.initState();
   }
 
   Widget _buildBody() {
@@ -138,7 +179,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
                       Row(
                         children: <Widget>[
                           Text(
-                            'Status : ',
+                            'Status             : ',
                             style: TextStyle(fontSize: 12.0),
                           ),
                           Text(
@@ -217,10 +258,11 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
                         onTap: () {
                           Get.to(ImageDetailScreen(
                             imageUrl: permission.photo,
+                            tag: permission.id.toString(),
                           ));
                         },
                         child: Hero(
-                          tag: 'image',
+                          tag: permission.id.toString(),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(10.0),
                             child: CachedNetworkImage(
@@ -244,9 +286,8 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
                               ),
                               imageUrl: permission.photo,
                               fit: BoxFit.cover,
-                              errorWidget: (_, __, ___) =>
-                                  Center(child: Icon(Icons.error)),
-                              width: MediaQuery.of(context).size.width,
+                              errorWidget: (_, __, ___) => ImageErrorWidget(),
+                              width: Get.width,
                               height: 250.0,
                             ),
                           ),
@@ -258,7 +299,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
                           textColor: Colors.white,
                           color: Colors.blueAccent,
                           onPressed: () {
-                            approvePermission(permission);
+                            _approvePermission(permission);
                           },
                           child: Text(permission.isApproved
                               ? 'Batal Setujui'
