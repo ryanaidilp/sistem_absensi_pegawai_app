@@ -68,14 +68,13 @@ class _ReportScreenState extends State<ReportScreen> {
             .map((daily) => MapEntry(daily.date, daily.attendances)));
         _holidays.addEntries(absentReport.holidays
             .map((holiday) => MapEntry(holiday.date, <Holiday>[holiday])));
-        if (_events.entries.last.key.isAtSameMomentAs(DateTime.now())) {
+        if (_events.entries.last.key.isSameDate(DateTime.now())) {
           _selectedEvents = _events.entries.last.value;
         } else {
           _selectedEvents = [];
         }
         _selectedHolidays = _holidays.entries
-            .firstWhere(
-                (element) => element.key.isAtSameMomentAs(DateTime.now()))
+            .firstWhere((element) => element.key.isSameDate(DateTime.now()))
             .value;
       });
     } catch (e) {
@@ -725,5 +724,13 @@ class _ReportScreenState extends State<ReportScreen> {
         ),
       ),
     );
+  }
+}
+
+extension DateOnlyCompare on DateTime {
+  bool isSameDate(DateTime other) {
+    return this.year == other.year &&
+        this.month == other.month &&
+        this.day == other.day;
   }
 }
