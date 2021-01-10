@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,25 +13,27 @@ import 'package:provider/provider.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/image_detail_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/file_util.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class CreatePermissionScreen extends StatefulWidget {
+class CreatePaidLeaveScreen extends StatefulWidget {
   @override
-  _CreatePermissionScreenState createState() => _CreatePermissionScreenState();
+  _CreatePaidLeaveScreenState createState() => _CreatePaidLeaveScreenState();
 }
 
-class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
+class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
   String _base64Image;
   String _fileName;
-  File _tmpFile;
-  DateTime _dueDate = DateTime.now();
-  DateTime _startDate = DateTime.now();
-  bool _isDateChange = false;
-
   final CalendarController _startDateController = CalendarController();
   final CalendarController _dueDateController = CalendarController();
+  File _tmpFile;
+  DateTime _startDate = DateTime.now();
+  DateTime _dueDate = DateTime.now();
+  Map<String, dynamic> _categories = paidLeaveCategories;
+  int _category = 1;
+  bool _isDateChange = false;
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -44,39 +47,6 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
       _base64Image = base64Encode(_tmpFile.readAsBytesSync());
       _fileName = _tmpFile.path.split('/').last;
     });
-  }
-
-  Future<void> _uploadData() async {
-    if (!_isDateChange) {
-      showAlertDialog(
-          'failed', 'Pelanggaran', 'Pilih tanggal terlebih dahulu!', true);
-    } else {
-      ProgressDialog pd = ProgressDialog(context, isDismissible: false);
-      try {
-        pd.show();
-        final dataRepo = Provider.of<DataRepository>(context, listen: false);
-        Map<String, dynamic> data = {
-          'title': _titleController.value.text,
-          'description': _descriptionController.value.text,
-          'photo': _base64Image,
-          'due_date': _dueDate.toIso8601String(),
-          'start_date': _startDate.toIso8601String(),
-          'file_name': _fileName
-        };
-        Map<String, dynamic> _res = await dataRepo.permission(data);
-        if (_res['success']) {
-          pd.hide();
-          showAlertDialog('success', "Sukses", _res['message'], false);
-          Timer(Duration(seconds: 5), () => Get.off(BottomNavScreen()));
-        } else {
-          if (pd.isShowing()) pd.hide();
-          showErrorDialog(_res);
-        }
-      } catch (e) {
-        print(e.toString());
-        pd.hide();
-      }
-    }
   }
 
   Widget _showImage() {
@@ -109,7 +79,41 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
     );
   }
 
-  _selectDueDate() async {
+  Future<void> _uploadData() async {
+    if (!_isDateChange) {
+      showAlertDialog(
+          'failed', 'Pelanggaran', 'Pilih tanggal terlebih dahulu!', true);
+    } else {
+      ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+      try {
+        pd.show();
+        final dataRepo = Provider.of<DataRepository>(context, listen: false);
+        Map<String, dynamic> data = {
+          'category': _category,
+          'title': _titleController.value.text,
+          'description': _descriptionController.value.text,
+          'photo': _base64Image,
+          'due_date': _dueDate.toIso8601String(),
+          'start_date': _startDate.toIso8601String(),
+          'file_name': _fileName
+        };
+        Map<String, dynamic> _res = await dataRepo.paidLeave(data);
+        if (_res['success']) {
+          pd.hide();
+          showAlertDialog('success', "Sukses", _res['message'], false);
+          Timer(Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+        } else {
+          if (pd.isShowing()) pd.hide();
+          showErrorDialog(_res);
+        }
+      } catch (e) {
+        print(e.toString());
+        pd.hide();
+      }
+    }
+  }
+
+  _selectDueDate() {
     Get.defaultDialog(
         title: 'Pilih Tanggal Selesai',
         content: Flexible(
@@ -147,7 +151,7 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
         ));
   }
 
-  _selectStartDate() async {
+  _selectStartDate() {
     Get.defaultDialog(
         title: 'Pilih Tanggal Mulai',
         content: Flexible(
@@ -195,20 +199,15 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
-        title: Text('Buat Izin'),
+        title: Text('Ajukan Cuti'),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,7 +217,7 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
               SizedBox(height: 20.0),
               Row(
                 children: <Widget>[
-                  Text('Judul Surat'),
+                  Text('Subjek Cuti'),
                   SizedBox(width: 5.0),
                   Text(
                     '*',
@@ -227,7 +226,7 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
                 ],
               ),
               Text(
-                'Mis: Izin Sakit, dsb.',
+                'Ringkasan dari kegiatan cuti anda.',
                 style: TextStyle(color: Colors.grey),
               ),
               TextFormField(
@@ -235,11 +234,37 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
                 controller: _titleController,
                 decoration: InputDecoration(
                     alignLabelWithHint: true,
-                    hintText: 'Judul',
+                    hintText: 'Judul/Subjek',
                     focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.blueAccent)),
                     labelStyle: TextStyle(color: Colors.grey)),
               ),
+              SizedBox(height: 20.0),
+              Row(
+                children: <Widget>[
+                  Text('Jenis Cuti'),
+                  SizedBox(width: 5.0),
+                  Text(
+                    '*',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ],
+              ),
+              DropdownButton(
+                  isExpanded: true,
+                  elevation: 10,
+                  value: _category,
+                  items: _categories.entries
+                      .map((option) => DropdownMenuItem<dynamic>(
+                            child: Text(option.key),
+                            value: option.value,
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _category = value;
+                    });
+                  }),
               SizedBox(height: 20.0),
               Row(
                 children: <Widget>[
@@ -252,7 +277,7 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
                 ],
               ),
               Text(
-                'Jelaskan secara singkat tentang izin yang diajukan!',
+                'Jelaskan secara singkat tentang cuti yang diajukan!',
                 style: TextStyle(color: Colors.grey),
               ),
               TextFormField(
@@ -270,7 +295,7 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
               SizedBox(height: 20.0),
               Row(
                 children: <Widget>[
-                  Text('Tanggal Izin'),
+                  Text('Tanggal Mulai'),
                   SizedBox(width: 5.0),
                   Text(
                     '*',
@@ -279,7 +304,7 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
                 ],
               ),
               Text(
-                'Pilih kapan izin mulai berlaku!',
+                'Pilih kapan anda mulai cuti!',
                 style: TextStyle(color: Colors.grey),
               ),
               Row(
@@ -289,7 +314,9 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
                       '${DateFormat('EEEE, d MMMM y').format(
                         _startDate,
                       )}',
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   IconButton(
@@ -297,15 +324,13 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
                         Icons.calendar_today_rounded,
                         color: Colors.blueAccent,
                       ),
-                      onPressed: () {
-                        _selectStartDate();
-                      })
+                      onPressed: _selectStartDate)
                 ],
               ),
               SizedBox(height: 20.0),
               Row(
                 children: <Widget>[
-                  Text('Tanggal Kadaluarsa'),
+                  Text('Tanggal Selesai'),
                   SizedBox(width: 5.0),
                   Text(
                     '*',
@@ -314,7 +339,7 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
                 ],
               ),
               Text(
-                'Pilih sampai kapan izin yang diajukan berlaku!',
+                'Pilih sampai kapan anda cuti!',
                 style: TextStyle(color: Colors.grey),
               ),
               Row(
@@ -332,9 +357,7 @@ class _CreatePermissionScreenState extends State<CreatePermissionScreen> {
                         Icons.calendar_today_rounded,
                         color: Colors.blueAccent,
                       ),
-                      onPressed: () {
-                        _selectDueDate();
-                      })
+                      onPressed: _selectDueDate)
                 ],
               ),
               SizedBox(height: 20.0),

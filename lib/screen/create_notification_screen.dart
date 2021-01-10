@@ -43,6 +43,13 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
   }
 
   @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
   }

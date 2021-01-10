@@ -17,7 +17,9 @@ class User {
       this.nextPresence,
       this.presences,
       this.holiday,
-      this.isWeekend});
+      this.isWeekend,
+      this.rank,
+      this.group});
 
   final int id;
   final String nip;
@@ -33,6 +35,8 @@ class User {
   final List<Presence> presences;
   final Holiday holiday;
   final bool isWeekend;
+  final String rank;
+  final String group;
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -59,6 +63,8 @@ class User {
             ? (json[USER_PRESENCES_FIELD] as List<dynamic>)
                 .map((json) => Presence.fromJson(json))
                 .toList()
-            : []);
+            : [],
+        rank: json[USER_RANK_FIELD] as String,
+        group: json[USER_GROUP_FIELD] as String);
   }
 }
