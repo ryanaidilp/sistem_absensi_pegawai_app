@@ -3,7 +3,8 @@ import 'package:spo_balaesang/utils/app_const.dart';
 
 class Presence {
   const Presence(
-      {this.date,
+      {this.id,
+      this.date,
       this.codeType,
       this.status,
       this.attendTime,
@@ -12,6 +13,7 @@ class Presence {
       this.startTime,
       this.endTime});
 
+  final int id;
   final DateTime date;
   final String codeType;
   final String status;
@@ -23,6 +25,7 @@ class Presence {
 
   factory Presence.fromJson(Map<String, dynamic> json) {
     return Presence(
+      id: json[USER_ID_FIELD] as int,
       date: DateTime.parse(json[PRESENCE_DATE_FIELD].toString()),
       codeType: json[PRESENCE_CODE_TYPE_FIELD] as String,
       status: json[PRESENCE_STATUS_FIELD] as String,
