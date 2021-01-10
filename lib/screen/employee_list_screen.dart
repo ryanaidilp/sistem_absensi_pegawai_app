@@ -74,9 +74,12 @@ class EmployeeListScreen extends StatelessWidget {
               status =
                   '${presence.status} $duration (${formatPercentage(checkPresencePercentage(presence.status))})';
             }
-            ListTile(
+            return ListTile(
               dense: true,
-              title: Text(presence.codeType),
+              title: Text(
+                presence.codeType,
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               subtitle: Text(
                 status,
                 style: TextStyle(color: checkStatusColor(presence.status)),
