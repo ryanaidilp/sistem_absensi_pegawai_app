@@ -5,12 +5,18 @@ import 'package:spo_balaesang/models/report/yearly.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 
 class AbsentReport {
-  const AbsentReport({this.daily, this.monthly, this.yearly, this.holidays});
+  const AbsentReport(
+      {this.daily,
+      this.monthly,
+      this.yearly,
+      this.holidays,
+      this.totalWorkDay});
 
   final List<Daily> daily;
   final Monthly monthly;
   final Yearly yearly;
   final List<Holiday> holidays;
+  final int totalWorkDay;
 
   factory AbsentReport.fromJson(Map<String, dynamic> json) => AbsentReport(
       daily: (json[ABSENT_REPORT_DAILY_FIELD] as List<dynamic>)
@@ -20,5 +26,6 @@ class AbsentReport {
       yearly: Yearly.fromJson(json[ABSENT_REPORT_YEARLY_FIELD]),
       holidays: (json[ABSENT_REPORT_HOLIDAYS_FIELD] as List<dynamic>)
           .map((item) => Holiday.fromJson(item))
-          .toList());
+          .toList(),
+      totalWorkDay: json[REPORT_TOTAL_WORK_DAY_FIELD] as int);
 }
