@@ -194,7 +194,7 @@ class _SplashScreenState extends State<SplashScreen> {
                                 color: Colors.white,
                                 fontWeight: FontWeight.w700)),
                         const SizedBox(width: 2.0),
-                        Text('v4.2.1', style: TextStyle(color: Colors.white)),
+                        Text('v4.2.2', style: TextStyle(color: Colors.white)),
                         const Spacer()
                       ],
                     ),
