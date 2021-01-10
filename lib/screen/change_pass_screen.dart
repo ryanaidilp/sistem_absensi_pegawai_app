@@ -39,7 +39,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         child: Stack(
           children: <Widget>[
             Container(
-              height: MediaQuery.of(context).size.height,
+              height: Get.height,
               child: Form(
                   key: _formKey,
                   child: ListView(
