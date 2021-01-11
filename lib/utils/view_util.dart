@@ -184,8 +184,9 @@ String calculateLateInMinutes(DateTime startTime, String attendTime) {
       startTime.month.toString().padLeft(2, '0') +
       '-' +
       startTime.day.toString().padLeft(2, '0');
-  var duration =
-      DateTime.parse('$attendDate $attendTime').difference(startTime).inMinutes;
+  var duration = DateTime.parse('$attendDate $attendTime')
+      .difference(startTime.add(Duration(minutes: 30)))
+      .inMinutes;
 
   return '$duration menit';
 }

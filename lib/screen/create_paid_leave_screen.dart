@@ -363,7 +363,7 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
               SizedBox(height: 20.0),
               Row(
                 children: <Widget>[
-                  Text('Foto Surat Izin'),
+                  Text('Foto Surat Pengajuan'),
                   SizedBox(width: 5.0),
                   Text(
                     '*',
@@ -372,7 +372,7 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
                 ],
               ),
               Text(
-                'Lampirkan foto surat izin atau surat lainnya seperti surat keterangan sakit dsb.',
+                'Lampirkan foto surat pengajuan cuti seperti surat keterangan sakit dsb.',
                 style: TextStyle(color: Colors.grey),
               ),
               Text(
