@@ -194,9 +194,8 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
       children: employee.presences.map((presence) {
         String status = presence.status;
         if (presence.status == 'Terlambat') {
-          var duration = calculateLateInMinutes(
-              presence.startTime.add(Duration(minutes: 30)),
-              presence.attendTime);
+          var duration =
+              calculateLateInMinutes(presence.startTime, presence.attendTime);
           status += ' $duration';
         }
         return Container(
