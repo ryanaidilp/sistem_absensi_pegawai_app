@@ -345,7 +345,7 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
                 ],
               ),
               Text(
-                'Lampirkan foto surat tugas.',
+                'Lampirkan foto surat tugas atau Surat Perintah Perjalanan Dinas (SPPD).',
                 style: TextStyle(color: Colors.grey),
               ),
               Text(
