@@ -86,6 +86,9 @@ const String REPORT_LIMIT_FIELD = 'limit';
 const String REPORT_LATE_COUNT_FIELD = 'late_count';
 const String REPORT_LEAVE_EARLY_COUNT_FIELD = 'leave_early_count';
 const String REPORT_NOT_MORNING_PARADE_COUNT_FIELD = 'not_morning_parade_count';
+const String REPORT_EARLY_LUNCH_BREAK_COUNT_FIELD = 'early_lunch_break_count';
+const String REPORT_NOT_COME_AFTER_LUNCH_BREAK_COUNT_FIELD =
+    'not_come_after_lunch_break_count';
 const String REPORT_TOTAL_WORK_DAY_FIELD = 'total_work_day';
 const String REPORT_ANNUAL_LEAVE_FIELD = 'annual_leave';
 const String REPORT_IMPORTANT_REASON_LEAVE_FIELD = 'important_reason_leave';
