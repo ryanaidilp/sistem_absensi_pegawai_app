@@ -203,5 +203,5 @@ String formatCurrency(double salary) {
 
 String trimPhoneNumber(String phoneNumber) {
   phoneNumber = phoneNumber.replaceAll(' ', '');
-  return '62' + phoneNumber.substring(1, phoneNumber.length - 1);
+  return '62' + phoneNumber.substring(1, phoneNumber.length);
 }

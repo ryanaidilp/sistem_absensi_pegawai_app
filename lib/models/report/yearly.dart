@@ -8,6 +8,8 @@ class Yearly {
     this.lateCount,
     this.absentPermission,
     this.leaveEarlyCount,
+    this.earlyLunchBreakCount,
+    this.notComeAfterLunchBreakCount,
     this.notMorningParadeCount,
     this.annualLeave,
     this.importantReasonLeave,
@@ -20,6 +22,8 @@ class Yearly {
   final int lateCount;
   final int leaveEarlyCount;
   final int notMorningParadeCount;
+  final int earlyLunchBreakCount;
+  final int notComeAfterLunchBreakCount;
   final Map<String, dynamic> absentPermission;
   final Map<String, dynamic> outstation;
   final Map<String, dynamic> absent;
@@ -41,6 +45,9 @@ class Yearly {
         leaveEarlyCount: json[REPORT_LEAVE_EARLY_COUNT_FIELD] as int,
         notMorningParadeCount:
             json[REPORT_NOT_MORNING_PARADE_COUNT_FIELD] as int,
+        earlyLunchBreakCount: json[REPORT_EARLY_LUNCH_BREAK_COUNT_FIELD] as int,
+        notComeAfterLunchBreakCount:
+            json[REPORT_NOT_COME_AFTER_LUNCH_BREAK_COUNT_FIELD] as int,
         annualLeave: json[REPORT_ANNUAL_LEAVE_FIELD] as Map<String, dynamic>,
         importantReasonLeave:
             json[REPORT_IMPORTANT_REASON_LEAVE_FIELD] as Map<String, dynamic>,
