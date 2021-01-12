@@ -144,94 +144,92 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        height: Get.height,
-        width: Get.width,
-        decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: <Color>[
-          Color(0xFF6B8EEF),
-          Color(0xFF0C2979),
-        ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-        child: Stack(
+    return Container(
+      height: Get.height,
+      width: Get.width,
+      decoration: const BoxDecoration(
+          gradient: LinearGradient(colors: <Color>[
+        Color(0xFF6B8EEF),
+        Color(0xFF0C2979),
+      ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+            Align(
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Image.asset(
+                    'assets/launcher/icon.png',
+                    width: Get.width * 0.3,
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                    'SiAP Balaesang',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w700),
+                  )
+                ],
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  const SpinKitFadingCircle(
+                    color: Colors.white,
+                    size: 35.0,
+                  ),
+                  const SizedBox(height: 10.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      Image.asset(
-                        'assets/launcher/icon.png',
-                        width: Get.width * 0.3,
-                      ),
-                      const SizedBox(height: 4.0),
-                      Text(
-                        'SiAP Balaesang',
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.w700),
-                      )
+                      const Spacer(),
+                      Text('SiAP Balaesang',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700)),
+                      const SizedBox(width: 2.0),
+                      Text('v4.2.6', style: TextStyle(color: Colors.white)),
+                      const Spacer()
                     ],
                   ),
-                  flex: 5,
-                ),
-                Expanded(
-                    child: Column(
-                  children: <Widget>[
-                    const SpinKitFadingCircle(
+                  const SizedBox(height: 10.0),
+                  Container(
+                    width: Get.width * 0.6,
+                    decoration: BoxDecoration(
                       color: Colors.white,
-                      size: 35.0,
+                      borderRadius: BorderRadius.circular(6),
                     ),
-                    const SizedBox(height: 10.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        const Spacer(),
-                        Text('SiAP Balaesang',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700)),
-                        const SizedBox(width: 2.0),
-                        Text('v4.2.5', style: TextStyle(color: Colors.white)),
-                        const Spacer()
+                        Spacer(),
+                        Image.asset(
+                          'assets/logo/banuacoders.png',
+                          width: Get.width * 0.25,
+                          fit: BoxFit.fitHeight,
+                        ),
+                        Spacer(),
+                        Text('|'),
+                        Spacer(),
+                        Image.asset(
+                          'assets/logo/balaesang.png',
+                          width: Get.width * 0.25,
+                          fit: BoxFit.scaleDown,
+                        ),
+                        Spacer(),
                       ],
                     ),
-                    const SizedBox(height: 10.0),
-                    Flexible(
-                      child: Container(
-                        width: Get.width * 0.5,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Spacer(),
-                            Image.asset(
-                              'assets/logo/banuacoders.png',
-                              width: Get.width * 0.2,
-                              fit: BoxFit.cover,
-                            ),
-                            Spacer(),
-                            Text('|'),
-                            Spacer(),
-                            Image.asset(
-                              'assets/logo/balaesang.png',
-                              width: Get.width * 0.2,
-                              fit: BoxFit.cover,
-                            ),
-                            Spacer(),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ))
-              ],
-            )
+                  ),
+                  const SizedBox(height: 30.0),
+                ],
+              ),
+            ),
           ],
         ),
       ),
