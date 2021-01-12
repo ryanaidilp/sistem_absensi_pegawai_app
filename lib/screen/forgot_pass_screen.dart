@@ -70,6 +70,8 @@ class ForgotPassScreen extends StatelessWidget {
                         EdgeInsets.fromLTRB(5.0, Get.height * 0.35, 5.0, 10),
                     padding: EdgeInsets.fromLTRB(10, 0, 10, 25),
                     child: Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                       elevation: 6.0,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
