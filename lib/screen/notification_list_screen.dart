@@ -158,6 +158,8 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
           return Container(
             margin: EdgeInsets.only(bottom: 8.0),
             child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
               elevation: 2.0,
               child: InkWell(
                 onTap: () {
@@ -175,8 +177,8 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                               child: Text(
                                 '${notification.data['heading']}',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16.0),
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                             notification.isRead
