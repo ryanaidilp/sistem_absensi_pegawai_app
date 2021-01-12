@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,12 +15,12 @@ import 'package:spo_balaesang/models/report/absent_report.dart';
 import 'package:spo_balaesang/models/report/daily.dart';
 import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
-import 'package:spo_balaesang/screen/image_detail_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
+import 'package:spo_balaesang/utils/extensions.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
-import 'package:spo_balaesang/widgets/image_error_widget.dart';
+import 'package:spo_balaesang/widgets/employee_presence_card_widget.dart';
 import 'package:spo_balaesang/widgets/statistics_card_widget.dart';
-import 'package:spo_balaesang/widgets/user_info_card_widgets.dart';
+import 'package:spo_balaesang/widgets/user_info_card_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class ReportScreen extends StatefulWidget {
@@ -121,7 +119,15 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Widget _buildUserInfoSection() {
-    return UserInfoCard(user: _user);
+    return UserInfoCardWidget(
+      name: _user.name,
+      status: _user.status,
+      group: _user.group,
+      rank: _user.rank,
+      department: _user.department,
+      nip: _user.nip,
+      position: _user.position,
+    );
   }
 
   Widget _buildStatisticSection(AbsentReport report, DateTime year) {
@@ -347,55 +353,10 @@ class _ReportScreenState extends State<ReportScreen> {
     return sum;
   }
 
-  Widget _showImage(DailyData presence) {
-    if (presence.photo.isEmpty) {
-      return Image.asset(
-        'assets/images/upload_placeholder.png',
-      );
-    }
-
-    return InkWell(
-      onTap: () {
-        Get.to(ImageDetailScreen(
-          tag: presence.photo,
-          imageUrl: presence.photo,
-        ));
-      },
-      child: Hero(
-        tag: presence.photo,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10.0),
-          child: CachedNetworkImage(
-            placeholder: (_, __) => Container(
-              child: Stack(
-                children: <Widget>[
-                  Image.asset('assets/images/upload_placeholder.png'),
-                  Center(
-                    child: SizedBox(
-                      child: SpinKitFadingGrid(
-                        size: 25,
-                        color: Colors.blueAccent,
-                      ),
-                      width: 25.0,
-                      height: 25.0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            imageUrl: presence.photo,
-            fit: BoxFit.cover,
-            errorWidget: (_, __, ___) => ImageErrorWidget(),
-            width: Get.width,
-            height: 250.0,
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildTableCalendar() {
     return Card(
+      elevation: 2.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       child: TableCalendar(
         startingDayOfWeek: StartingDayOfWeek.monday,
         calendarController: _calendarController,
@@ -532,115 +493,22 @@ class _ReportScreenState extends State<ReportScreen> {
 
     return Column(
       children: _selectedEvents.map((event) {
-        String status =
-            '${event.attendStatus} (${formatPercentage(checkPresencePercentage(event.attendStatus))})';
+        Color color = checkStatusColor(event.attendStatus);
+        String status = '${event.attendStatus}';
         if (event.attendStatus == 'Terlambat') {
           var duration =
               calculateLateInMinutes(event.startTime, event.attendTime);
-          status =
-              '${event.attendStatus} $duration (${formatPercentage(checkPresencePercentage(event.attendStatus))})';
+          status = '${event.attendStatus} $duration})';
         }
-        Color color = checkStatusColor(event.attendStatus);
-        final TextStyle labelTextStyle = TextStyle(color: Colors.grey[600]);
-        return Container(
-          margin: const EdgeInsets.only(bottom: 24.0),
-          width: Get.width,
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    event.attendType,
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  Divider(thickness: 1.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Jam Absen',
-                        style: labelTextStyle,
-                      ),
-                      Text(
-                        event.attendTime.isEmpty ? '-' : event.attendTime,
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Poin Kehadiran',
-                        style: labelTextStyle,
-                      ),
-                      Text(
-                        '${formatPercentage(checkPresencePercentage(event.attendStatus))}',
-                        style: TextStyle(
-                          color: color,
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Status Kehadiran',
-                        style: labelTextStyle,
-                      ),
-                      Text(
-                        status,
-                        style: TextStyle(
-                          color: color,
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  Divider(thickness: 1),
-                  Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.location_on,
-                        color: Colors.grey[600],
-                        size: 20.0,
-                      ),
-                      SizedBox(width: 4.0),
-                      Text('Lokasi', style: labelTextStyle)
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  AutoSizeText(
-                    event.address.isEmpty ? '-' : event.address,
-                    maxLines: 3,
-                    minFontSize: 10.0,
-                    maxFontSize: 12.0,
-                    textAlign: TextAlign.justify,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Divider(thickness: 1),
-                  Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.photo,
-                        color: Colors.grey[600],
-                        size: 20.0,
-                      ),
-                      SizedBox(width: 4.0),
-                      Text('Foto Wajah', style: labelTextStyle)
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  _showImage(event),
-                  SizedBox(height: 8.0),
-                ],
-              ),
-            ),
-          ),
+        return EmployeePresenceCardWidget(
+          presenceType: event.attendType,
+          status: status,
+          point: formatPercentage(checkPresencePercentage(event.attendStatus)),
+          color: color,
+          attendTime: event.attendTime,
+          address: event.address,
+          heroTag: event.photo,
+          photo: event.photo,
         );
       }).toList(),
     );
@@ -724,13 +592,5 @@ class _ReportScreenState extends State<ReportScreen> {
         ),
       ),
     );
-  }
-}
-
-extension DateOnlyCompare on DateTime {
-  bool isSameDate(DateTime other) {
-    return this.year == other.year &&
-        this.month == other.month &&
-        this.day == other.day;
   }
 }

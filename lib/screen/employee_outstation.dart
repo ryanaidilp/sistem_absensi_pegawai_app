@@ -1,21 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/outstation.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
-import 'package:spo_balaesang/screen/image_detail_screen.dart';
+import 'package:spo_balaesang/utils/extensions.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
-import 'package:spo_balaesang/widgets/image_error_widget.dart';
+import 'package:spo_balaesang/widgets/employee_proposal_widget.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class EmployeeOutstationScreen extends StatefulWidget {
   @override
@@ -27,6 +27,13 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
   List<Outstation> _outstations = List<Outstation>();
   bool _isLoading = false;
   final TextEditingController _reasonController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final CalendarController _calendarController = CalendarController();
+  List<Outstation> _filteredOutstation = List<Outstation>();
+  Set<String> choices = {'Semua', 'Disetujui', 'Belum Disetujui', 'Tanggal'};
+  String _selectedChoice = 'Semua';
+  DateTime _selectedDate = DateTime.now();
+  bool _isDateChange = false;
 
   @override
   void setState(fn) {
@@ -48,6 +55,7 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
           outstations.map((json) => Outstation.fromJson(json)).toList();
       setState(() {
         _outstations = _data;
+        _filteredOutstation = _outstations;
       });
     } catch (e) {
       print(e.toString());
@@ -121,6 +129,8 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
   @override
   void dispose() {
     _reasonController.dispose();
+    _nameController.dispose();
+    _calendarController.dispose();
     super.dispose();
   }
 
@@ -132,190 +142,162 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
 
   Widget _buildBody() {
     if (_isLoading)
-      return Center(
-          child: SpinKitFadingFour(
-        size: 45,
-        color: Colors.blueAccent,
-      ));
-    if (_outstations.isEmpty) {
-      return Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                width: Get.width * 0.5,
-                height: Get.height * 0.3,
-                child: FlareActor(
-                  'assets/flare/not_found.flr',
-                  fit: BoxFit.contain,
-                  animation: 'empty',
-                  alignment: Alignment.center,
+      return Container(
+        height: Get.height * 0.8,
+        child: Center(
+            child: SpinKitFadingFour(
+          size: 45,
+          color: Colors.blueAccent,
+        )),
+      );
+    if (_filteredOutstation.isEmpty) {
+      return Container(
+        height: Get.height * 0.6,
+        child: Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  width: Get.width * 0.5,
+                  height: Get.height * 0.3,
+                  child: FlareActor(
+                    'assets/flare/not_found.flr',
+                    fit: BoxFit.contain,
+                    animation: 'empty',
+                    alignment: Alignment.center,
+                  ),
                 ),
-              ),
-              Text('Belum ada Dinas Luar yang diajukan!')
-            ]),
+                Text('Belum ada Dinas Luar yang diajukan!')
+              ]),
+        ),
       );
     }
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ListView.builder(
-        itemBuilder: (_, index) {
-          Outstation outstation = _outstations[index];
-          DateTime dueDate = _outstations[index].dueDate;
-          DateTime startDate = _outstations[index].startDate;
-          return Container(
-            margin: EdgeInsets.only(bottom: 16.0),
-            child: Card(
-              elevation: 4.0,
-              child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        '${outstation.title}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 16.0),
-                      ),
-                      SizedBox(height: 5.0),
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            'Status              : ',
-                            style: TextStyle(fontSize: 12.0),
-                          ),
-                          Text(
-                            '${outstation.isApproved ? 'Disetujui' : 'Belum Disetujui'}',
-                            style: TextStyle(
-                                fontSize: 12.0,
-                                color: outstation.isApproved
-                                    ? Colors.green
-                                    : Colors.red),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 5.0),
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            'Diajukan oleh : ',
-                            style: TextStyle(fontSize: 12.0),
-                          ),
-                          Text(
-                            '${outstation.user.name}',
-                            style: TextStyle(
-                              fontSize: 12.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 5.0),
-                      Divider(height: 2.0),
-                      SizedBox(height: 5.0),
-                      Text(
-                        'Masa Berlaku : ',
-                        style: TextStyle(fontSize: 12.0, color: Colors.grey),
-                      ),
-                      SizedBox(height: 5.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Icon(
-                            Icons.calendar_today_rounded,
-                            size: 16.0,
-                          ),
-                          SizedBox(width: 5.0),
-                          Text(
-                            '${startDate.day}/${startDate.month}/${startDate.year} - ${dueDate.day}/${dueDate.month}/${dueDate.year}',
-                            style: TextStyle(fontSize: 12.0),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 10.0),
-                      Text(
-                        'Deskripsi : ',
-                        style: TextStyle(fontSize: 12.0, color: Colors.grey),
-                      ),
-                      AutoSizeText(
-                        '${outstation.description}',
-                        maxFontSize: 12.0,
-                        minFontSize: 10.0,
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(height: 10.0),
-                      Text(
-                        'Surat Tugas : ',
-                        style: TextStyle(fontSize: 12.0, color: Colors.grey),
-                      ),
-                      Text(
-                        '*tekan untuk memperbesar',
-                        style: TextStyle(
-                            fontSize: 12.0,
-                            color: Colors.black87,
-                            fontStyle: FontStyle.italic),
-                      ),
-                      SizedBox(height: 5.0),
-                      InkWell(
-                        onTap: () {
-                          Get.to(ImageDetailScreen(
-                            imageUrl: outstation.photo,
-                            tag: outstation.id.toString(),
-                          ));
-                        },
-                        child: Hero(
-                          tag: outstation.id.toString(),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10.0),
-                            child: CachedNetworkImage(
-                              placeholder: (_, __) => Container(
-                                child: Stack(
-                                  children: <Widget>[
-                                    Image.asset(
-                                        'assets/images/upload_placeholder.png'),
-                                    Center(
-                                      child: SizedBox(
-                                        child: SpinKitFadingGrid(
-                                          size: 25,
-                                          color: Colors.blueAccent,
-                                        ),
-                                        width: 25.0,
-                                        height: 25.0,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              imageUrl: outstation.photo,
-                              fit: BoxFit.cover,
-                              errorWidget: (_, __, ___) => ImageErrorWidget(),
-                              width: Get.width,
-                              height: 250.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 5.0),
-                      SizedBox(
-                        child: RaisedButton(
-                          textColor: Colors.white,
-                          color: Colors.blueAccent,
-                          onPressed: () {
-                            _approveOutstation(outstation);
-                          },
-                          child: Text(outstation.isApproved
-                              ? 'Batal Setujui'
-                              : 'Setujui'),
-                        ),
-                      )
-                    ],
-                  )),
+    return Column(
+      children: _filteredOutstation.map((outstation) {
+        DateTime dueDate = outstation.dueDate;
+        DateTime startDate = outstation.startDate;
+        return EmployeeProposalWidget(
+          isApprovalCard: true,
+          employeeName: outstation.user.name,
+          button: SizedBox(
+            width: Get.width,
+            child: RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
+              textColor: Colors.white,
+              color: Colors.blueAccent,
+              onPressed: () {
+                _approveOutstation(outstation);
+              },
+              child: Text(outstation.isApproved ? 'Batal Setujui' : 'Setujui'),
             ),
-          );
-        },
-        itemCount: _outstations.length,
-      ),
+          ),
+          photo: outstation.photo,
+          heroTag: outstation.id.toString(),
+          isApproved: outstation.isApproved,
+          startDate: startDate,
+          dueDate: dueDate,
+          description: outstation.description,
+          title: outstation.title,
+        );
+      }).toList(),
     );
+  }
+
+  List<Outstation> _setFilter(String value) {
+    if (value == 'Disetujui') {
+      return _outstations
+          .where((element) => element.isApproved == true)
+          .toList();
+    }
+
+    if (value == 'Belum Disetujui') {
+      return _outstations
+          .where((element) => element.isApproved == false)
+          .toList();
+    }
+
+    if (value == 'Tanggal') {
+      if (!_isDateChange) {
+        _selectDate();
+      }
+      return _outstations.where((element) {
+        setState(() {
+          _isDateChange = false;
+        });
+        return element.startDate.isSameDate(_selectedDate) ||
+            element.dueDate.isSameDate(_selectedDate);
+      }).toList();
+    }
+
+    return _outstations;
+  }
+
+  _selectDate() {
+    Get.defaultDialog(
+        title: 'Pilih Tanggal',
+        content: Flexible(
+          child: Container(
+            width: Get.width * 0.9,
+            child: TableCalendar(
+              availableCalendarFormats: <CalendarFormat, String>{
+                CalendarFormat.month: '1 minggu',
+                CalendarFormat.twoWeeks: '1 bulan',
+                CalendarFormat.week: '2 minggu'
+              },
+              availableGestures: AvailableGestures.horizontalSwipe,
+              headerStyle:
+                  HeaderStyle(formatButtonTextStyle: TextStyle(fontSize: 12.0)),
+              calendarController: _calendarController,
+              startingDayOfWeek: StartingDayOfWeek.monday,
+              startDay: DateTime(2021),
+              endDay: DateTime(DateTime.now().year + 5),
+              initialSelectedDay: _selectedDate,
+              locale: 'in_ID',
+              initialCalendarFormat: CalendarFormat.month,
+              onDaySelected: (day, events, holidays) {
+                Get.back();
+                setState(() {
+                  _selectedDate = day;
+                  if (!_isDateChange) {
+                    _isDateChange = true;
+                  }
+                  _filteredOutstation = _setFilter(_selectedChoice);
+                  if (_nameController.value.text.isNotEmpty) {
+                    _searchByName(_nameController.value.text);
+                  }
+                });
+              },
+            ),
+          ),
+        ));
+  }
+
+  void _searchByName(String value) {
+    setState(() {
+      if (value.length > 0) {
+        _filteredOutstation = _filteredOutstation
+            .where((element) =>
+                element.user.name.toLowerCase().contains(value.toLowerCase()))
+            .toList();
+      } else {
+        _filteredOutstation = _setFilter(_selectedChoice);
+      }
+    });
+  }
+
+  Widget _buildLabelSection() {
+    if (_selectedChoice == 'Tanggal') {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text('Hasil      : ${_filteredOutstation.length} dinas luar'),
+          Text(
+              'Tanggal : ${DateFormat.yMMMMEEEEd('id_ID').format(_selectedDate)}')
+        ],
+      );
+    }
+    return Text('Hasil : ${_filteredOutstation.length} dinas luar');
   }
 
   @override
@@ -325,7 +307,70 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
         backgroundColor: Colors.blueAccent,
         title: Text('Daftar Dinas Luar Pegawai'),
       ),
-      body: _buildBody(),
+      body: Container(
+        padding: const EdgeInsets.all(8),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.search),
+                    labelText: 'Cari dengan nama pegawai'),
+              ),
+              SizedBox(height: 10.0),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      'Filter : ',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600, fontSize: 16.0),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          border: Border.all(color: Colors.grey[600])),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton(
+                            isExpanded: true,
+                            value: _selectedChoice,
+                            items: choices
+                                .map(
+                                  (choice) => DropdownMenuItem(
+                                    child: Text(
+                                      choice,
+                                    ),
+                                    value: choice,
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedChoice = value;
+                                _filteredOutstation = _setFilter(value);
+                                if (_nameController.value.text.isNotEmpty) {
+                                  _searchByName(_nameController.value.text);
+                                }
+                              });
+                            }),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              Divider(),
+              _buildLabelSection(),
+              SizedBox(height: 8.0),
+              _buildBody(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -16,6 +16,7 @@ import 'package:spo_balaesang/screen/image_detail_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/file_util.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
+import 'package:spo_balaesang/widgets/image_placeholder_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CreatePaidLeaveScreen extends StatefulWidget {
@@ -51,8 +52,12 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
 
   Widget _showImage() {
     if (_base64Image == null) {
-      return Image.asset(
-        'assets/images/upload_placeholder.png',
+      return ImagePlaceholderWidget(
+        child: Icon(
+          Icons.camera_alt_rounded,
+          color: Colors.grey,
+        ),
+        label: 'Ambil Foto',
       );
     }
 
@@ -201,6 +206,7 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
         title: Text('Ajukan Cuti'),
