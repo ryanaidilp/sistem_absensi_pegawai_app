@@ -190,6 +190,31 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
           elevation: 2.0,
           child: InkWell(
             onTap: () {
+              Get.to(EmployeeAttendanceScreen());
+            },
+            child: ListTile(
+              dense: false,
+              leading: Icon(
+                Icons.playlist_add_check_rounded,
+                color: Colors.green,
+                size: 32.0,
+              ),
+              title: Text(
+                'Presensi Pegawai',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                'Lihat & konfirmasi kehadiran pegawai',
+                style: TextStyle(color: Colors.black87),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 10.0),
+        Card(
+          elevation: 2.0,
+          child: InkWell(
+            onTap: () {
               Get.to(EmployeePermissionScreen());
             },
             child: ListTile(
@@ -252,31 +277,6 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
               ),
               subtitle: Text(
                 'Setujui Cuti yang diajukan',
-                style: TextStyle(color: Colors.black87),
-              ),
-            ),
-          ),
-        ),
-        SizedBox(height: 10.0),
-        Card(
-          elevation: 2.0,
-          child: InkWell(
-            onTap: () {
-              Get.to(EmployeeAttendanceScreen());
-            },
-            child: ListTile(
-              dense: false,
-              leading: Icon(
-                Icons.playlist_add_check_rounded,
-                color: Colors.green,
-                size: 32.0,
-              ),
-              title: Text(
-                'Presensi Pegawai',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(
-                'Lihat & konfirmasi kehadiran pegawai',
                 style: TextStyle(color: Colors.black87),
               ),
             ),
