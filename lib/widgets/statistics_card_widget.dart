@@ -281,6 +281,7 @@ class StatisticCard extends StatelessWidget {
     return Container(
       width: Get.width,
       child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 2.0,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
