@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -15,9 +12,9 @@ import 'package:spo_balaesang/models/employee.dart';
 import 'package:spo_balaesang/models/presence.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
-import 'package:spo_balaesang/screen/image_detail_screen.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
-import 'package:spo_balaesang/widgets/image_error_widget.dart';
+import 'package:spo_balaesang/widgets/employee_presence_card_widget.dart';
+import 'package:spo_balaesang/widgets/user_info_card_widget.dart';
 
 class PresenceListScreen extends StatefulWidget {
   PresenceListScreen({this.employee, this.date});
@@ -101,76 +98,6 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
     }
   }
 
-  final TextStyle labelTextStyle = TextStyle(color: Colors.grey[600]);
-
-  Widget _showImage(Presence presence) {
-    if (presence.photo.isEmpty) {
-      return Image.asset(
-        'assets/images/upload_placeholder.png',
-      );
-    }
-    return InkWell(
-      onTap: () {
-        Get.to(ImageDetailScreen(
-          tag: presence.id.toString(),
-          imageUrl: presence.photo,
-        ));
-      },
-      child: Hero(
-        tag: presence.id.toString(),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10.0),
-          child: CachedNetworkImage(
-            placeholder: (_, __) => Container(
-              child: Stack(
-                children: <Widget>[
-                  Image.asset('assets/images/upload_placeholder.png'),
-                  Center(
-                    child: SizedBox(
-                      child: SpinKitFadingGrid(
-                        size: 25,
-                        color: Colors.blueAccent,
-                      ),
-                      width: 25.0,
-                      height: 25.0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            imageUrl: presence.photo,
-            fit: BoxFit.cover,
-            errorWidget: (_, __, ___) => ImageErrorWidget(),
-            width: Get.width,
-            height: 250.0,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCancelButton(Presence presence) {
-    if (presence.status != 'Tepat Waktu' && presence.status != 'Terlambat') {
-      return SizedBox();
-    }
-    return Column(
-      children: <Widget>[
-        Divider(),
-        SizedBox(
-          width: Get.width * 0.9,
-          child: RaisedButton(
-            color: Colors.blueAccent,
-            textColor: Colors.white,
-            child: Text('Batalkan'),
-            onPressed: () {
-              _cancelAttendance(presence);
-            },
-          ),
-        )
-      ],
-    );
-  }
-
   Widget _buildPresenceSection() {
     if (employee.presences.isEmpty) {
       return Center(
@@ -192,112 +119,34 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
 
     return Column(
       children: employee.presences.map((presence) {
+        Color color = checkStatusColor(presence.status);
         String status = presence.status;
         if (presence.status == 'Terlambat') {
           var duration =
               calculateLateInMinutes(presence.startTime, presence.attendTime);
           status += ' $duration';
         }
-        return Container(
-          margin: const EdgeInsets.only(bottom: 24.0),
-          width: Get.width,
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    presence.codeType,
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  Divider(thickness: 1.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Jam Absen',
-                        style: labelTextStyle,
-                      ),
-                      Text(
-                        presence.attendTime.isEmpty ? '-' : presence.attendTime,
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Poin Kehadiran',
-                        style: labelTextStyle,
-                      ),
-                      Text(
-                        '${formatPercentage(checkPresencePercentage(presence.status))}',
-                        style: TextStyle(
-                          color: checkStatusColor(presence.status),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Status Kehadiran',
-                        style: labelTextStyle,
-                      ),
-                      Text(
-                        status,
-                        style: TextStyle(
-                          color: checkStatusColor(presence.status),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  Divider(thickness: 1),
-                  Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.location_on,
-                        color: Colors.grey[600],
-                        size: 20.0,
-                      ),
-                      SizedBox(width: 4.0),
-                      Text('Lokasi', style: labelTextStyle)
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  AutoSizeText(
-                    presence.location.address.isEmpty
-                        ? '-'
-                        : presence.location.address,
-                    maxLines: 3,
-                    minFontSize: 10.0,
-                    maxFontSize: 12.0,
-                    textAlign: TextAlign.justify,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Divider(thickness: 1),
-                  Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.photo,
-                        color: Colors.grey[600],
-                        size: 20.0,
-                      ),
-                      SizedBox(width: 4.0),
-                      Text('Foto Wajah', style: labelTextStyle)
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  _showImage(presence),
-                  SizedBox(height: 8.0),
-                  _buildCancelButton(presence)
-                ],
-              ),
+        return EmployeePresenceCardWidget(
+          isApprovalCard: true,
+          photo: presence.photo,
+          heroTag: presence.id.toString(),
+          status: status,
+          color: color,
+          address: presence.location.address,
+          attendTime: presence.attendTime,
+          point: formatPercentage(checkPresencePercentage(presence.status)),
+          presenceType: presence.codeType,
+          buttonWidget: SizedBox(
+            width: Get.width * 0.9,
+            child: RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              color: Colors.blueAccent,
+              textColor: Colors.white,
+              child: Text('Batalkan'),
+              onPressed: () {
+                _cancelAttendance(presence);
+              },
             ),
           ),
         );
@@ -320,52 +169,14 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
             children: <Widget>[
               Container(
                 width: Get.width,
-                child: Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          'Info Pegawai',
-                          style: TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        Divider(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              'Nama    : ',
-                              style: labelTextStyle,
-                            ),
-                            Text(employee.name)
-                          ],
-                        ),
-                        SizedBox(height: 4.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              'Bagian : ',
-                              style: labelTextStyle,
-                            ),
-                            Text(employee.department)
-                          ],
-                        ),
-                        SizedBox(height: 4.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              'Jabatan : ',
-                              style: labelTextStyle,
-                            ),
-                            Text(employee.position)
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+                child: UserInfoCardWidget(
+                  name: employee.name,
+                  position: employee.position,
+                  nip: employee.nip,
+                  department: employee.department,
+                  rank: employee.rank,
+                  group: employee.group,
+                  status: employee.status,
                 ),
               ),
               SizedBox(height: 10.0),

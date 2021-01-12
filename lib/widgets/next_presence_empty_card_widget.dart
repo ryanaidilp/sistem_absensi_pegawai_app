@@ -2,8 +2,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class NextPresenceEmptyCard extends StatelessWidget {
-  const NextPresenceEmptyCard(
+class NextPresenceEmptyCardWidget extends StatelessWidget {
+  const NextPresenceEmptyCardWidget(
       {this.topLabel,
       this.trailingLabel,
       this.firstLabel,
@@ -34,6 +34,7 @@ class NextPresenceEmptyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Center(

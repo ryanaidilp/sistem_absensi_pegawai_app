@@ -8,7 +8,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -17,17 +16,15 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:spo_balaesang/models/employee.dart';
-import 'package:spo_balaesang/models/presence.dart';
 import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/employee_list_screen.dart';
-import 'package:spo_balaesang/screen/image_detail_screen.dart';
 import 'package:spo_balaesang/screen/notification_list_screen.dart';
 import 'package:spo_balaesang/screen/presence_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
-import 'package:spo_balaesang/widgets/image_error_widget.dart';
-import 'package:spo_balaesang/widgets/next_presence_empty_card.dart';
+import 'package:spo_balaesang/widgets/employee_presence_card_widget.dart';
+import 'package:spo_balaesang/widgets/next_presence_empty_card_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -40,7 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Employee> _users;
   bool isLoading = false;
   double _percentage = 0;
-  final TextStyle labelTextStyle = TextStyle(color: Colors.grey[600]);
 
   @override
   void setState(fn) {
@@ -337,115 +333,21 @@ class _HomeScreenState extends State<HomeScreen> {
     if (user != null && user.presences.isNotEmpty) {
       return user.presences.map((presence) {
         Color color = checkStatusColor(presence.status);
-        String status =
-            '${presence.status} (${formatPercentage(checkPresencePercentage(presence.status))})';
+        String status = '${presence.status}';
         if (presence.status == 'Terlambat') {
           var duration =
               calculateLateInMinutes(presence.startTime, presence.attendTime);
-          status =
-              '${presence.status} $duration (${formatPercentage(checkPresencePercentage(presence.status))})';
+          status = '${presence.status} $duration';
         }
-        return Container(
-          margin: const EdgeInsets.only(bottom: 24.0),
-          width: Get.width,
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    presence.codeType,
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  Divider(thickness: 1.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Jam Absen',
-                        style: labelTextStyle,
-                      ),
-                      Text(
-                        presence.attendTime.isEmpty ? '-' : presence.attendTime,
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Poin Kehadiran',
-                        style: labelTextStyle,
-                      ),
-                      Text(
-                        '${formatPercentage(checkPresencePercentage(presence.status))}',
-                        style: TextStyle(
-                          color: color,
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Status Kehadiran',
-                        style: labelTextStyle,
-                      ),
-                      Text(
-                        status,
-                        style: TextStyle(
-                          color: color,
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  Divider(thickness: 1),
-                  Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.location_on,
-                        color: Colors.grey[600],
-                        size: 20.0,
-                      ),
-                      SizedBox(width: 4.0),
-                      Text('Lokasi', style: labelTextStyle)
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  AutoSizeText(
-                    presence.location.address.isEmpty
-                        ? '-'
-                        : presence.location.address,
-                    maxLines: 3,
-                    minFontSize: 10.0,
-                    maxFontSize: 12.0,
-                    textAlign: TextAlign.justify,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Divider(thickness: 1),
-                  Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.photo,
-                        color: Colors.grey[600],
-                        size: 20.0,
-                      ),
-                      SizedBox(width: 4.0),
-                      Text('Foto Wajah', style: labelTextStyle)
-                    ],
-                  ),
-                  SizedBox(height: 4.0),
-                  _showImage(presence),
-                  SizedBox(height: 8.0),
-                ],
-              ),
-            ),
-          ),
+        return EmployeePresenceCardWidget(
+          photo: presence.photo,
+          heroTag: presence.id.toString(),
+          status: status,
+          color: color,
+          address: presence.location.address,
+          attendTime: presence.attendTime,
+          point: formatPercentage(checkPresencePercentage(presence.status)),
+          presenceType: presence.codeType,
         );
       }).toList();
     }
@@ -464,53 +366,6 @@ class _HomeScreenState extends State<HomeScreen> {
         Text('Tidak ada presensi hari ini!')
       ])
     ];
-  }
-
-  Widget _showImage(Presence presence) {
-    if (presence.photo.isEmpty) {
-      return Image.asset(
-        'assets/images/upload_placeholder.png',
-      );
-    }
-
-    return InkWell(
-      onTap: () {
-        Get.to(ImageDetailScreen(
-          tag: presence.id.toString(),
-          imageUrl: presence.photo,
-        ));
-      },
-      child: Hero(
-        tag: presence.id.toString(),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10.0),
-          child: CachedNetworkImage(
-            placeholder: (_, __) => Container(
-              child: Stack(
-                children: <Widget>[
-                  Image.asset('assets/images/upload_placeholder.png'),
-                  Center(
-                    child: SizedBox(
-                      child: SpinKitFadingGrid(
-                        size: 25,
-                        color: Colors.blueAccent,
-                      ),
-                      width: 25.0,
-                      height: 25.0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            imageUrl: presence.photo,
-            fit: BoxFit.cover,
-            errorWidget: (_, __, ___) => ImageErrorWidget(),
-            width: Get.width,
-            height: 250.0,
-          ),
-        ),
-      ),
-    );
   }
 
   int checkTime() {
@@ -665,6 +520,7 @@ class _HomeScreenState extends State<HomeScreen> {
         fontSize = 12;
       }
       return Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 4.0,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -769,7 +625,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     if (user?.holiday != null) {
-      return NextPresenceEmptyCard(
+      return NextPresenceEmptyCardWidget(
         color: checkStatusColor('Izin'),
         topLabel: 'Libur',
         firstLabel: 'JENIS LIBUR',
@@ -787,7 +643,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     if (user.isWeekend) {
-      return NextPresenceEmptyCard(
+      return NextPresenceEmptyCardWidget(
         color: checkStatusColor('Izin'),
         topLabel: 'Akhir Pekan',
         firstLabel: 'JENIS LIBUR',
@@ -804,8 +660,8 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    return NextPresenceEmptyCard(
-      color: checkStatusColor('Izin'),
+    return NextPresenceEmptyCardWidget(
+      color: _checkPresenceStatusColor(_percentage),
       topLabel: 'Selesai',
       firstLabel: 'SKEMA ABSENSI',
       firstContent: '-',
@@ -973,8 +829,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black26,
-                    offset: Offset(0, 5),
-                    blurRadius: 10.0,
+                    offset: Offset(0, 3),
+                    blurRadius: 15.0,
                   )
                 ],
               ),
@@ -987,6 +843,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(
                   width: Get.width,
                   child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(

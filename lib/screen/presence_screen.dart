@@ -19,6 +19,7 @@ import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/image_detail_screen.dart';
 import 'package:spo_balaesang/utils/file_util.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
+import 'package:spo_balaesang/widgets/image_placeholder_widget.dart';
 
 class PresenceScreen extends StatefulWidget {
   @override
@@ -128,8 +129,12 @@ class _PresenceScreenState extends State<PresenceScreen> {
 
   Widget _showImage() {
     if (_base64Image == null) {
-      return Image.asset(
-        'assets/images/upload_placeholder.png',
+      return ImagePlaceholderWidget(
+        child: Icon(
+          Icons.camera_alt_rounded,
+          color: Colors.grey,
+        ),
+        label: 'Ambil Foto',
       );
     }
 
@@ -206,6 +211,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
         title: Text('Presensi'),
@@ -256,7 +262,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
                 ],
               ),
               Text(
-                'Ambil foto selfie anda di depan layar komputer sebagai bukti bahwa anda melakukan presensi di kantor tanpa diwakili orang lain.',
+                'Ambil foto selfie anda sebagai bukti bahwa anda melakukan presensi di kantor tanpa diwakili orang lain. Pastikan wajah terlihat jelas.',
                 style: TextStyle(color: Colors.grey),
               ),
               SizedBox(height: 10.0),

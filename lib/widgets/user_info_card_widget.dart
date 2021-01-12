@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:spo_balaesang/models/user.dart';
 
-class UserInfoCard extends StatelessWidget {
-  const UserInfoCard({this.user});
-  final User user;
+class UserInfoCardWidget extends StatelessWidget {
+  const UserInfoCardWidget(
+      {this.status,
+      this.name,
+      this.position,
+      this.rank,
+      this.group,
+      this.nip,
+      this.department});
+
+  final String status;
+  final String name;
+  final String position;
+  final String rank;
+  final String group;
+  final String nip;
+  final String department;
 
   Widget _buildPnsInfoSection() {
-    if (user?.status == 'Honorer') {
+    if (status == 'Honorer') {
       return SizedBox();
     }
     return Column(
@@ -19,7 +32,7 @@ class UserInfoCard extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                '${user?.nip}',
+                '$nip',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                 ),
@@ -35,7 +48,7 @@ class UserInfoCard extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                '${user?.rank?.toUpperCase()}',
+                '${rank?.toUpperCase()}',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                 ),
@@ -51,7 +64,7 @@ class UserInfoCard extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                '${user?.group}',
+                '$group',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                 ),
@@ -67,6 +80,8 @@ class UserInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -74,9 +89,7 @@ class UserInfoCard extends StatelessWidget {
           children: <Widget>[
             Text(
               'Informasi Pegawai : ',
-              style: TextStyle(
-                fontSize: 16.0,
-              ),
+              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
             ),
             Divider(color: Colors.black38),
             Center(
@@ -89,7 +102,7 @@ class UserInfoCard extends StatelessWidget {
                       ),
                       Expanded(
                         child: Text(
-                          '${user?.name}',
+                          '$name',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                           ),
@@ -105,7 +118,7 @@ class UserInfoCard extends StatelessWidget {
                       ),
                       Expanded(
                         child: Text(
-                          '${user?.department}',
+                          '$department',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                           ),
@@ -121,7 +134,7 @@ class UserInfoCard extends StatelessWidget {
                       ),
                       Expanded(
                         child: Text(
-                          '${user?.position}',
+                          '$position',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                           ),
