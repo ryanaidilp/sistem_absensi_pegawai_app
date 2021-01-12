@@ -120,13 +120,13 @@ class _ReportScreenState extends State<ReportScreen> {
 
   Widget _buildUserInfoSection() {
     return UserInfoCardWidget(
-      name: _user.name,
-      status: _user.status,
-      group: _user.group,
-      rank: _user.rank,
-      department: _user.department,
-      nip: _user.nip,
-      position: _user.position,
+      name: _user?.name,
+      status: _user?.status,
+      group: _user?.group,
+      rank: _user?.rank,
+      department: _user?.department,
+      nip: _user?.nip,
+      position: _user?.position,
     );
   }
 
