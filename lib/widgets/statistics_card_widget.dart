@@ -517,6 +517,126 @@ class StatisticCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
+                    'Istrahat Sebelum Waktunya',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14.0,
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        children: <Widget>[
+                          Text(
+                            report.monthly.earlyLunchBreakCount.toString(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32.0,
+                            ),
+                          ),
+                          Text(
+                            ' kali/bulan',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        '|',
+                        style: TextStyle(fontSize: 32.0, color: Colors.black54),
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        children: <Widget>[
+                          Text(
+                            report.yearly.earlyLunchBreakCount.toString(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32.0,
+                            ),
+                          ),
+                          Text(
+                            ' kali/tahun',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              SizedBox(height: 6.0),
+              Divider(color: Colors.black26),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    'Tidak Masuk Siang',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14.0,
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        children: <Widget>[
+                          Text(
+                            report.monthly.notComeAfterLunchBreakCount
+                                .toString(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32.0,
+                            ),
+                          ),
+                          Text(
+                            ' kali/bulan',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        '|',
+                        style: TextStyle(fontSize: 32.0, color: Colors.black54),
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        children: <Widget>[
+                          Text(
+                            report.yearly.notComeAfterLunchBreakCount
+                                .toString(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32.0,
+                            ),
+                          ),
+                          Text(
+                            ' kali/tahun',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              SizedBox(height: 6.0),
+              Divider(color: Colors.black26),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
                     'Pulang Cepat',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
