@@ -1,5 +1,5 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:spo_balaesang/models/employee.dart';
@@ -19,23 +19,39 @@ class EmployeeListScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        AutoSizeText(
-          "NIP             : ${this.employees[index].nip}",
-          maxFontSize: 12.0,
-          minFontSize: 10.0,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              "Golongan",
+              style: labelTextStyle,
+            ),
+            Text('${this.employees[index].group}')
+          ],
         ),
         SizedBox(height: 2.0),
-        AutoSizeText(
-          "Pangkat     : ${this.employees[index].rank}",
-          maxFontSize: 12.0,
-          minFontSize: 10.0,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              "Pangkat",
+              style: labelTextStyle,
+            ),
+            Text('${this.employees[index].rank}')
+          ],
         ),
         SizedBox(height: 2.0),
-        AutoSizeText(
-          "Golongan   : ${this.employees[index].group}",
-          maxFontSize: 12.0,
-          minFontSize: 10.0,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              "NIP",
+              style: labelTextStyle,
+            ),
+            Text('${this.employees[index].nip}')
+          ],
         ),
+        SizedBox(height: 2.0),
       ],
     );
   }
@@ -101,11 +117,13 @@ class EmployeeListScreen extends StatelessWidget {
         title: Text('Pegawai'),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+        padding: EdgeInsets.only(bottom: 8, left: 8, right: 8),
         child: ListView.builder(
           itemBuilder: (_, index) => Container(
-            margin: EdgeInsets.symmetric(vertical: 4.0),
+            margin: EdgeInsets.only(bottom: 16),
             child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
               elevation: 3.0,
               child: Padding(
                 padding: EdgeInsets.all(8),
@@ -117,51 +135,96 @@ class EmployeeListScreen extends StatelessWidget {
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                     Divider(thickness: 1),
-                    Row(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              AutoSizeText(
-                                "Status        : ${this.employees[index].status}",
-                                maxFontSize: 12.0,
-                                minFontSize: 10.0,
-                              ),
-                              SizedBox(height: 2.0),
-                              AutoSizeText(
-                                "Jabatan     : ${this.employees[index].position}",
-                                maxFontSize: 12.0,
-                                minFontSize: 10.0,
-                              ),
-                              SizedBox(height: 2.0),
-                              AutoSizeText(
-                                "Bagian       : ${this.employees[index].department}",
-                                maxFontSize: 12.0,
-                                minFontSize: 10.0,
-                              ),
-                              SizedBox(height: 2.0),
-                              _buildPnsInfoSection(index)
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          width: Get.width * 0.15,
-                          child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            textColor: Colors.white,
-                            color: Colors.blueAccent,
-                            onPressed: () {
-                              launch('tel:${this.employees[index].phone}');
-                            },
-                            child: Icon(
-                              Icons.phone,
-                              color: Colors.white,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              "Jabatan",
+                              style: labelTextStyle,
                             ),
-                          ),
+                            Text('${this.employees[index].position}')
+                          ],
                         ),
+                        SizedBox(height: 2.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              "Bagian",
+                              style: labelTextStyle,
+                            ),
+                            Text('${this.employees[index].department}')
+                          ],
+                        ),
+                        SizedBox(height: 2.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              "Status",
+                              style: labelTextStyle,
+                            ),
+                            Text('${this.employees[index].status}')
+                          ],
+                        ),
+                        SizedBox(height: 2.0),
+                        _buildPnsInfoSection(index)
                       ],
+                    ),
+                    Divider(thickness: 1),
+                    Center(
+                      child: Wrap(
+                        spacing: 8.0,
+                        children: <Widget>[
+                          IconButton(
+                            onPressed: () {
+                              launch(
+                                  'tel:${trimPhoneNumber(this.employees[index].phone)}');
+                            },
+                            color: Colors.blueAccent,
+                            icon: Icon(Icons.phone),
+                            enableFeedback: true,
+                            tooltip: 'Hubungi via Telpon',
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              var whatsappUrl =
+                                  "whatsapp://send?phone=${trimPhoneNumber(this.employees[index].phone)}";
+                              await canLaunch(whatsappUrl)
+                                  ? launch(whatsappUrl)
+                                  : Get.defaultDialog(
+                                      title: 'Gagal',
+                                      content:
+                                          Text('WhatsApp tidak ditemukan!'),
+                                    );
+                            },
+                            color: Colors.green[600],
+                            icon: FaIcon(FontAwesomeIcons.whatsapp),
+                            enableFeedback: true,
+                            tooltip: 'Hubungi via WA',
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              var smsUrl =
+                                  "smsto:${trimPhoneNumber(this.employees[index].phone)}";
+                              await canLaunch(smsUrl)
+                                  ? launch(smsUrl)
+                                  : Get.defaultDialog(
+                                      title: 'Gagal',
+                                      content:
+                                          Text('Aplikasi SMS tidak ditemukan!'),
+                                    );
+                            },
+                            color: Colors.red[800],
+                            icon: FaIcon(FontAwesomeIcons.mailBulk),
+                            enableFeedback: true,
+                            tooltip: 'Hubungi via SMS',
+                          ),
+                        ],
+                      ),
                     ),
                     _buildPresenceSection(index)
                   ],
