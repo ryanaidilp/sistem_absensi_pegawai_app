@@ -92,6 +92,8 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
 
   Widget _buildTableCalendar() {
     return Card(
+      elevation: 2.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       child: TableCalendar(
         startingDayOfWeek: StartingDayOfWeek.monday,
         calendarController: _calendarController,
@@ -138,7 +140,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              'Golongan  : ',
+              'Golongan',
               style: TextStyle(color: Colors.grey[600]),
             ),
             Text('${employee.group}')
@@ -149,7 +151,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              'NIP            : ',
+              'NIP',
               style: TextStyle(color: Colors.grey[600]),
             ),
             Text(employee.nip)
@@ -257,6 +259,9 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
                   width: Get.width,
                   margin: EdgeInsets.only(bottom: 8.0),
                   child: Card(
+                    elevation: 2.0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                     child: Padding(
                       padding: EdgeInsets.all(8),
                       child: Column(
@@ -273,7 +278,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text(
-                                'Jabatan    : ',
+                                'Jabatan',
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
                               Text(employee.position)
@@ -284,7 +289,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text(
-                                'Bagian      : ',
+                                'Bagian ',
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
                               Text(employee.department)
@@ -295,7 +300,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text(
-                                'Status      : ',
+                                'Status',
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
                               Text(employee.status)
@@ -308,6 +313,8 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
                             child: SizedBox(
                               width: Get.width * 0.9,
                               child: RaisedButton(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6)),
                                 textColor: Colors.white,
                                 color: Colors.blueAccent,
                                 onPressed: () {

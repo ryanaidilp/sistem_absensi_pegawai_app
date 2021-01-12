@@ -14,6 +14,7 @@ import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/image_detail_screen.dart';
 import 'package:spo_balaesang/utils/file_util.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
+import 'package:spo_balaesang/widgets/image_placeholder_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CreateOutstationScreen extends StatefulWidget {
@@ -80,8 +81,12 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
 
   Widget _showImage() {
     if (_base64Image == null) {
-      return Image.asset(
-        'assets/images/upload_placeholder.png',
+      return ImagePlaceholderWidget(
+        child: Icon(
+          Icons.camera_alt_rounded,
+          color: Colors.grey,
+        ),
+        label: 'Ambil Foto',
       );
     }
 
@@ -202,6 +207,7 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
         title: Text('Ajukan Dinas Luar'),
