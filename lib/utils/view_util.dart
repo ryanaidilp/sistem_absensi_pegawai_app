@@ -97,7 +97,7 @@ Color percentageLabelColor(double percentage) {
 Color checkStatusColor(String status) {
   switch (status) {
     case 'Tidak Hadir':
-      return Colors.red;
+      return Colors.red[800];
     case 'Tepat Waktu':
       return Colors.green;
     case 'Terlambat':
@@ -111,7 +111,7 @@ Color checkStatusColor(String status) {
     case 'Cuti Alasan Penting':
       return Colors.pink;
     default:
-      return Colors.red;
+      return Colors.red[800];
   }
 }
 
@@ -191,10 +191,17 @@ String calculateLateInMinutes(DateTime startTime, String attendTime) {
   return '$duration menit';
 }
 
+final TextStyle labelTextStyle = TextStyle(color: Colors.grey[600]);
+
 String formatPercentage(double percentage) {
   return '${NumberFormat.decimalPattern('id_ID').format(percentage)}%';
 }
 
 String formatCurrency(double salary) {
   return NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ').format(salary);
+}
+
+String trimPhoneNumber(String phoneNumber) {
+  phoneNumber = phoneNumber.replaceAll(' ', '');
+  return '62' + phoneNumber.substring(1, phoneNumber.length - 1);
 }
