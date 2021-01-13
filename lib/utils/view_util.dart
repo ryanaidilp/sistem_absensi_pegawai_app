@@ -178,7 +178,7 @@ List<PageViewModel> onBoardingScreens = [
   )
 ];
 
-String calculateLateInMinutes(DateTime startTime, String attendTime) {
+String calculateLateTime(DateTime startTime, String attendTime) {
   var attendDate = startTime.year.toString() +
       '-' +
       startTime.month.toString().padLeft(2, '0') +
@@ -187,6 +187,20 @@ String calculateLateInMinutes(DateTime startTime, String attendTime) {
   var duration = DateTime.parse('$attendDate $attendTime')
       .difference(startTime.add(Duration(minutes: 30)))
       .inMinutes;
+
+  if (duration == 0) {
+    var duration = DateTime.parse('$attendDate $attendTime')
+        .difference(startTime.add(Duration(minutes: 30)))
+        .inSeconds;
+    return '$duration detik';
+  }
+
+  if(duration > 59) {
+    var duration = DateTime.parse('$attendDate $attendTime')
+        .difference(startTime.add(Duration(minutes: 30)))
+        .inHours;
+    return '$duration jam';
+  }
 
   return '$duration menit';
 }
