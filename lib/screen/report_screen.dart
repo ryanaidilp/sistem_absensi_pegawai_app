@@ -496,8 +496,7 @@ class _ReportScreenState extends State<ReportScreen> {
         Color color = checkStatusColor(event.attendStatus);
         String status = '${event.attendStatus}';
         if (event.attendStatus == 'Terlambat') {
-          var duration =
-              calculateLateInMinutes(event.startTime, event.attendTime);
+          var duration = calculateLateTime(event.startTime, event.attendTime);
           status = '${event.attendStatus} $duration})';
         }
         return EmployeePresenceCardWidget(
