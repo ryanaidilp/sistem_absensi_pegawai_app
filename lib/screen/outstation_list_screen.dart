@@ -85,7 +85,7 @@ class _OutstationListScreenState extends State<OutstationListScreen> {
           DateTime dueDate = _outstations[index].dueDate;
           DateTime startDate = _outstations[index].startDate;
           return EmployeeProposalWidget(
-            title: outstation.toString(),
+            title: outstation.title,
             description: outstation.description,
             dueDate: dueDate,
             startDate: startDate,
