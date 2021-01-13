@@ -123,7 +123,7 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
         String status = presence.status;
         if (presence.status == 'Terlambat') {
           var duration =
-              calculateLateInMinutes(presence.startTime, presence.attendTime);
+              calculateLateTime(presence.startTime, presence.attendTime);
           status += ' $duration';
         }
         return EmployeePresenceCardWidget(
