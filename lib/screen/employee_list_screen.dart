@@ -85,8 +85,8 @@ class EmployeeListScreen extends StatelessWidget {
             String status =
                 '${presence.status} (${formatPercentage(checkPresencePercentage(presence.status))})';
             if (presence.status == 'Terlambat') {
-              var duration = calculateLateInMinutes(
-                  presence.startTime, presence.attendTime);
+              var duration =
+                  calculateLateTime(presence.startTime, presence.attendTime);
               status =
                   '${presence.status} $duration (${formatPercentage(checkPresencePercentage(presence.status))})';
             }
