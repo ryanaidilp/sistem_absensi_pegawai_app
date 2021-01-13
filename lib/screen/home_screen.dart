@@ -336,7 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
         String status = '${presence.status}';
         if (presence.status == 'Terlambat') {
           var duration =
-              calculateLateInMinutes(presence.startTime, presence.attendTime);
+              calculateLateTime(presence.startTime, presence.attendTime);
           status = '${presence.status} $duration';
         }
         return EmployeePresenceCardWidget(
@@ -513,7 +513,7 @@ class _HomeScreenState extends State<HomeScreen> {
       String status = user.nextPresence.status;
       double fontSize = 14;
       if (status == 'Terlambat') {
-        var duration = calculateLateInMinutes(
+        var duration = calculateLateTime(
             user.nextPresence.startTime.add(Duration(minutes: 30)),
             user.nextPresence.attendTime);
         status += ' $duration';
