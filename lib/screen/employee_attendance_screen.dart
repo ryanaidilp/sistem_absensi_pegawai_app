@@ -225,6 +225,8 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
             const Text('Gagal memuat data'),
             const SizedBox(height: 20.0),
             RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
               color: Colors.blueAccent,
               textColor: Colors.white,
               onPressed: _fetchPresenceData,
