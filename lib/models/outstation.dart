@@ -8,6 +8,7 @@ class Outstation {
       this.description,
       this.isApproved,
       this.photo,
+      this.approvalStatus,
       this.dueDate,
       this.startDate,
       this.user});
@@ -17,6 +18,7 @@ class Outstation {
   final String description;
   final bool isApproved;
   final String photo;
+  final String approvalStatus;
   final DateTime dueDate;
   final DateTime startDate;
   final User user;
@@ -28,6 +30,7 @@ class Outstation {
         description: json[OUTSTATION_DESCRIPTION_FIELD] as String,
         isApproved: json[OUTSTATION_IS_APPROVED_FIELD] as bool,
         photo: json[OUTSTATION_PHOTO_FIELD] as String,
+        approvalStatus: json[APPROVAL_STATUS_FIELD] as String,
         dueDate: DateTime.parse(json[OUTSTATION_DUE_DATE_FIELD]),
         startDate: DateTime.parse(json[OUTSTATION_START_DATE_FIELD]),
         user: json[OUTSTATION_USER_FIELD] != null
