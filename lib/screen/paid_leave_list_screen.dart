@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/paid_leave.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
+import 'package:spo_balaesang/screen/change_paid_leave_photo_screen.dart';
 import 'package:spo_balaesang/screen/create_paid_leave_screen.dart';
 import 'package:spo_balaesang/widgets/employee_proposal_widget.dart';
 
@@ -95,9 +96,11 @@ class _PaidLeaveListScreenState extends State<PaidLeaveListScreen> {
       description: paidLeave.description,
       startDate: startDate,
       dueDate: dueDate,
+      approvalStatus: paidLeave.approvalStatus,
       photo: paidLeave.photo,
       isApproved: paidLeave.isApproved,
       isPaidLeave: true,
+      updateWidget: ChangePaidLeavePhotoScreen(paidLeave: paidLeave),
       heroTag: paidLeave.id.toString(),
       category: paidLeave.category,
     );

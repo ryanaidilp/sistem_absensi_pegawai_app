@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/absent_permission.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
+import 'package:spo_balaesang/screen/change_absent_permission_photo_screen.dart';
 import 'package:spo_balaesang/screen/create_permission_screen.dart';
 import 'package:spo_balaesang/widgets/employee_proposal_widget.dart';
 
@@ -87,8 +88,10 @@ class _PermissionListScreenState extends State<PermissionListScreen> {
             isApproved: permission.isApproved,
             startDate: startDate,
             dueDate: dueDate,
+            approvalStatus: permission.approvalStatus,
             description: permission.description,
             title: permission.title,
+            updateWidget: ChangePermissionPhotoScreen(permission: permission),
           );
         },
         itemCount: _permissions.length,
