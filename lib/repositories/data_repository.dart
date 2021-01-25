@@ -136,6 +136,19 @@ class DataRepository {
     return response;
   }
 
+  Future<Map<String, dynamic>> changePermissionPhoto(
+      Map<String, dynamic> data) async {
+    Map<String, dynamic> result;
+    try {
+      var response = await apiService.postEndpointWithToken(
+          endpoint: Endpoint.changePermissionPhoto, data: data);
+      result = jsonDecode(response.body);
+    } catch (e) {
+      print(e.toString());
+    }
+    return result;
+  }
+
   Future<Map<String, dynamic>> outstation(Map<String, dynamic> data) async {
     Map<String, dynamic> result;
     try {
@@ -178,6 +191,19 @@ class DataRepository {
       print(e.toString());
     }
     return response;
+  }
+
+  Future<Map<String, dynamic>> changeOutstationPhoto(
+      Map<String, dynamic> data) async {
+    Map<String, dynamic> result;
+    try {
+      var response = await apiService.postEndpointWithToken(
+          endpoint: Endpoint.changeOutstationPhoto, data: data);
+      result = jsonDecode(response.body);
+    } catch (e) {
+      print(e.toString());
+    }
+    return result;
   }
 
   Future<Map<String, dynamic>> getAllNotifications() async {
@@ -281,6 +307,19 @@ class DataRepository {
       print(e.toString());
     }
     return data;
+  }
+
+  Future<Map<String, dynamic>> changePaidLeavePhoto(
+      Map<String, dynamic> data) async {
+    Map<String, dynamic> result;
+    try {
+      var response = await apiService.postEndpointWithToken(
+          endpoint: Endpoint.changePaidLeavePhoto, data: data);
+      result = jsonDecode(response.body);
+    } catch (e) {
+      print(e.toString());
+    }
+    return result;
   }
 
   Future<Response> approvePaidLeave(Map<String, dynamic> data) async {
