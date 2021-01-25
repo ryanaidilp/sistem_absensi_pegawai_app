@@ -9,6 +9,7 @@ class AbsentPermission {
       this.startDate,
       this.description,
       this.photo,
+      this.approvalStatus,
       this.isApproved,
       this.user});
 
@@ -17,6 +18,7 @@ class AbsentPermission {
   final String description;
   final bool isApproved;
   final String photo;
+  final String approvalStatus;
   final DateTime dueDate;
   final DateTime startDate;
   final User user;
@@ -28,6 +30,7 @@ class AbsentPermission {
         description: json[ABSENT_PERMISSION_DESCRIPTION_FIELD] as String,
         isApproved: json[ABSENT_PERMISSION_IS_APPROVED_FIELD] as bool,
         photo: json[ABSENT_PERMISSION_PHOTO_FIELD] as String,
+        approvalStatus: json[APPROVAL_STATUS_FIELD] as String,
         dueDate: DateTime.parse(json[ABSENT_PERMISSION_DUE_DATE_FIELD]),
         startDate: DateTime.parse(json[ABSENT_PERMISSION_START_DATE_FIELD]),
         user: json[ABSENT_PERMISSION_USER_FIELD] != null
