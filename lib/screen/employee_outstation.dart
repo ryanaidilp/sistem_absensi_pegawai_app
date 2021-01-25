@@ -66,46 +66,93 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
     }
   }
 
-  _approveOutstation(Outstation outstation) {
-    if (outstation.isApproved) {
-      Get.defaultDialog(
-          title: 'Alasan Pembatalan!',
-          content: Flexible(
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              width: Get.width * 0.9,
-              child: TextFormField(
-                controller: _reasonController,
-                decoration: InputDecoration(
-                    labelText: 'Alasan',
-                    focusColor: Colors.blueAccent,
-                    focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blueAccent))),
-              ),
+  _rejectOutstation(Outstation outstation) {
+    Get.defaultDialog(
+        title: 'Alasan Pembatalan!',
+        content: Flexible(
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            width: Get.width * 0.9,
+            child: TextFormField(
+              controller: _reasonController,
+              decoration: InputDecoration(
+                  labelText: 'Alasan',
+                  focusColor: Colors.blueAccent,
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blueAccent))),
             ),
           ),
-          confirm: RaisedButton(
-            color: Colors.blueAccent,
-            textColor: Colors.white,
-            onPressed: () {
-              Get.back();
-              _sendData(outstation);
-            },
-            child: Text('OK'),
-          ));
-    } else {
-      _sendData(outstation);
+        ),
+        confirm: RaisedButton(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+          color: Colors.blueAccent,
+          textColor: Colors.white,
+          onPressed: () {
+            Get.back();
+            _sendData(outstation, false);
+          },
+          child: Text('OK'),
+        ));
+  }
+
+  _approveOutstation(Outstation outstation) {
+    _sendData(outstation, true);
+  }
+
+  _cancelButton(String label, Outstation outstation) {
+    return SizedBox(
+      width: Get.width,
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        textColor: Colors.white,
+        color: Colors.red,
+        onPressed: () {
+          _rejectOutstation(outstation);
+        },
+        child: Text(label),
+      ),
+    );
+  }
+
+  _approveButton(Outstation outstation) {
+    return SizedBox(
+      width: Get.width,
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        textColor: Colors.white,
+        color: Colors.blueAccent,
+        onPressed: () {
+          _approveOutstation(outstation);
+        },
+        child: Text('Setujui'),
+      ),
+    );
+  }
+
+  _buildButtonSection(Outstation outstation) {
+    switch (outstation.approvalStatus) {
+      case 'Menunggu Persetujuan':
+        return Column(
+          children: <Widget>[
+            _approveButton(outstation),
+            _cancelButton('Tolak', outstation)
+          ],
+        );
+      case 'Disetujui':
+        return _cancelButton('Batal Setujui', outstation);
+      case 'Ditolak':
+        return _approveButton(outstation);
     }
   }
 
-  Future<void> _sendData(Outstation outstation) async {
+  Future<void> _sendData(Outstation outstation, bool isApproved) async {
     ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     pd.show();
     try {
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
       Map<String, dynamic> data = {
         'user_id': outstation.user.id,
-        'is_approved': !outstation.isApproved,
+        'is_approved': isApproved,
         'outstation_id': outstation.id,
         'reason': _reasonController.value.text
       };
@@ -179,22 +226,11 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
         return EmployeeProposalWidget(
           isApprovalCard: true,
           employeeName: outstation.user.name,
-          button: SizedBox(
-            width: Get.width,
-            child: RaisedButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6)),
-              textColor: Colors.white,
-              color: Colors.blueAccent,
-              onPressed: () {
-                _approveOutstation(outstation);
-              },
-              child: Text(outstation.isApproved ? 'Batal Setujui' : 'Setujui'),
-            ),
-          ),
+          button: _buildButtonSection(outstation),
           photo: outstation.photo,
           heroTag: outstation.id.toString(),
           isApproved: outstation.isApproved,
+          approvalStatus: outstation.approvalStatus,
           startDate: startDate,
           dueDate: dueDate,
           description: outstation.description,

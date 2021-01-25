@@ -62,6 +62,7 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
           ),
         ),
         confirm: RaisedButton(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
           color: Colors.blueAccent,
           textColor: Colors.white,
           onPressed: () {
@@ -141,7 +142,7 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
             child: RaisedButton(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              color: Colors.blueAccent,
+              color: Colors.red[600],
               textColor: Colors.white,
               child: Text('Batalkan'),
               onPressed: () {

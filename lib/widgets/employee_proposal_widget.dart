@@ -13,6 +13,7 @@ class EmployeeProposalWidget extends StatelessWidget {
       {this.title,
       this.isApproved,
       this.employeeName,
+      this.approvalStatus,
       this.isApprovalCard = false,
       this.isPaidLeave = false,
       this.startDate,
@@ -20,12 +21,14 @@ class EmployeeProposalWidget extends StatelessWidget {
       this.description,
       this.category,
       this.photo,
+      this.updateWidget,
       this.heroTag,
       this.button});
 
   final String title;
   final bool isApproved;
   final String employeeName;
+  final String approvalStatus;
   final bool isApprovalCard;
   final bool isPaidLeave;
   final DateTime startDate;
@@ -35,6 +38,18 @@ class EmployeeProposalWidget extends StatelessWidget {
   final String photo;
   final String heroTag;
   final Widget button;
+  final Widget updateWidget;
+
+  Color _checkStatusColor(String status) {
+    switch (status) {
+      case 'Disetujui':
+        return Colors.green;
+      case 'Menunggu Persetujuan':
+        return Colors.deepOrange;
+      default:
+        return Colors.red[800];
+    }
+  }
 
   Widget _buildEmployeeNameSection() {
     if (isApprovalCard) {
@@ -126,10 +141,10 @@ class EmployeeProposalWidget extends StatelessWidget {
                       style: labelTextStyle.copyWith(fontSize: 12.0),
                     ),
                     Text(
-                      '${isApproved ? 'Disetujui' : 'Belum Disetujui'}',
+                      '$approvalStatus',
                       style: TextStyle(
                           fontSize: 12.0,
-                          color: isApproved ? Colors.green : Colors.red),
+                          color: _checkStatusColor(approvalStatus)),
                     ),
                   ],
                 ),
@@ -170,7 +185,7 @@ class EmployeeProposalWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 10.0),
                 Text(
-                  'Bukti Izin : ',
+                  'Lampiran : ',
                   style: TextStyle(fontSize: 12.0, color: Colors.grey),
                 ),
                 Text(
@@ -182,6 +197,11 @@ class EmployeeProposalWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 5.0),
                 InkWell(
+                  onLongPress: () {
+                    if (updateWidget != null) {
+                      Get.to(updateWidget);
+                    }
+                  },
                   onTap: () {
                     Get.to(ImageDetailScreen(
                       imageUrl: photo,
