@@ -267,6 +267,8 @@ class _ReportScreenState extends State<ReportScreen> {
             const Text('Gagal memuat data'),
             const SizedBox(height: 20.0),
             RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
               color: Colors.blueAccent,
               textColor: Colors.white,
               onPressed: _fetchReportData,
@@ -441,6 +443,8 @@ class _ReportScreenState extends State<ReportScreen> {
             const Text('Gagal memuat data'),
             const SizedBox(height: 20.0),
             RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
               color: Colors.blueAccent,
               textColor: Colors.white,
               onPressed: _fetchReportData,
