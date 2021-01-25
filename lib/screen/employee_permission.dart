@@ -64,46 +64,95 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
     }
   }
 
-  _approvePermission(AbsentPermission permission) {
-    if (permission.isApproved) {
-      Get.defaultDialog(
-          title: 'Alasan Pembatalan!',
-          content: Flexible(
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              width: Get.width * 0.9,
-              child: TextFormField(
-                decoration: InputDecoration(
-                    labelText: 'Alasan',
-                    focusColor: Colors.blueAccent,
-                    focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blueAccent))),
-                controller: _reasonController,
-              ),
+  _rejectPermission(AbsentPermission permission) {
+    Get.defaultDialog(
+        title: 'Alasan Pembatalan!',
+        content: Flexible(
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            width: Get.width * 0.9,
+            child: TextFormField(
+              decoration: InputDecoration(
+                  labelText: 'Alasan',
+                  focusColor: Colors.blueAccent,
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blueAccent))),
+              controller: _reasonController,
             ),
           ),
-          confirm: RaisedButton(
-            color: Colors.blueAccent,
-            textColor: Colors.white,
-            onPressed: () {
-              Get.back();
-              _sendData(permission);
-            },
-            child: Text('OK'),
-          ));
-    } else {
-      _sendData(permission);
+        ),
+        confirm: RaisedButton(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+          color: Colors.blueAccent,
+          textColor: Colors.white,
+          onPressed: () {
+            Get.back();
+            _sendData(permission, false);
+          },
+          child: Text('OK'),
+        ));
+  }
+
+  _approvePermission(AbsentPermission permission) {
+    if (permission.isApproved) {
+      _sendData(permission, true);
     }
   }
 
-  Future<void> _sendData(AbsentPermission permission) async {
+  _cancelButton(String label, AbsentPermission permission) {
+    return SizedBox(
+      width: Get.width,
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        textColor: Colors.white,
+        color: Colors.red[600],
+        onPressed: () {
+          _rejectPermission(permission);
+        },
+        child: Text(label),
+      ),
+    );
+  }
+
+  _approveButton(AbsentPermission permission) {
+    return SizedBox(
+      width: Get.width,
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        textColor: Colors.white,
+        color: Colors.blueAccent,
+        onPressed: () {
+          _approvePermission(permission);
+        },
+        child: Text('Setujui'),
+      ),
+    );
+  }
+
+  _buildButtonSection(AbsentPermission permission) {
+    switch (permission.approvalStatus) {
+      case 'Menunggu Persetujuan':
+        return Column(
+          children: <Widget>[
+            _approveButton(permission),
+            _cancelButton('Tolak', permission)
+          ],
+        );
+      case 'Disetujui':
+        return _cancelButton('Batal Setujui', permission);
+      case 'Ditolak':
+        return _approveButton(permission);
+    }
+  }
+
+  Future<void> _sendData(AbsentPermission permission, bool isApproved) async {
     ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     pd.show();
     try {
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
       Map<String, dynamic> data = {
         'user_id': permission.user.id,
-        'is_approved': !permission.isApproved,
+        'is_approved': isApproved,
         'permission_id': permission.id,
         'reason': _reasonController.value.text
       };
@@ -181,22 +230,11 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
           dueDate: dueDate,
           employeeName: permission.user.name,
           isApproved: permission.isApproved,
+          approvalStatus: permission.approvalStatus,
           heroTag: permission.id.toString(),
           photo: permission.photo,
           isApprovalCard: true,
-          button: SizedBox(
-            width: Get.width,
-            child: RaisedButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6)),
-              textColor: Colors.white,
-              color: Colors.blueAccent,
-              onPressed: () {
-                _approvePermission(permission);
-              },
-              child: Text(permission.isApproved ? 'Batal Setujui' : 'Setujui'),
-            ),
-          ),
+          button: _buildButtonSection(permission),
         );
       }).toList(),
     );
