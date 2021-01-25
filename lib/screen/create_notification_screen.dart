@@ -116,6 +116,8 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
                     onPressed: _sendNotification,
                     color: Colors.blueAccent,
                     textColor: Colors.white,

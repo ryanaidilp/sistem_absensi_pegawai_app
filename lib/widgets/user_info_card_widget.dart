@@ -26,48 +26,48 @@ class UserInfoCardWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              'NIP           : ',
+              'Golongan',
+              style: TextStyle(color: Colors.grey[700]),
             ),
-            Expanded(
-              child: Text(
-                '$nip',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
+            Text(
+              '$group',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
         SizedBox(height: 4.0),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              'Pangkat   : ',
+              'Pangkat',
+              style: TextStyle(color: Colors.grey[700]),
             ),
-            Expanded(
-              child: Text(
-                '${rank?.toUpperCase()}',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
+            Text(
+              '${rank?.toUpperCase()}',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
         SizedBox(height: 4.0),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              'Golongan : ',
+              'NIP',
+              style: TextStyle(color: Colors.grey[700]),
             ),
-            Expanded(
-              child: Text(
-                '$group',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
+            Text(
+              '$nip',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
@@ -89,55 +89,74 @@ class UserInfoCardWidget extends StatelessWidget {
           children: <Widget>[
             Text(
               'Informasi Pegawai : ',
-              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[700]),
             ),
             Divider(color: Colors.black38),
             Center(
               child: Column(
                 children: <Widget>[
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        'Nama       : ',
+                        'Nama',
+                        style: TextStyle(color: Colors.grey[700]),
                       ),
-                      Expanded(
-                        child: Text(
-                          '$name',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
+                      Text(
+                        '$name',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: 4.0),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        'Bagian     : ',
+                        'Jabatan',
+                        style: TextStyle(color: Colors.grey[700]),
                       ),
-                      Expanded(
-                        child: Text(
-                          '$department',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
+                      Text(
+                        '$position',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: 4.0),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        'Jabatan   : ',
+                        'Bagian',
+                        style: TextStyle(color: Colors.grey[700]),
                       ),
-                      Expanded(
-                        child: Text(
-                          '$position',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
+                      Text(
+                        '$department',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 4.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        'Status',
+                        style: TextStyle(color: Colors.grey[700]),
+                      ),
+                      Text(
+                        '$status',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],

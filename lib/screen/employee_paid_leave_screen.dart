@@ -60,45 +60,17 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
   }
 
   _approvePaidLeave(PaidLeave paidLeave) {
-    if (paidLeave.isApproved) {
-      Get.defaultDialog(
-          title: 'Alasan Pembatalan!',
-          content: Flexible(
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              width: Get.width * 0.9,
-              child: TextFormField(
-                controller: _reasonController,
-                decoration: InputDecoration(
-                    labelText: 'Alasan',
-                    focusColor: Colors.blueAccent,
-                    focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blueAccent))),
-              ),
-            ),
-          ),
-          confirm: RaisedButton(
-            color: Colors.blueAccent,
-            textColor: Colors.white,
-            onPressed: () {
-              Get.back();
-              _sendData(paidLeave);
-            },
-            child: Text('OK'),
-          ));
-    } else {
-      _sendData(paidLeave);
-    }
+    _sendData(paidLeave, true);
   }
 
-  Future<void> _sendData(PaidLeave paidLeave) async {
+  Future<void> _sendData(PaidLeave paidLeave, bool isApproved) async {
     ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     pd.show();
     try {
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
       Map<String, dynamic> data = {
         'user_id': paidLeave.user.id,
-        'is_approved': !paidLeave.isApproved,
+        'is_approved': isApproved,
         'paid_leave_id': paidLeave.id,
         'reason': _reasonController.value.text
       };
@@ -181,6 +153,81 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
     );
   }
 
+  _rejectPaidLeave(PaidLeave paidLeave) {
+    Get.defaultDialog(
+        title: 'Alasan Pembatalan!',
+        content: Flexible(
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            width: Get.width * 0.9,
+            child: TextFormField(
+              controller: _reasonController,
+              decoration: InputDecoration(
+                  labelText: 'Alasan',
+                  focusColor: Colors.blueAccent,
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blueAccent))),
+            ),
+          ),
+        ),
+        confirm: RaisedButton(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+          color: Colors.blueAccent,
+          textColor: Colors.white,
+          onPressed: () {
+            Get.back();
+            _sendData(paidLeave, false);
+          },
+          child: Text('OK'),
+        ));
+  }
+
+  _cancelButton(String label, PaidLeave paidLeave) {
+    return SizedBox(
+      width: Get.width,
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        textColor: Colors.white,
+        color: Colors.red[600],
+        onPressed: () {
+          _rejectPaidLeave(paidLeave);
+        },
+        child: Text(label),
+      ),
+    );
+  }
+
+  _approveButton(PaidLeave paidLeave) {
+    return SizedBox(
+      width: Get.width,
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        textColor: Colors.white,
+        color: Colors.blueAccent,
+        onPressed: () {
+          _approvePaidLeave(paidLeave);
+        },
+        child: Text('Setujui'),
+      ),
+    );
+  }
+
+  _buildButtonSection(PaidLeave paidLeave) {
+    switch (paidLeave.approvalStatus) {
+      case 'Menunggu Persetujuan':
+        return Column(
+          children: <Widget>[
+            _approveButton(paidLeave),
+            _cancelButton('Tolak', paidLeave)
+          ],
+        );
+      case 'Disetujui':
+        return _cancelButton('Batal Setujui', paidLeave);
+      case 'Ditolak':
+        return _approveButton(paidLeave);
+    }
+  }
+
   Widget _buildPaidLeaveItem(PaidLeave paidLeave) {
     var startDate = paidLeave.startDate;
     var dueDate = paidLeave.dueDate;
@@ -189,20 +236,13 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
       isPaidLeave: true,
       description: paidLeave.description,
       dueDate: dueDate,
+      category: paidLeave.category,
       startDate: startDate,
       heroTag: paidLeave.id.toString(),
       photo: paidLeave.photo,
+      approvalStatus: paidLeave.approvalStatus,
       employeeName: paidLeave.user.name,
-      button: SizedBox(
-        child: RaisedButton(
-          textColor: Colors.white,
-          color: Colors.blueAccent,
-          onPressed: () {
-            _approvePaidLeave(paidLeave);
-          },
-          child: Text(paidLeave.isApproved ? 'Batal Setujui' : 'Setujui'),
-        ),
-      ),
+      button: _buildButtonSection(paidLeave),
       isApproved: paidLeave.isApproved,
       title: paidLeave.title,
     );

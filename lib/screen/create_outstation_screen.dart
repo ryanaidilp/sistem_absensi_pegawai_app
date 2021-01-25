@@ -44,6 +44,7 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
       _base64Image = base64Encode(_tmpFile.readAsBytesSync());
       _fileName = _tmpFile.path.split('/').last;
     });
+    await file.delete(recursive: true);
   }
 
   Future<void> _uploadData() async {
@@ -363,10 +364,13 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
               ),
               SizedBox(height: 20.0),
               _showImage(),
+              SizedBox(height: 10.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
                     onPressed: _openCamera,
                     color: Colors.blueAccent,
                     textColor: Colors.white,
@@ -374,8 +378,10 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
                         Text(_base64Image == null ? 'Ambil Foto' : 'Ubah Foto'),
                   ),
                   RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
                     onPressed: _uploadData,
-                    color: Colors.blueAccent,
+                    color: Colors.green,
                     textColor: Colors.white,
                     child: Text('Kirim'),
                   ),

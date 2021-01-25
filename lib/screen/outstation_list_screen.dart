@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/outstation.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
+import 'package:spo_balaesang/screen/change_outstation_photo_screen.dart';
 import 'package:spo_balaesang/screen/create_outstation_screen.dart';
 import 'package:spo_balaesang/widgets/employee_proposal_widget.dart';
 
@@ -89,9 +90,11 @@ class _OutstationListScreenState extends State<OutstationListScreen> {
             description: outstation.description,
             dueDate: dueDate,
             startDate: startDate,
+            approvalStatus: outstation.approvalStatus,
             isApproved: outstation.isApproved,
             heroTag: outstation.id.toString(),
             photo: outstation.photo,
+            updateWidget: ChangeOutstationPhotoScreen(outstation: outstation),
           );
         },
         itemCount: _outstations.length,

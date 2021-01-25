@@ -21,7 +21,10 @@ enum Endpoint {
   paidLeave,
   employeePaidLeave,
   approvePaidLeave,
-  cancelAttendance
+  cancelAttendance,
+  changePermissionPhoto,
+  changeOutstationPhoto,
+  changePaidLeavePhoto,
 }
 
 class API {
@@ -50,6 +53,9 @@ class API {
     Endpoint.paidLeave: 'paid-leave',
     Endpoint.employeePaidLeave: 'paid-leave/all',
     Endpoint.approvePaidLeave: 'paid-leave/approve',
-    Endpoint.cancelAttendance: 'presence/cancel'
+    Endpoint.cancelAttendance: 'presence/cancel',
+    Endpoint.changePermissionPhoto: 'permission/picture',
+    Endpoint.changeOutstationPhoto: 'outstation/picture',
+    Endpoint.changePaidLeavePhoto: 'paid-leave/picture',
   };
 }

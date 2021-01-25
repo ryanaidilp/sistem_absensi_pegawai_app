@@ -54,6 +54,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
         _base64Image = base64Encode(_tmpFile.readAsBytesSync());
         _fileName = _tmpFile.path.split('/').last;
       });
+      await file.delete(recursive: true);
     }
   }
 
@@ -276,6 +277,8 @@ class _PresenceScreenState extends State<PresenceScreen> {
               SizedBox(height: 20.0),
               _showImage(),
               RaisedButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6)),
                 onPressed: _openCamera,
                 color: Colors.blueAccent,
                 textColor: Colors.white,

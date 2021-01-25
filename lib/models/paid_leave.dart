@@ -7,6 +7,7 @@ class PaidLeave {
       this.id,
       this.category,
       this.photo,
+      this.approvalStatus,
       this.description,
       this.startDate,
       this.dueDate,
@@ -18,6 +19,7 @@ class PaidLeave {
   final String category;
   final String description;
   final bool isApproved;
+  final String approvalStatus;
   final DateTime startDate;
   final DateTime dueDate;
   final String photo;
@@ -29,6 +31,7 @@ class PaidLeave {
       category: json[PAID_LEAVE_CATEGORY_FIELD] as String,
       description: json[PAID_LEAVE_DESCRIPTION_FIELD] as String,
       isApproved: json[PAID_LEAVE_IS_APPROVED_FIELD] as bool,
+      approvalStatus: json[APPROVAL_STATUS_FIELD] as String,
       startDate: DateTime.parse(json[PAID_LEAVE_START_DATE_FIELD]),
       dueDate: DateTime.parse(json[PAID_LEAVE_DUE_DATE_FIELD]),
       photo: json[PAID_LEAVE_PHOTO_FIELD] as String,
