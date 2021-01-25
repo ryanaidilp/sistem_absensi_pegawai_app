@@ -8,6 +8,7 @@ const String PREFS_SEEN_KEY = 'seen';
 
 // General
 const String JSON_DATA_FIELD = 'data';
+const String APPROVAL_STATUS_FIELD = 'approval_status';
 
 // User/Employee
 const String USER_ID_FIELD = 'id';
