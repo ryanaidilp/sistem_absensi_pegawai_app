@@ -94,9 +94,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
   }
 
   _approvePermission(AbsentPermission permission) {
-    if (permission.isApproved) {
-      _sendData(permission, true);
-    }
+    _sendData(permission, true);
   }
 
   _cancelButton(String label, AbsentPermission permission) {
