@@ -7,6 +7,7 @@ import 'package:spo_balaesang/models/outstation.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/change_outstation_photo_screen.dart';
 import 'package:spo_balaesang/screen/create_outstation_screen.dart';
+import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/employee_proposal_widget.dart';
 
 class OutstationListScreen extends StatefulWidget {
@@ -15,11 +16,11 @@ class OutstationListScreen extends StatefulWidget {
 }
 
 class _OutstationListScreenState extends State<OutstationListScreen> {
-  List<Outstation> _outstations = List<Outstation>();
+  List<Outstation> _outstations = <Outstation>[];
   bool _isLoading = false;
 
   @override
-  void setState(fn) {
+  void setState(void Function() fn) {
     if (mounted) {
       super.setState(fn);
     }
@@ -30,16 +31,20 @@ class _OutstationListScreenState extends State<OutstationListScreen> {
       setState(() {
         _isLoading = true;
       });
-      var dataRepo = Provider.of<DataRepository>(context, listen: false);
-      Map<String, dynamic> _result = await dataRepo.getAllOutstation();
-      List<dynamic> outstations = _result['data'];
-      List<Outstation> _data =
-          outstations.map((json) => Outstation.fromJson(json)).toList();
+      final dataRepo = Provider.of<DataRepository>(context, listen: false);
+      final Map<String, dynamic> _result = await dataRepo.getAllOutstation();
+      final List<dynamic> outstations = _result['data'] as List<dynamic>;
+      final List<Outstation> _data = outstations
+          .map((json) => Outstation.fromJson(json as Map<String, dynamic>))
+          .toList();
       setState(() {
         _outstations = _data;
       });
     } catch (e) {
-      print(e);
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': [e.toString()]
+      });
     } finally {
       setState(() {
         _isLoading = false;
@@ -54,37 +59,37 @@ class _OutstationListScreenState extends State<OutstationListScreen> {
   }
 
   Widget _buildBody() {
-    if (_isLoading)
-      return Center(
+    if (_isLoading) {
+      return const Center(
           child: SpinKitFadingFour(
         size: 45,
         color: Colors.blueAccent,
       ));
-    if (_outstations.isEmpty)
+    }
+    if (_outstations.isEmpty) {
       return Center(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Container(
+              SizedBox(
                 width: Get.width * 0.5,
                 height: Get.height * 0.3,
-                child: FlareActor(
+                child: const FlareActor(
                   'assets/flare/not_found.flr',
-                  fit: BoxFit.contain,
                   animation: 'empty',
-                  alignment: Alignment.center,
                 ),
               ),
-              Text('Belum ada Dinas Luar yang diajukan!')
+              const Text('Belum ada Dinas Luar yang diajukan!')
             ]),
       );
+    }
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListView.builder(
         itemBuilder: (_, index) {
-          Outstation outstation = _outstations[index];
-          DateTime dueDate = _outstations[index].dueDate;
-          DateTime startDate = _outstations[index].startDate;
+          final Outstation outstation = _outstations[index];
+          final DateTime dueDate = _outstations[index].dueDate;
+          final DateTime startDate = _outstations[index].startDate;
           return EmployeeProposalWidget(
             title: outstation.title,
             description: outstation.description,
@@ -107,14 +112,14 @@ class _OutstationListScreenState extends State<OutstationListScreen> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blueAccent,
-          title: Text('Daftar Dinas Luar'),
+          title: const Text('Daftar Dinas Luar'),
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.blueAccent,
-          child: Icon(Icons.add),
           onPressed: () {
             Get.to(CreateOutstationScreen());
           },
+          child: const Icon(Icons.add),
         ),
         body: _buildBody());
   }
