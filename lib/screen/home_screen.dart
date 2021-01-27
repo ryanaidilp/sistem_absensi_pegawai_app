@@ -7,6 +7,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_countdown_timer/countdown_timer_controller.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -32,14 +33,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<String> _images = new List();
+  List<String> _images = [];
+  CountdownTimerController _countdownController;
   User user;
   List<Employee> _users;
   bool isLoading = false;
   double _percentage = 0;
 
   @override
-  void setState(fn) {
+  void setState(void Function() fn) {
     if (mounted) {
       super.setState(fn);
     }
@@ -47,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildImageStack() {
     if (_images.isNotEmpty) {
-      var widgets = _images
+      final widgets = _images
           .sublist(0, 5)
           .map(
             (e) => Padding(
@@ -57,6 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: CachedNetworkImage(
                   imageUrl: e,
                   placeholder: (_, __) => Shimmer.fromColors(
+                    baseColor: Colors.grey[400],
+                    highlightColor: Colors.white,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 4.0, top: 4.0),
                       child: ClipRRect(
@@ -78,8 +82,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    baseColor: Colors.grey[400],
-                    highlightColor: Colors.white,
                   ),
                   height: 55.0,
                 ),
@@ -95,12 +97,12 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.grey[300],
             child: InkWell(
               onTap: () {
-                Get.to(EmployeeListScreen(employees: this._users));
+                Get.to(EmployeeListScreen(employees: _users));
               },
               splashColor: Colors.white,
               borderRadius: BorderRadius.circular(100),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
+              child: const Padding(
+                padding: EdgeInsets.all(16.0),
                 child: Icon(
                   Icons.add,
                   color: Colors.grey,
@@ -124,6 +126,8 @@ class _HomeScreenState extends State<HomeScreen> {
         children: List<Widget>.generate(
             7,
             (index) => Shimmer.fromColors(
+                  baseColor: Colors.grey[400],
+                  highlightColor: Colors.white,
                   child: Padding(
                     padding: const EdgeInsets.only(right: 4.0, top: 4.0),
                     child: ClipRRect(
@@ -145,8 +149,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  baseColor: Colors.grey[400],
-                  highlightColor: Colors.white,
                 )),
       ),
     );
@@ -155,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _getAllEmployee({ProgressDialog pd}) async {
     try {
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
-      List<Employee> users = await dataRepo.getAllEmployee();
+      final List<Employee> users = await dataRepo.getAllEmployee();
       setState(() {
         _users = users;
         _images = users
@@ -166,7 +168,10 @@ class _HomeScreenState extends State<HomeScreen> {
         if (pd != null && pd.isShowing()) pd?.hide();
       });
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': [e.toString()]
+      });
     }
   }
 
@@ -182,11 +187,11 @@ class _HomeScreenState extends State<HomeScreen> {
           'failed',
           'Kesalahan',
           'Pastikan anda terhubung ke internet lalu tekan tombol refresh.',
-          true,
+          dismissible: true,
         );
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        var data = jsonDecode(prefs.getString(PREFS_USER_KEY));
-        _user = User.fromJson(data);
+        final data = jsonDecode(prefs.getString(prefsUserKey));
+        _user = User.fromJson(data as Map<String, dynamic>);
       }
       OneSignal.shared.setExternalUserId(_user.id.toString());
       setState(() {
@@ -194,7 +199,10 @@ class _HomeScreenState extends State<HomeScreen> {
         _countAttendancePercentage();
       });
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': [e.toString()]
+      });
     } finally {
       setState(() {
         isLoading = false;
@@ -216,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _percentage = 0;
     }
 
-    user.presences.forEach((presence) {
+    user.presences.map((presence) {
       switch (presence.status) {
         case 'Tepat Waktu':
         case 'Dinas Luar':
@@ -245,15 +253,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildShimmerSection(double width, double height) {
     return Shimmer.fromColors(
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(6.0),
-              color: Colors.blueAccent),
-          width: width,
-          height: height,
-        ),
-        baseColor: Colors.grey[300],
-        highlightColor: Colors.white);
+      baseColor: Colors.grey[300],
+      highlightColor: Colors.white,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6.0), color: Colors.blueAccent),
+        width: width,
+        height: height,
+      ),
+    );
   }
 
   Widget _buildUserNameSection() {
@@ -262,30 +270,32 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     if (user == null) {
-      Text(
+      const Text(
         'Gagal memuat data',
         style: TextStyle(
             color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w600),
       );
     }
 
+    final nipSection = user.status == 'PNS'
+        ? Text(
+            'NIP : ${user.nip}',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12.0,
+            ),
+          )
+        : sizedBox;
+
     return Column(
       children: <Widget>[
         Text(
-          '${user.name}',
-          style: TextStyle(
+          user.name ?? '',
+          style: const TextStyle(
               color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w600),
         ),
-        SizedBox(height: 5.0),
-        user.status == 'PNS'
-            ? Text(
-                'NIP : ${user.nip}',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12.0,
-                ),
-              )
-            : SizedBox()
+        sizedBoxH5,
+        nipSection
       ],
     );
   }
@@ -293,24 +303,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildPositionSection() {
     if (isLoading) {
       return Column(
-        children: <Widget>[
-          SizedBox(height: 10.0),
-          _buildShimmerSection(60, 15)
-        ],
+        children: <Widget>[sizedBoxH10, _buildShimmerSection(60, 15)],
       );
     }
     if (user != null) {
-      var text = user.position == 'Camat' || user.position == 'Sekcam'
+      final text = user.position == 'Camat' || user.position == 'Sekcam'
           ? user.position
           : "${user.position} - ${user.department}";
       return AutoSizeText(
         '($text)',
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
         maxFontSize: 14.0,
-        minFontSize: 12.0,
       );
     }
-    return Text(
+    return const Text(
       'Coba untuk memuat kembali data!',
       style: TextStyle(
           color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w600),
@@ -321,21 +327,21 @@ class _HomeScreenState extends State<HomeScreen> {
     if (isLoading) {
       return [
         _buildShimmerSection(Get.width, 250),
-        SizedBox(height: 10.0),
+        sizedBoxH10,
         _buildShimmerSection(Get.width, 250),
-        SizedBox(height: 10.0),
+        sizedBoxH10,
         _buildShimmerSection(Get.width, 250),
-        SizedBox(height: 10.0),
+        sizedBoxH10,
         _buildShimmerSection(Get.width, 250),
-        SizedBox(height: 10.0),
+        sizedBoxH10,
       ];
     }
     if (user != null && user.presences.isNotEmpty) {
       return user.presences.map((presence) {
-        Color color = checkStatusColor(presence.status);
-        String status = '${presence.status}';
+        final Color color = checkStatusColor(presence.status);
+        String status = presence.status ?? '';
         if (presence.status == 'Terlambat') {
-          var duration =
+          final String duration =
               calculateLateTime(presence.startTime, presence.attendTime);
           status = '${presence.status} $duration';
         }
@@ -352,19 +358,19 @@ class _HomeScreenState extends State<HomeScreen> {
       }).toList();
     }
     return [
-      Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-        Container(
-          width: 150,
-          height: 150,
-          child: FlareActor(
-            'assets/flare/empty.flr',
-            fit: BoxFit.contain,
-            animation: 'empty',
-            alignment: Alignment.center,
-          ),
-        ),
-        Text('Tidak ada presensi hari ini!')
-      ])
+      Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const <Widget>[
+            SizedBox(
+              width: 150,
+              height: 150,
+              child: FlareActor(
+                'assets/flare/empty.flr',
+                animation: 'empty',
+              ),
+            ),
+            Text('Tidak ada presensi hari ini!')
+          ])
     ];
   }
 
@@ -392,7 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return Column(
           children: <Widget>[
             Icon(Icons.check, color: checkStatusColor(status), size: 54),
-            Text(
+            const Text(
               'Hadir',
               style: TextStyle(color: Colors.blueGrey),
             )
@@ -405,7 +411,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Icon(Icons.warning, color: checkStatusColor(status), size: 54),
             Text(
               status,
-              style: TextStyle(color: Colors.blueGrey),
+              style: const TextStyle(color: Colors.blueGrey),
             )
           ],
         );
@@ -421,7 +427,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 size: 54, color: checkStatusColor(status)),
             Text(
               status,
-              style: TextStyle(color: Colors.blueGrey),
+              style: const TextStyle(color: Colors.blueGrey),
             )
           ],
         );
@@ -431,7 +437,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Icon(Icons.warning, color: checkStatusColor(status), size: 54),
             Text(
               status,
-              style: TextStyle(color: Colors.blueGrey),
+              style: const TextStyle(color: Colors.blueGrey),
             )
           ],
         );
@@ -440,8 +446,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildStatusSection() {
     if (user.nextPresence.attendTime.isNotEmpty ||
-        user.nextPresence.startTime.isAfter(DateTime.now()))
+        user.nextPresence.startTime.isAfter(DateTime.now())) {
       return _checkStatusIcon(user.nextPresence.status);
+    }
 
     return Center(
       child: ClipRRect(
@@ -455,7 +462,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
-                children: <Widget>[
+                children: const <Widget>[
                   Icon(
                     Icons.qr_code_rounded,
                     size: 84,
@@ -513,8 +520,8 @@ class _HomeScreenState extends State<HomeScreen> {
       String status = user.nextPresence.status;
       double fontSize = 14;
       if (status == 'Terlambat') {
-        var duration = calculateLateTime(
-            user.nextPresence.startTime.add(Duration(minutes: 30)),
+        final duration = calculateLateTime(
+            user.nextPresence.startTime.add(const Duration(minutes: 30)),
             user.nextPresence.attendTime);
         status += ' $duration';
         fontSize = 12;
@@ -549,7 +556,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              Divider(
+              const Divider(
                 thickness: 1.0,
                 color: Colors.black26,
               ),
@@ -563,14 +570,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         'SKEMA ABSENSI :',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 2.0),
+                      sizedBoxH2,
                       Text(user.nextPresence.codeType),
-                      const SizedBox(height: 10.0),
+                      sizedBoxH10,
                       const Text(
                         'JADWAL ABSENSI :',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 2.0),
+                      sizedBoxH2,
                       Row(
                         children: <Widget>[
                           Text(
@@ -584,30 +591,27 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                         ],
                       ),
-                      const SizedBox(height: 10.0),
+                      sizedBoxH10,
                       const Text(
                         'STATUS KEHADIRAN :',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 2.0),
+                      sizedBoxH2,
                       Text(
                         status,
                         style: TextStyle(
                             fontSize: fontSize,
                             color: checkStatusColor(user.nextPresence.status)),
                       ),
-                      const SizedBox(height: 10.0),
+                      sizedBoxH10,
                       Text(
                         _checkTimeLabel(),
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 2.0),
+                      sizedBoxH2,
                       CountdownTimer(
-                        onEnd: () {
-                          _getUser();
-                        },
-                        endTime: checkTime(),
-                        emptyWidget: AutoSizeText(
+                        controller: _countdownController,
+                        emptyWidget: const AutoSizeText(
                           'Semua absen hari ini telah selesai',
                           maxFontSize: 12.0,
                           minFontSize: 10.0,
@@ -683,30 +687,52 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildPNSHonorerSection() {
-    var pns = _countUserByStatus('PNS');
-    var honorer = _countUserByStatus('Honorer');
+    final pns = _countUserByStatus('PNS');
+    final honorer = _countUserByStatus('Honorer');
     return Text(
       '$pns PNS/$honorer Honorer',
-      style: TextStyle(
+      style: const TextStyle(
           fontWeight: FontWeight.w600, fontSize: 12.0, color: Colors.grey),
     );
   }
 
   int _countUserByStatus(String status) {
-    var count = 0;
-
     if (_users == null) {
-      return count;
+      return 0;
     }
-    count = _users.where((element) => element.status == status).length +
-        (this.user?.status == status ? 1 : 0);
-    return count;
+    return _users.where((element) => element.status == status).length +
+        (user?.status == status ? 1 : 0);
   }
 
   @override
   void initState() {
     super.initState();
     Future.wait([_getUser(), _getAllEmployee()]);
+    _countdownController = CountdownTimerController(
+        onEnd: () {
+          _getUser();
+        },
+        endTime: checkTime());
+  }
+
+  Widget _buildUnreadNotificationCount() {
+    if (user != null && user.unreadNotification > 0) {
+      return Positioned(
+        right: 8,
+        top: 6,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+          decoration: BoxDecoration(
+              color: Colors.red, borderRadius: BorderRadius.circular(50)),
+          child: Text(
+            user?.unreadNotification.toString(),
+            style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
+    }
+
+    return sizedBox;
   }
 
   @override
@@ -731,24 +757,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         .then((value) => _getUser());
                   },
                 ),
-                (user != null && user.unreadNotification > 0)
-                    ? Positioned(
-                        right: 8,
-                        top: 6,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 4.0, vertical: 2.0),
-                          child: Text(
-                            user?.unreadNotification.toString(),
-                            style: TextStyle(
-                                fontSize: 12.0, fontWeight: FontWeight.bold),
-                          ),
-                          decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(50)),
-                        ),
-                      )
-                    : SizedBox(),
+                _buildUnreadNotificationCount(),
               ],
             ),
           ],
@@ -759,26 +768,29 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.blueAccent,
-          child: Icon(
-            Icons.refresh,
-            color: Colors.white,
-          ),
           onPressed: () async {
-            ProgressDialog pd = ProgressDialog(context);
-            var showing = await pd.show();
+            final ProgressDialog pd = ProgressDialog(context);
+            final showing = await pd.show();
             try {
               await Future.wait([_getUser(), _getAllEmployee(pd: pd)]);
             } catch (e) {
-              print(e);
+              showErrorDialog({
+                'message': 'Kesalahan',
+                'errors': [e.toString()]
+              });
             } finally {
               if (showing) {
                 pd.hide();
               }
             }
           },
+          child: const Icon(
+            Icons.refresh,
+            color: Colors.white,
+          ),
         ),
         body: CustomScrollView(
-          physics: ClampingScrollPhysics(),
+          physics: const ClampingScrollPhysics(),
           slivers: <Widget>[_buildHeader(), _buildNextPresence()],
         ));
   }
@@ -790,7 +802,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             padding: EdgeInsets.only(
                 left: 20.0, right: 20.0, bottom: Get.height * 0.13, top: 5.0),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black26,
@@ -807,13 +819,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Text(
+                      const Text(
                         'Selamat Datang',
                         style: TextStyle(fontSize: 12.0, color: Colors.white),
                       ),
-                      SizedBox(height: 10),
+                      sizedBoxH10,
                       _buildUserNameSection(),
                       _buildPositionSection(),
                     ],
@@ -825,7 +836,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black26,
@@ -840,7 +851,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 right: 20.0,
               ),
               child: ClipRRect(
-                child: Container(
+                borderRadius: BorderRadius.circular(10),
+                child: SizedBox(
                   width: Get.width,
                   child: Card(
                     shape: RoundedRectangleBorder(
@@ -855,13 +867,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: <Widget>[
                               Text(
                                 '${_users == null ? 0 : (_users.length + 1)} Pegawai',
-                                style: TextStyle(fontWeight: FontWeight.w600),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600),
                               ),
-                              SizedBox(height: 10.0),
+                              sizedBoxH10,
                               _buildPNSHonorerSection()
                             ],
                           ),
-                          SizedBox(height: 10.0),
+                          sizedBoxH10,
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: _buildImageStack(),
@@ -871,7 +884,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                borderRadius: BorderRadius.circular(10),
               ),
             ),
           ),
@@ -883,12 +895,12 @@ class _HomeScreenState extends State<HomeScreen> {
   SliverToBoxAdapter _buildNextPresence() {
     return SliverToBoxAdapter(
       child: Container(
-        margin: EdgeInsets.only(top: 12.0),
-        padding: EdgeInsets.all(8),
+        margin: const EdgeInsets.only(top: 12.0),
+        padding: const EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
+            const Text(
               'Absen Selanjutnya',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
@@ -898,8 +910,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Center(
               child: _buildTimerSection(),
             ),
-            SizedBox(height: 30.0),
-            Text(
+            sizedBoxH30,
+            const Text(
               'Absen Hari Ini',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
