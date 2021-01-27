@@ -29,15 +29,16 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = widget.imageUrl == null
+        ? MemoryImage(widget.bytes)
+        : CachedNetworkImageProvider(widget.imageUrl);
     return Scaffold(
       body: Center(
           child: PhotoView(
               heroAttributes: PhotoViewHeroAttributes(
                   tag: widget.tag, transitionOnUserGestures: true),
               maxScale: 5.0,
-              imageProvider: widget.imageUrl == null
-                  ? MemoryImage(widget.bytes)
-                  : CachedNetworkImageProvider(widget.imageUrl))),
+              imageProvider: provider as ImageProvider)),
     );
   }
 }
