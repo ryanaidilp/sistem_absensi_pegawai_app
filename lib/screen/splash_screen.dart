@@ -56,12 +56,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> checkIsFirstSeen() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey(PREFS_SEEN_KEY)) {
+    if (prefs.containsKey(prefsSeenKey)) {
       setState(() {
         _isFirstSeen = true;
       });
     } else {
-      prefs.setBool(PREFS_SEEN_KEY, true);
+      prefs.setBool(prefsSeenKey, true);
       setState(() {
         _isFirstSeen = false;
       });
@@ -70,7 +70,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkIfLoggedIn() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String token = prefs.getString(PREFS_TOKEN_KEY);
+    final String token = prefs.getString(prefsTokenKey);
     if (token != null) {
       setState(() {
         _isLoggedIn = true;
@@ -91,7 +91,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<Timer> _loadWidget() async {
-    final Duration _duration = Duration(seconds: 5);
+    const Duration _duration = Duration(seconds: 5);
     return Timer(_duration, navigationPage);
   }
 
@@ -99,8 +99,8 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!(await Geolocator().isLocationServiceEnabled())) {
       Get.defaultDialog(
         title: 'Perhatian',
-        content: Center(
-          child: const Text(
+        content: const Center(
+          child: Text(
             'Tidak dapat mendeteksi lokasi saat ini! Pastikan GPS sudah aktif dan coba lagi!',
             textAlign: TextAlign.center,
           ),
@@ -158,7 +158,6 @@ class _SplashScreenState extends State<SplashScreen> {
           fit: StackFit.expand,
           children: <Widget>[
             Align(
-              alignment: Alignment.center,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -166,8 +165,8 @@ class _SplashScreenState extends State<SplashScreen> {
                     'assets/launcher/icon.png',
                     width: Get.width * 0.3,
                   ),
-                  const SizedBox(height: 4.0),
-                  Text(
+                  sizedBoxH4,
+                  const Text(
                     'SiAP Balaesang',
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.w700),
@@ -187,15 +186,15 @@ class _SplashScreenState extends State<SplashScreen> {
                   const SizedBox(height: 10.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      const Spacer(),
+                    children: const <Widget>[
+                      Spacer(),
                       Text('SiAP Balaesang',
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w700)),
-                      const SizedBox(width: 2.0),
+                      SizedBox(width: 2.0),
                       Text('v4.3.0', style: TextStyle(color: Colors.white)),
-                      const Spacer()
+                      Spacer()
                     ],
                   ),
                   const SizedBox(height: 10.0),
@@ -205,25 +204,27 @@ class _SplashScreenState extends State<SplashScreen> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Spacer(),
-                        Image.asset(
-                          'assets/logo/banuacoders.png',
-                          width: Get.width * 0.25,
-                          fit: BoxFit.fitHeight,
-                        ),
-                        Spacer(),
-                        Text('|'),
-                        Spacer(),
-                        Image.asset(
-                          'assets/logo/balaesang.png',
-                          width: Get.width * 0.25,
-                          fit: BoxFit.scaleDown,
-                        ),
-                        Spacer(),
-                      ],
+                    child: IntrinsicHeight(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          const Spacer(),
+                          Image.asset(
+                            'assets/logo/banuacoders.png',
+                            width: Get.width * 0.25,
+                            fit: BoxFit.fitHeight,
+                          ),
+                          const Spacer(),
+                          verticalDiv,
+                          const Spacer(),
+                          Image.asset(
+                            'assets/logo/balaesang.png',
+                            width: Get.width * 0.25,
+                            fit: BoxFit.scaleDown,
+                          ),
+                          const Spacer(),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 30.0),
