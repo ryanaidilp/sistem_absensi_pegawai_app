@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/outstation.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/extensions.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/employee_proposal_widget.dart';
@@ -24,19 +25,19 @@ class EmployeeOutstationScreen extends StatefulWidget {
 }
 
 class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
-  List<Outstation> _outstations = List<Outstation>();
+  List<Outstation> _outstations = <Outstation>[];
   bool _isLoading = false;
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final CalendarController _calendarController = CalendarController();
-  List<Outstation> _filteredOutstation = List<Outstation>();
+  List<Outstation> _filteredOutstation = <Outstation>[];
   Set<String> choices = {'Semua', 'Disetujui', 'Belum Disetujui', 'Tanggal'};
   String _selectedChoice = 'Semua';
   DateTime _selectedDate = DateTime.now();
   bool _isDateChange = false;
 
   @override
-  void setState(fn) {
+  void setState(void Function() fn) {
     if (mounted) {
       super.setState(fn);
     }
@@ -47,18 +48,23 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
       setState(() {
         _isLoading = true;
       });
-      var dataRepo = Provider.of<DataRepository>(context, listen: false);
-      Map<String, dynamic> _result = await dataRepo.getAllEmployeeOutstation();
-      List<dynamic> outstations = _result['data'];
+      final dataRepo = Provider.of<DataRepository>(context, listen: false);
+      final Map<String, dynamic> _result =
+          await dataRepo.getAllEmployeeOutstation();
+      final List<dynamic> outstations = _result['data'] as List<dynamic>;
 
-      List<Outstation> _data =
-          outstations.map((json) => Outstation.fromJson(json)).toList();
+      final _data = outstations
+          .map((json) => Outstation.fromJson(json as Map<String, dynamic>))
+          .toList();
       setState(() {
         _outstations = _data;
         _filteredOutstation = _outstations;
       });
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': [e.toString()]
+      });
     } finally {
       setState(() {
         _isLoading = false;
@@ -66,7 +72,7 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
     }
   }
 
-  _rejectOutstation(Outstation outstation) {
+  void _rejectOutstation(Outstation outstation) {
     Get.defaultDialog(
         title: 'Alasan Pembatalan!',
         content: Flexible(
@@ -75,7 +81,7 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
             width: Get.width * 0.9,
             child: TextFormField(
               controller: _reasonController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   labelText: 'Alasan',
                   focusColor: Colors.blueAccent,
                   focusedBorder: UnderlineInputBorder(
@@ -91,15 +97,16 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
             Get.back();
             _sendData(outstation, false);
           },
-          child: Text('OK'),
+          child: const Text('OK'),
         ));
   }
 
+  // ignore: always_declare_return_types
   _approveOutstation(Outstation outstation) {
     _sendData(outstation, true);
   }
 
-  _cancelButton(String label, Outstation outstation) {
+  SizedBox _cancelButton(String label, Outstation outstation) {
     return SizedBox(
       width: Get.width,
       child: RaisedButton(
@@ -114,7 +121,7 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
     );
   }
 
-  _approveButton(Outstation outstation) {
+  SizedBox _approveButton(Outstation outstation) {
     return SizedBox(
       width: Get.width,
       child: RaisedButton(
@@ -124,12 +131,12 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
         onPressed: () {
           _approveOutstation(outstation);
         },
-        child: Text('Setujui'),
+        child: const Text('Setujui'),
       ),
     );
   }
 
-  _buildButtonSection(Outstation outstation) {
+  Widget _buildButtonSection(Outstation outstation) {
     switch (outstation.approvalStatus) {
       case 'Menunggu Persetujuan':
         return Column(
@@ -142,34 +149,40 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
         return _cancelButton('Batal Setujui', outstation);
       case 'Ditolak':
         return _approveButton(outstation);
+      default:
+        return sizedBox;
     }
   }
 
   Future<void> _sendData(Outstation outstation, bool isApproved) async {
-    ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    final ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     pd.show();
     try {
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
-      Map<String, dynamic> data = {
+      final Map<String, dynamic> data = {
         'user_id': outstation.user.id,
         'is_approved': isApproved,
         'outstation_id': outstation.id,
         'reason': _reasonController.value.text
       };
-      http.Response response = await dataRepo.approveOutstation(data);
-      Map<String, dynamic> _res = jsonDecode(response.body);
-      print(response.statusCode);
+      final http.Response response = await dataRepo.approveOutstation(data);
+      final Map<String, dynamic> _res =
+          jsonDecode(response.body) as Map<String, dynamic>;
       if (response.statusCode == 200) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], false);
-        Timer(Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+        showAlertDialog("success", "Sukses", _res['message'].toString(),
+            dismissible: false);
+        Timer(const Duration(seconds: 5), () => Get.off(BottomNavScreen()));
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);
       }
     } catch (e) {
       pd.hide();
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': [e.toString()]
+      });
     }
   }
 
@@ -188,41 +201,40 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
   }
 
   Widget _buildBody() {
-    if (_isLoading)
-      return Container(
+    if (_isLoading) {
+      return SizedBox(
         height: Get.height * 0.8,
-        child: Center(
+        child: const Center(
             child: SpinKitFadingFour(
           size: 45,
           color: Colors.blueAccent,
         )),
       );
+    }
     if (_filteredOutstation.isEmpty) {
-      return Container(
+      return SizedBox(
         height: Get.height * 0.6,
         child: Center(
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Container(
+                SizedBox(
                   width: Get.width * 0.5,
                   height: Get.height * 0.3,
-                  child: FlareActor(
+                  child: const FlareActor(
                     'assets/flare/not_found.flr',
-                    fit: BoxFit.contain,
                     animation: 'empty',
-                    alignment: Alignment.center,
                   ),
                 ),
-                Text('Belum ada Dinas Luar yang diajukan!')
+                const Text('Belum ada Dinas Luar yang diajukan!')
               ]),
         ),
       );
     }
     return Column(
       children: _filteredOutstation.map((outstation) {
-        DateTime dueDate = outstation.dueDate;
-        DateTime startDate = outstation.startDate;
+        final DateTime dueDate = outstation.dueDate;
+        final DateTime startDate = outstation.startDate;
         return EmployeeProposalWidget(
           isApprovalCard: true,
           employeeName: outstation.user.name,
@@ -269,28 +281,27 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
     return _outstations;
   }
 
-  _selectDate() {
+  void _selectDate() {
     Get.defaultDialog(
         title: 'Pilih Tanggal',
         content: Flexible(
-          child: Container(
+          child: SizedBox(
             width: Get.width * 0.9,
             child: TableCalendar(
-              availableCalendarFormats: <CalendarFormat, String>{
+              availableCalendarFormats: const <CalendarFormat, String>{
                 CalendarFormat.month: '1 minggu',
                 CalendarFormat.twoWeeks: '1 bulan',
                 CalendarFormat.week: '2 minggu'
               },
               availableGestures: AvailableGestures.horizontalSwipe,
-              headerStyle:
-                  HeaderStyle(formatButtonTextStyle: TextStyle(fontSize: 12.0)),
+              headerStyle: const HeaderStyle(
+                  formatButtonTextStyle: TextStyle(fontSize: 12.0)),
               calendarController: _calendarController,
               startingDayOfWeek: StartingDayOfWeek.monday,
               startDay: DateTime(2021),
               endDay: DateTime(DateTime.now().year + 5),
               initialSelectedDay: _selectedDate,
               locale: 'in_ID',
-              initialCalendarFormat: CalendarFormat.month,
               onDaySelected: (day, events, holidays) {
                 Get.back();
                 setState(() {
@@ -311,7 +322,7 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
 
   void _searchByName(String value) {
     setState(() {
-      if (value.length > 0) {
+      if (value.isNotEmpty) {
         _filteredOutstation = _filteredOutstation
             .where((element) =>
                 element.user.name.toLowerCase().contains(value.toLowerCase()))
@@ -341,7 +352,7 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
-        title: Text('Daftar Dinas Luar Pegawai'),
+        title: const Text('Daftar Dinas Luar Pegawai'),
       ),
       body: Container(
         padding: const EdgeInsets.all(8),
@@ -351,14 +362,14 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
             children: <Widget>[
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.search),
                     labelText: 'Cari dengan nama pegawai'),
               ),
-              SizedBox(height: 10.0),
+              sizedBoxH10,
               Row(
                 children: <Widget>[
-                  Expanded(
+                  const Expanded(
                     child: Text(
                       'Filter : ',
                       style: TextStyle(
@@ -367,7 +378,7 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
                   ),
                   Expanded(
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10.0),
                           border: Border.all(color: Colors.grey[600])),
@@ -378,17 +389,18 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
                             items: choices
                                 .map(
                                   (choice) => DropdownMenuItem(
+                                    value: choice,
                                     child: Text(
                                       choice,
                                     ),
-                                    value: choice,
                                   ),
                                 )
                                 .toList(),
                             onChanged: (value) {
                               setState(() {
-                                _selectedChoice = value;
-                                _filteredOutstation = _setFilter(value);
+                                _selectedChoice = value.toString();
+                                _filteredOutstation =
+                                    _setFilter(value.toString());
                                 if (_nameController.value.text.isNotEmpty) {
                                   _searchByName(_nameController.value.text);
                                 }
@@ -399,9 +411,9 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
                   )
                 ],
               ),
-              Divider(),
+              const Divider(),
               _buildLabelSection(),
-              SizedBox(height: 8.0),
+              sizedBoxH8,
               _buildBody(),
             ],
           ),
