@@ -3,17 +3,18 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:spo_balaesang/models/employee.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class EmployeeListScreen extends StatelessWidget {
-  const EmployeeListScreen({this.employees, key}) : super(key: key);
+  const EmployeeListScreen({this.employees});
 
   final List<Employee> employees;
 
   Widget _buildPnsInfoSection(int index) {
-    if (this.employees[index].status == 'Honorer') {
-      return SizedBox();
+    if (employees[index].status == 'Honorer') {
+      return sizedBox;
     }
 
     return Column(
@@ -26,10 +27,10 @@ class EmployeeListScreen extends StatelessWidget {
               "Golongan",
               style: labelTextStyle,
             ),
-            Text('${this.employees[index].group}')
+            Text(employees[index].group ?? '')
           ],
         ),
-        SizedBox(height: 2.0),
+        sizedBoxH2,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -37,10 +38,10 @@ class EmployeeListScreen extends StatelessWidget {
               "Pangkat",
               style: labelTextStyle,
             ),
-            Text('${this.employees[index].rank}')
+            Text(employees[index].rank ?? '')
           ],
         ),
-        SizedBox(height: 2.0),
+        sizedBoxH2,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -48,44 +49,42 @@ class EmployeeListScreen extends StatelessWidget {
               "NIP",
               style: labelTextStyle,
             ),
-            Text('${this.employees[index].nip}')
+            Text(employees[index].nip ?? '')
           ],
         ),
-        SizedBox(height: 2.0),
+        sizedBoxH2,
       ],
     );
   }
 
   Widget _buildPresenceSection(int index) {
-    if (this.employees[index].presences.isEmpty) {
-      return SizedBox();
+    if (employees[index].presences.isEmpty) {
+      return sizedBox;
     }
 
     return Column(
       children: <Widget>[
-        Divider(
-          thickness: 1.0,
-        ),
+        dividerT1,
         Row(
           children: <Widget>[
-            SizedBox(width: 12),
-            Text(
+            sizedBoxW12,
+            const Text(
               'Kehadiran : ',
               style: TextStyle(color: Colors.blueGrey),
             ),
             Text(
-              '${DateFormat("EEEE, d MMMM y").format(DateTime.now())}',
-              style: TextStyle(fontSize: 12.0),
+              DateFormat("EEEE, d MMMM y").format(DateTime.now()),
+              style: const TextStyle(fontSize: 12.0),
             )
           ],
         ),
-        const SizedBox(height: 4.0),
+        sizedBoxH4,
         Column(
-          children: this.employees[index].presences.map((presence) {
+          children: employees[index].presences.map((presence) {
             String status =
                 '${presence.status} (${formatPercentage(checkPresencePercentage(presence.status))})';
             if (presence.status == 'Terlambat') {
-              var duration =
+              final duration =
                   calculateLateTime(presence.startTime, presence.attendTime);
               status =
                   '${presence.status} $duration (${formatPercentage(checkPresencePercentage(presence.status))})';
@@ -94,14 +93,14 @@ class EmployeeListScreen extends StatelessWidget {
               dense: true,
               title: Text(
                 presence.codeType,
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               subtitle: Text(
                 status,
                 style: TextStyle(color: checkStatusColor(presence.status)),
               ),
-              trailing: Text(
-                  '${presence.attendTime.isEmpty ? '-' : presence.attendTime}'),
+              trailing:
+                  Text(presence.attendTime.isEmpty ? '-' : presence.attendTime),
             );
           }).toList(),
         )
@@ -114,27 +113,27 @@ class EmployeeListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
-        title: Text('Pegawai'),
+        title: const Text('Pegawai'),
       ),
       body: Padding(
-        padding: EdgeInsets.only(bottom: 8, left: 8, right: 8),
+        padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
         child: ListView.builder(
           itemBuilder: (_, index) => Container(
-            margin: EdgeInsets.only(bottom: 16),
+            margin: const EdgeInsets.only(bottom: 16),
             child: Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               elevation: 3.0,
               child: Padding(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      this.employees[index].name,
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      employees[index].name,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    Divider(thickness: 1),
+                    dividerT1,
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -145,10 +144,10 @@ class EmployeeListScreen extends StatelessWidget {
                               "Jabatan",
                               style: labelTextStyle,
                             ),
-                            Text('${this.employees[index].position}')
+                            Text(employees[index].position)
                           ],
                         ),
-                        SizedBox(height: 2.0),
+                        sizedBoxH2,
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
@@ -156,10 +155,10 @@ class EmployeeListScreen extends StatelessWidget {
                               "Bagian",
                               style: labelTextStyle,
                             ),
-                            Text('${this.employees[index].department}')
+                            Text(employees[index].department)
                           ],
                         ),
-                        SizedBox(height: 2.0),
+                        sizedBoxH2,
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
@@ -167,14 +166,14 @@ class EmployeeListScreen extends StatelessWidget {
                               "Status",
                               style: labelTextStyle,
                             ),
-                            Text('${this.employees[index].status}')
+                            Text(employees[index].status)
                           ],
                         ),
-                        SizedBox(height: 2.0),
+                        sizedBoxH2,
                         _buildPnsInfoSection(index)
                       ],
                     ),
-                    Divider(thickness: 1),
+                    dividerT1,
                     Center(
                       child: Wrap(
                         spacing: 8.0,
@@ -182,45 +181,42 @@ class EmployeeListScreen extends StatelessWidget {
                           IconButton(
                             onPressed: () {
                               launch(
-                                  'tel:${trimPhoneNumber(this.employees[index].phone)}');
+                                  'tel:${trimPhoneNumber(employees[index].phone)}');
                             },
                             color: Colors.blueAccent,
-                            icon: Icon(Icons.phone),
-                            enableFeedback: true,
+                            icon: const Icon(Icons.phone),
                             tooltip: 'Hubungi via Telpon',
                           ),
                           IconButton(
                             onPressed: () async {
-                              var whatsappUrl =
-                                  "whatsapp://send?phone=${trimPhoneNumber(this.employees[index].phone)}";
+                              final whatsappUrl =
+                                  "whatsapp://send?phone=${trimPhoneNumber(employees[index].phone)}";
                               await canLaunch(whatsappUrl)
                                   ? launch(whatsappUrl)
                                   : Get.defaultDialog(
                                       title: 'Gagal',
-                                      content:
-                                          Text('WhatsApp tidak ditemukan!'),
+                                      content: const Text(
+                                          'WhatsApp tidak ditemukan!'),
                                     );
                             },
                             color: Colors.green[600],
-                            icon: FaIcon(FontAwesomeIcons.whatsapp),
-                            enableFeedback: true,
+                            icon: const FaIcon(FontAwesomeIcons.whatsapp),
                             tooltip: 'Hubungi via WA',
                           ),
                           IconButton(
                             onPressed: () async {
-                              var smsUrl =
-                                  "smsto:${trimPhoneNumber(this.employees[index].phone)}";
+                              final smsUrl =
+                                  "smsto:${trimPhoneNumber(employees[index].phone)}";
                               await canLaunch(smsUrl)
                                   ? launch(smsUrl)
                                   : Get.defaultDialog(
                                       title: 'Gagal',
-                                      content:
-                                          Text('Aplikasi SMS tidak ditemukan!'),
+                                      content: const Text(
+                                          'Aplikasi SMS tidak ditemukan!'),
                                     );
                             },
                             color: Colors.red[800],
-                            icon: FaIcon(FontAwesomeIcons.mailBulk),
-                            enableFeedback: true,
+                            icon: const FaIcon(FontAwesomeIcons.mailBulk),
                             tooltip: 'Hubungi via SMS',
                           ),
                         ],
@@ -232,7 +228,7 @@ class EmployeeListScreen extends StatelessWidget {
               ),
             ),
           ),
-          itemCount: this.employees.length,
+          itemCount: employees.length,
         ),
       ),
     );
