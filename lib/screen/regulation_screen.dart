@@ -45,17 +45,17 @@ class RegulationScreen extends StatelessWidget {
                       elevation: 4.0,
                       child: ListTile(
                         onTap: () {
-                          launch(regulation['link']);
+                          launch(regulation['link'].toString());
                         },
                         title: Text(
-                          regulation['title'],
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                          regulation['title'].toString(),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
-                        subtitle: Text(regulation['description']),
+                        subtitle: Text(regulation['description'].toString()),
                         trailing: IconButton(
-                          icon: Icon(Icons.chevron_right),
+                          icon: const Icon(Icons.chevron_right),
                           onPressed: () {
-                            launch(regulation['link']);
+                            launch(regulation['link'].toString());
                           },
                         ),
                         dense: true,
@@ -72,7 +72,7 @@ class RegulationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Daftar Rujukan'),
+        title: const Text('Daftar Rujukan'),
         backgroundColor: Colors.blueAccent,
       ),
       body: _buildBody(),
