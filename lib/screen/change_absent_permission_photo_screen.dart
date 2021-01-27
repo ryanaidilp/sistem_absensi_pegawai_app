@@ -14,13 +14,14 @@ import 'package:spo_balaesang/models/absent_permission.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/image_detail_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/file_util.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/employee_proposal_info_widget.dart';
 import 'package:spo_balaesang/widgets/image_placeholder_widget.dart';
 
 class ChangePermissionPhotoScreen extends StatefulWidget {
-  ChangePermissionPhotoScreen({this.permission});
+  const ChangePermissionPhotoScreen({this.permission});
 
   final AbsentPermission permission;
 
@@ -36,9 +37,9 @@ class _ChangePermissionPhotoScreenState
   File _tmpFile;
   AbsentPermission _permission;
 
-  _openCamera() async {
-    var picture = await ImagePicker().getImage(source: ImageSource.camera);
-    var file = await compressAndGetFile(File(picture.path),
+  Future<void> _openCamera() async {
+    final picture = await ImagePicker().getImage(source: ImageSource.camera);
+    final file = await compressAndGetFile(File(picture.path),
         '/storage/emulated/0/Android/data/com.banuacoders.siap/files/Pictures/images.jpg');
     setState(() {
       _tmpFile = file;
@@ -49,27 +50,31 @@ class _ChangePermissionPhotoScreenState
   }
 
   Future<void> _uploadData(AbsentPermission permission) async {
-    ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    final ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     try {
       pd.show();
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
-      Map<String, dynamic> data = {
+      final Map<String, dynamic> data = {
         'photo': _base64Image,
         'file_name': _fileName,
         'permission_id': permission.id
       };
-      Map<String, dynamic> _res = await dataRepo.changePermissionPhoto(data);
-      print(_res.toString());
-      if (_res['success']) {
+      final Map<String, dynamic> _res =
+          await dataRepo.changePermissionPhoto(data);
+      if (_res['success'] as bool) {
         pd.hide();
-        showAlertDialog('success', "Sukses", _res['message'], false);
-        Timer(Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+        showAlertDialog('success', "Sukses", _res['message'].toString(),
+            dismissible: false);
+        Timer(const Duration(seconds: 5), () => Get.off(BottomNavScreen()));
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);
       }
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': [e.toString()]
+      });
       pd.hide();
     }
   }
@@ -88,7 +93,7 @@ class _ChangePermissionPhotoScreenState
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10.0),
             child: CachedNetworkImage(
-              placeholder: (_, __) => ImagePlaceholderWidget(
+              placeholder: (_, __) => const ImagePlaceholderWidget(
                 label: 'Memuat Foto',
                 child: SpinKitFadingCircle(
                   size: 25.0,
@@ -97,7 +102,7 @@ class _ChangePermissionPhotoScreenState
               ),
               imageUrl: _permission.photo,
               fit: BoxFit.cover,
-              errorWidget: (_, __, ___) => ImagePlaceholderWidget(
+              errorWidget: (_, __, ___) => const ImagePlaceholderWidget(
                 label: 'Gagal memuat foto!',
                 child: Icon(
                   Icons.image_not_supported_rounded,
@@ -112,7 +117,7 @@ class _ChangePermissionPhotoScreenState
       );
     }
 
-    Uint8List bytes = base64Decode(_base64Image);
+    final Uint8List bytes = base64Decode(_base64Image);
     return InkWell(
       onTap: () {
         Get.to(ImageDetailScreen(
@@ -147,7 +152,7 @@ class _ChangePermissionPhotoScreenState
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
-        title: Text('Perbarui Lampiran'),
+        title: const Text('Perbarui Lampiran'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -156,18 +161,19 @@ class _ChangePermissionPhotoScreenState
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('Pastikan gembar yang akan dikirim adalah salah satu dari memo absen, SPPD, atau surat keterangan dokter. ' +
-                  'Pastikan juga surat sudah ditandatangani oleh pihak yang berwenang disertai dengan cap resmi.'),
-              SizedBox(height: 20.0),
+              const Text(
+                  'Pastikan gembar yang akan dikirim adalah salah satu dari memo absen, SPPD, atau surat keterangan dokter. ' +
+                      'Pastikan juga surat sudah ditandatangani oleh pihak yang berwenang disertai dengan cap resmi.'),
+              sizedBoxH20,
               EmployeeProposalInfoWidget(
                 title: _permission.title,
                 startDate: _permission.startDate,
                 dueDate: _permission.dueDate,
                 label: 'Izin',
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               Row(
-                children: <Widget>[
+                children: const <Widget>[
                   Text('Foto Surat Izin'),
                   SizedBox(width: 5.0),
                   Text(
@@ -176,20 +182,20 @@ class _ChangePermissionPhotoScreenState
                   ),
                 ],
               ),
-              Text(
+              const Text(
                 'Lampirkan foto surat izin atau surat lainnya seperti surat keterangan dokter, dsb.',
                 style: TextStyle(color: Colors.grey),
               ),
-              Text(
+              const Text(
                 '*tekan untuk memperbesar',
                 style: TextStyle(
                     fontSize: 12.0,
                     color: Colors.black87,
                     fontStyle: FontStyle.italic),
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               _showImage(),
-              SizedBox(height: 10.0),
+              sizedBoxH10,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -199,7 +205,7 @@ class _ChangePermissionPhotoScreenState
                     onPressed: _openCamera,
                     color: Colors.blueAccent,
                     textColor: Colors.white,
-                    child: Text('Ubah Foto'),
+                    child: const Text('Ubah Foto'),
                   ),
                   RaisedButton(
                     shape: RoundedRectangleBorder(
@@ -209,11 +215,11 @@ class _ChangePermissionPhotoScreenState
                     },
                     color: Colors.green,
                     textColor: Colors.white,
-                    child: Text('Kirim'),
+                    child: const Text('Kirim'),
                   ),
                 ],
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
             ],
           ),
         ),
