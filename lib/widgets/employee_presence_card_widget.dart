@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:spo_balaesang/screen/image_detail_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/image_placeholder_widget.dart';
 
@@ -34,16 +35,16 @@ class EmployeePresenceCardWidget extends StatelessWidget {
   Widget _buildCancelButton(String status) {
     if ((status != 'Tepat Waktu' && !status.contains('Terlambat')) ||
         !isApprovalCard) {
-      return SizedBox();
+      return const SizedBox();
     }
     return Column(
-      children: <Widget>[Divider(), buttonWidget],
+      children: <Widget>[const Divider(), buttonWidget],
     );
   }
 
   Widget _showImage(String photo) {
     if (photo.isEmpty) {
-      return ImagePlaceholderWidget(
+      return const ImagePlaceholderWidget(
         label: 'Tidak ada foto!',
         child: Icon(
           Icons.image_not_supported_rounded,
@@ -64,7 +65,7 @@ class EmployeePresenceCardWidget extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10.0),
           child: CachedNetworkImage(
-            placeholder: (_, __) => ImagePlaceholderWidget(
+            placeholder: (_, __) => const ImagePlaceholderWidget(
               label: 'Memuat Foto',
               child: SpinKitFadingCircle(
                 size: 25.0,
@@ -73,7 +74,7 @@ class EmployeePresenceCardWidget extends StatelessWidget {
             ),
             imageUrl: photo,
             fit: BoxFit.cover,
-            errorWidget: (_, __, ___) => ImagePlaceholderWidget(
+            errorWidget: (_, __, ___) => const ImagePlaceholderWidget(
               label: 'Gagal memuat foto',
               child: Icon(
                 Icons.image_not_supported_rounded,
@@ -103,9 +104,9 @@ class EmployeePresenceCardWidget extends StatelessWidget {
             children: <Widget>[
               Text(
                 presenceType,
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
-              Divider(thickness: 1.0),
+              const Divider(thickness: 1.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -118,7 +119,7 @@ class EmployeePresenceCardWidget extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(height: 4.0),
+              sizedBoxH4,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -127,14 +128,14 @@ class EmployeePresenceCardWidget extends StatelessWidget {
                     style: labelTextStyle,
                   ),
                   Text(
-                    '$point',
+                    point,
                     style: TextStyle(
                       color: color,
                     ),
                   )
                 ],
               ),
-              SizedBox(height: 4.0),
+              sizedBoxH4,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -150,8 +151,8 @@ class EmployeePresenceCardWidget extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(height: 4.0),
-              Divider(thickness: 1),
+              sizedBoxH4,
+              dividerT1,
               Row(
                 children: <Widget>[
                   Icon(
@@ -159,11 +160,11 @@ class EmployeePresenceCardWidget extends StatelessWidget {
                     color: Colors.grey[600],
                     size: 20.0,
                   ),
-                  SizedBox(width: 4.0),
+                  sizedBoxW4,
                   Text('Lokasi', style: labelTextStyle)
                 ],
               ),
-              SizedBox(height: 4.0),
+              sizedBoxH4,
               AutoSizeText(
                 address.isEmpty ? '-' : address,
                 maxLines: 3,
@@ -172,7 +173,7 @@ class EmployeePresenceCardWidget extends StatelessWidget {
                 textAlign: TextAlign.justify,
                 overflow: TextOverflow.ellipsis,
               ),
-              Divider(thickness: 1),
+              dividerT1,
               Row(
                 children: <Widget>[
                   Icon(
@@ -180,13 +181,13 @@ class EmployeePresenceCardWidget extends StatelessWidget {
                     color: Colors.grey[600],
                     size: 20.0,
                   ),
-                  SizedBox(width: 4.0),
+                  sizedBoxW4,
                   Text('Foto Wajah', style: labelTextStyle)
                 ],
               ),
-              SizedBox(height: 4.0),
+              sizedBoxH4,
               _showImage(photo),
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               _buildCancelButton(status)
             ],
           ),

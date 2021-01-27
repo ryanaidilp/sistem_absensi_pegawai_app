@@ -53,7 +53,7 @@ class StatisticCard extends StatelessWidget {
         children: <Widget>[
           Text(
             type,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 10.0,
               color: Colors.black87,
             ),
@@ -64,12 +64,12 @@ class StatisticCard extends StatelessWidget {
             children: <Widget>[
               Text(
                 '$percentage',
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 24.0,
                 ),
               ),
-              Text(
+              const Text(
                 '%',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
@@ -80,13 +80,13 @@ class StatisticCard extends StatelessWidget {
           ),
           Text(
             '/$suffix',
-            style: TextStyle(color: Colors.grey, fontSize: 12.0),
+            style: const TextStyle(color: Colors.grey, fontSize: 12.0),
           )
         ],
       ),
       footer: Text(
         header.toUpperCase(),
-        style: TextStyle(
+        style: const TextStyle(
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -100,17 +100,17 @@ class StatisticCard extends StatelessWidget {
       children: <Widget>[
         Row(
           children: <Widget>[
-            SizedBox(width: 2.0),
+            sizedBoxW2,
             Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 16.0,
               ),
             ),
           ],
         ),
-        SizedBox(height: 6.0),
+        sizedBoxH6,
         LinearPercentIndicator(
           progressColor: color,
           animationDuration: 1000,
@@ -125,9 +125,9 @@ class StatisticCard extends StatelessWidget {
                 fontSize: 12.0, color: percentageLabelColor(percentage)),
           ),
         ),
-        SizedBox(height: 6.0),
+        sizedBoxH6,
         Row(
-          children: <Widget>[SizedBox(width: 2.0), footer],
+          children: <Widget>[sizedBoxW2, footer],
         )
       ],
     );
@@ -135,12 +135,12 @@ class StatisticCard extends StatelessWidget {
 
   Widget _buildPaidLeaveSection() {
     if (status == 'Honorer') {
-      return SizedBox();
+      return sizedBox;
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Divider(color: Colors.black26),
+        const Divider(color: Colors.black26),
         Text(
           'Cuti',
           style: TextStyle(
@@ -149,51 +149,53 @@ class StatisticCard extends StatelessWidget {
             color: Colors.grey[600],
           ),
         ),
-        SizedBox(height: 4.0),
+        sizedBoxH4,
         _buildLinearPercentage(
           double.parse(report
-              .yearly.outOfLiabilityLeave[REPORT_PERCENTAGE_FIELD]
+              .yearly.outOfLiabilityLeave[absentReportPercentageField]
               .toString()),
           'Diluar Tanggungan',
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             children: <Widget>[
-              SizedBox(width: 6.0),
+              sizedBoxW6,
               Text(
-                report.yearly.outOfLiabilityLeave[REPORT_DAY_FIELD].toString(),
+                report.yearly.outOfLiabilityLeave[reportDayField].toString(),
                 style: TextStyle(
                   color: Colors.grey[800],
                 ),
               ),
               Text(
-                '/${report.yearly.outOfLiabilityLeave[REPORT_LIMIT_FIELD]} hari',
-                style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                '/${report.yearly.outOfLiabilityLeave[reportLimitField]} hari',
+                style: const TextStyle(color: Colors.grey, fontSize: 12.0),
               )
             ],
           ),
           Colors.red[800],
           Get.width * 0.85,
         ),
-        SizedBox(height: 20.0),
+        sizedBoxH20,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             _buildLinearPercentage(
-                double.parse(report.yearly.annualLeave[REPORT_PERCENTAGE_FIELD]
+                double.parse(report
+                    .yearly.annualLeave[absentReportPercentageField]
                     .toString()),
                 'Tahunan',
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   children: <Widget>[
                     Text(
-                      report.yearly.annualLeave[REPORT_DAY_FIELD].toString(),
+                      report.yearly.annualLeave[reportDayField].toString(),
                       style: TextStyle(
                         color: Colors.grey[800],
                       ),
                     ),
                     Text(
-                      '/${report.yearly.annualLeave[REPORT_LIMIT_FIELD]} hari',
-                      style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                      '/${report.yearly.annualLeave[reportLimitField]} hari',
+                      style:
+                          const TextStyle(color: Colors.grey, fontSize: 12.0),
                     )
                   ],
                 ),
@@ -201,22 +203,23 @@ class StatisticCard extends StatelessWidget {
                 Get.width * 0.4),
             _buildLinearPercentage(
                 double.parse(report
-                    .yearly.importantReasonLeave[REPORT_PERCENTAGE_FIELD]
+                    .yearly.importantReasonLeave[absentReportPercentageField]
                     .toString()),
                 'Alasan Penting',
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   children: <Widget>[
                     Text(
-                      report.yearly.importantReasonLeave[REPORT_DAY_FIELD]
+                      report.yearly.importantReasonLeave[reportDayField]
                           .toString(),
                       style: TextStyle(
                         color: Colors.grey[800],
                       ),
                     ),
                     Text(
-                      '/${report.yearly.importantReasonLeave[REPORT_LIMIT_FIELD]} hari',
-                      style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                      '/${report.yearly.importantReasonLeave[reportLimitField]} hari',
+                      style:
+                          const TextStyle(color: Colors.grey, fontSize: 12.0),
                     )
                   ],
                 ),
@@ -224,26 +227,28 @@ class StatisticCard extends StatelessWidget {
                 Get.width * 0.4),
           ],
         ),
-        SizedBox(height: 20.0),
+        sizedBoxH20,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             _buildLinearPercentage(
-                double.parse(report.yearly.sickLeave[REPORT_PERCENTAGE_FIELD]
+                double.parse(report
+                    .yearly.sickLeave[absentReportPercentageField]
                     .toString()),
                 'Sakit',
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   children: <Widget>[
                     Text(
-                      report.yearly.sickLeave[REPORT_DAY_FIELD].toString(),
+                      report.yearly.sickLeave[reportDayField].toString(),
                       style: TextStyle(
                         color: Colors.grey[800],
                       ),
                     ),
                     Text(
-                      '/180 hari',
-                      style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                      '/${report.yearly.sickLeave[reportLimitField]} hari',
+                      style:
+                          const TextStyle(color: Colors.grey, fontSize: 12.0),
                     )
                   ],
                 ),
@@ -251,21 +256,22 @@ class StatisticCard extends StatelessWidget {
                 Get.width * 0.4),
             _buildLinearPercentage(
                 double.parse(report
-                    .yearly.maternityLeave[REPORT_PERCENTAGE_FIELD]
+                    .yearly.maternityLeave[absentReportPercentageField]
                     .toString()),
                 'Bersalin',
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   children: <Widget>[
                     Text(
-                      report.yearly.maternityLeave[REPORT_DAY_FIELD].toString(),
+                      report.yearly.maternityLeave[reportDayField].toString(),
                       style: TextStyle(
                         color: Colors.grey[800],
                       ),
                     ),
                     Text(
-                      '/${report.yearly.maternityLeave[REPORT_LIMIT_FIELD]} hari',
-                      style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                      '/${report.yearly.maternityLeave[reportLimitField]} hari',
+                      style:
+                          const TextStyle(color: Colors.grey, fontSize: 12.0),
                     )
                   ],
                 ),
@@ -279,6 +285,7 @@ class StatisticCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: sized_box_for_whitespace
     return Container(
       width: Get.width,
       child: Card(
@@ -289,20 +296,20 @@ class StatisticCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
+              const Text(
                 'Statistik',
                 style: TextStyle(
                   fontSize: 16.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              Divider(color: Colors.black38),
+              const Divider(color: Colors.black38),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   _buildCircularPercentage(
                     report.monthly.attendancePercentage,
-                    '${DateFormat.MMMM('id_ID').format(year)}',
+                    DateFormat.MMMM('id_ID').format(year),
                     'bulan',
                     'Kehadiran',
                   ),
@@ -314,44 +321,45 @@ class StatisticCard extends StatelessWidget {
                   ),
                 ],
               ),
-              Divider(color: Colors.black26),
+              const Divider(color: Colors.black26),
               _buildLinearPercentage(
-                double.parse(
-                    report.yearly.absent[REPORT_PERCENTAGE_FIELD].toString()),
+                double.parse(report.yearly.absent[absentReportPercentageField]
+                    .toString()),
                 'Alpa',
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   children: <Widget>[
-                    SizedBox(width: 6.0),
+                    sizedBoxW6,
                     Text(
-                      report.yearly.absent[REPORT_DAY_FIELD].toString(),
+                      report.yearly.absent[reportDayField].toString(),
                       style: TextStyle(
                         color: Colors.grey[800],
                       ),
                     ),
                     Text(
-                      '/${report.yearly.absent[REPORT_LIMIT_FIELD]} hari',
-                      style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                      '/${report.yearly.absent[reportLimitField]} hari',
+                      style:
+                          const TextStyle(color: Colors.grey, fontSize: 12.0),
                     )
                   ],
                 ),
                 Colors.red[800],
                 Get.width * 0.85,
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   _buildLinearPercentage(
                       double.parse(report
-                          .yearly.absentPermission[REPORT_PERCENTAGE_FIELD]
+                          .yearly.absentPermission[absentReportPercentageField]
                           .toString()),
                       'Izin',
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.baseline,
                         children: <Widget>[
                           Text(
-                            report.yearly.absentPermission[REPORT_DAY_FIELD]
+                            report.yearly.absentPermission[reportDayField]
                                 .toString(),
                             style: TextStyle(
                               color: Colors.grey[800],
@@ -359,8 +367,8 @@ class StatisticCard extends StatelessWidget {
                           ),
                           Text(
                             '/${report.totalWorkDay} hari kerja',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 12.0),
                           )
                         ],
                       ),
@@ -368,23 +376,22 @@ class StatisticCard extends StatelessWidget {
                       Get.width * 0.4),
                   _buildLinearPercentage(
                       double.parse(report
-                          .yearly.outstation[REPORT_PERCENTAGE_FIELD]
+                          .yearly.outstation[absentReportPercentageField]
                           .toString()),
                       'Dinas Luar',
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.baseline,
                         children: <Widget>[
                           Text(
-                            report.yearly.outstation[REPORT_DAY_FIELD]
-                                .toString(),
+                            report.yearly.outstation[reportDayField].toString(),
                             style: TextStyle(
                               color: Colors.grey[800],
                             ),
                           ),
                           Text(
                             '/${report.totalWorkDay} hari kerja',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 12.0),
                           )
                         ],
                       ),
@@ -393,20 +400,20 @@ class StatisticCard extends StatelessWidget {
                 ],
               ),
               _buildPaidLeaveSection(),
-              SizedBox(height: 6.0),
-              Divider(color: Colors.black26),
+              sizedBoxH6,
+              const Divider(color: Colors.black26),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(
+                  const Text(
                     'Tidak Apel Pagi',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14.0,
                     ),
                   ),
-                  SizedBox(height: 8.0),
+                  sizedBoxH8,
                   IntrinsicHeight(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -416,33 +423,30 @@ class StatisticCard extends StatelessWidget {
                           children: <Widget>[
                             Text(
                               report.monthly.notMorningParadeCount.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 32.0,
                               ),
                             ),
-                            Text(
+                            const Text(
                               ' kali/bulan',
                               style:
                                   TextStyle(color: Colors.grey, fontSize: 12.0),
                             ),
                           ],
                         ),
-                        VerticalDivider(
-                          thickness: 1,
-                          color: Colors.black,
-                        ),
+                        verticalDiv,
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.baseline,
                           children: <Widget>[
                             Text(
                               report.yearly.notMorningParadeCount.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 32.0,
                               ),
                             ),
-                            Text(
+                            const Text(
                               ' kali/tahun',
                               style:
                                   TextStyle(color: Colors.grey, fontSize: 12.0),
@@ -454,20 +458,20 @@ class StatisticCard extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(height: 6.0),
-              Divider(color: Colors.black26),
+              sizedBoxH6,
+              const Divider(color: Colors.black26),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(
+                  const Text(
                     'Terlambat',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14.0,
                     ),
                   ),
-                  SizedBox(height: 8.0),
+                  sizedBoxH8,
                   IntrinsicHeight(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -477,33 +481,30 @@ class StatisticCard extends StatelessWidget {
                           children: <Widget>[
                             Text(
                               report.monthly.lateCount.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 32.0,
                               ),
                             ),
-                            Text(
+                            const Text(
                               ' kali/bulan',
                               style:
                                   TextStyle(color: Colors.grey, fontSize: 12.0),
                             ),
                           ],
                         ),
-                        VerticalDivider(
-                          thickness: 1,
-                          color: Colors.black,
-                        ),
+                        verticalDiv,
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.baseline,
                           children: <Widget>[
                             Text(
                               report.yearly.lateCount.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 32.0,
                               ),
                             ),
-                            Text(
+                            const Text(
                               ' kali/tahun',
                               style:
                                   TextStyle(color: Colors.grey, fontSize: 12.0),
@@ -515,20 +516,20 @@ class StatisticCard extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(height: 6.0),
-              Divider(color: Colors.black26),
+              sizedBoxH6,
+              const Divider(color: Colors.black26),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(
+                  const Text(
                     'Istrahat Sebelum Waktunya',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14.0,
                     ),
                   ),
-                  SizedBox(height: 8.0),
+                  sizedBoxH8,
                   IntrinsicHeight(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -538,33 +539,30 @@ class StatisticCard extends StatelessWidget {
                           children: <Widget>[
                             Text(
                               report.monthly.earlyLunchBreakCount.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 32.0,
                               ),
                             ),
-                            Text(
+                            const Text(
                               ' kali/bulan',
                               style:
                                   TextStyle(color: Colors.grey, fontSize: 12.0),
                             ),
                           ],
                         ),
-                        VerticalDivider(
-                          thickness: 1,
-                          color: Colors.black,
-                        ),
+                        verticalDiv,
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.baseline,
                           children: <Widget>[
                             Text(
                               report.yearly.earlyLunchBreakCount.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 32.0,
                               ),
                             ),
-                            Text(
+                            const Text(
                               ' kali/tahun',
                               style:
                                   TextStyle(color: Colors.grey, fontSize: 12.0),
@@ -576,20 +574,20 @@ class StatisticCard extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(height: 6.0),
-              Divider(color: Colors.black26),
+              sizedBoxH6,
+              const Divider(color: Colors.black26),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(
+                  const Text(
                     'Tidak Masuk Siang',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14.0,
                     ),
                   ),
-                  SizedBox(height: 8.0),
+                  sizedBoxH8,
                   IntrinsicHeight(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -600,34 +598,31 @@ class StatisticCard extends StatelessWidget {
                             Text(
                               report.monthly.notComeAfterLunchBreakCount
                                   .toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 32.0,
                               ),
                             ),
-                            Text(
+                            const Text(
                               ' kali/bulan',
                               style:
                                   TextStyle(color: Colors.grey, fontSize: 12.0),
                             ),
                           ],
                         ),
-                        VerticalDivider(
-                          thickness: 1,
-                          color: Colors.black,
-                        ),
+                        verticalDiv,
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.baseline,
                           children: <Widget>[
                             Text(
                               report.yearly.notComeAfterLunchBreakCount
                                   .toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 32.0,
                               ),
                             ),
-                            Text(
+                            const Text(
                               ' kali/tahun',
                               style:
                                   TextStyle(color: Colors.grey, fontSize: 12.0),
@@ -639,20 +634,20 @@ class StatisticCard extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(height: 6.0),
-              Divider(color: Colors.black26),
+              sizedBoxH6,
+              const Divider(color: Colors.black26),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(
+                  const Text(
                     'Pulang Cepat',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14.0,
                     ),
                   ),
-                  SizedBox(height: 8.0),
+                  sizedBoxH8,
                   IntrinsicHeight(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -662,33 +657,30 @@ class StatisticCard extends StatelessWidget {
                           children: <Widget>[
                             Text(
                               report.monthly.leaveEarlyCount.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 32.0,
                               ),
                             ),
-                            Text(
+                            const Text(
                               ' kali/bulan',
                               style:
                                   TextStyle(color: Colors.grey, fontSize: 12.0),
                             ),
                           ],
                         ),
-                        VerticalDivider(
-                          thickness: 1,
-                          color: Colors.black,
-                        ),
+                        verticalDiv,
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.baseline,
                           children: <Widget>[
                             Text(
                               report.yearly.leaveEarlyCount.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 32.0,
                               ),
                             ),
-                            Text(
+                            const Text(
                               ' kali/tahun',
                               style:
                                   TextStyle(color: Colors.grey, fontSize: 12.0),

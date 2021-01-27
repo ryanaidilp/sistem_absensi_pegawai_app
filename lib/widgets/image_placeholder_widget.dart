@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 
 class ImagePlaceholderWidget extends StatelessWidget {
   const ImagePlaceholderWidget({this.label, this.child});
@@ -21,10 +22,10 @@ class ImagePlaceholderWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             child,
-            SizedBox(height: 5.0),
+            sizedBoxH5,
             Text(
               label,
-              style: TextStyle(color: Colors.grey),
+              style: const TextStyle(color: Colors.grey),
             )
           ],
         ));
