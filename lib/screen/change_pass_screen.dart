@@ -32,13 +32,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
-        title: Text('Ubah Password'),
+        title: const Text('Ubah Password'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Stack(
           children: <Widget>[
-            Container(
+            SizedBox(
               height: Get.height,
               child: Form(
                   key: _formKey,
@@ -135,7 +135,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               bottom: MediaQuery.of(context).viewInsets.bottom,
               child: RaisedButton(
                 onPressed: () async {
-                  ProgressDialog pd =
+                  final ProgressDialog pd =
                       ProgressDialog(context, isDismissible: false);
                   pd.show();
                   try {
@@ -148,12 +148,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     };
                     final http.Response response =
                         await dataRepo.changePass(data);
-                    final Map<String, dynamic> _res = jsonDecode(response.body);
+                    final Map<String, dynamic> _res =
+                        jsonDecode(response.body) as Map<String, dynamic>;
                     if (response.statusCode == 200) {
                       pd.hide();
                       showAlertDialog(
-                          'success', "Sukses", _res['message'], false);
-                      Timer(Duration(seconds: 1),
+                          'success', "Sukses", _res['message'].toString(),
+                          dismissible: false);
+                      Timer(const Duration(seconds: 1),
                           () => Get.off(BottomNavScreen()));
                     } else {
                       pd.hide();
@@ -161,10 +163,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     }
                   } catch (e) {
                     pd.hide();
-                    print(e.toString());
+                    showErrorDialog({
+                      'message': 'Kesalahan',
+                      'errors': [e.toString()]
+                    });
                   }
                 },
                 textColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                color: Colors.blueAccent,
                 child: isLoading
                     ? const SizedBox(
                         height: 30.0,
@@ -175,9 +183,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         ),
                       )
                     : const Text('SIMPAN'),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                color: Colors.blueAccent,
               ),
             )
           ],
