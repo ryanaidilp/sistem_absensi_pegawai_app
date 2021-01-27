@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/absent_permission.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/extensions.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/employee_proposal_widget.dart';
@@ -24,19 +25,19 @@ class EmployeePermissionScreen extends StatefulWidget {
 }
 
 class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
-  List<AbsentPermission> _permissions = List<AbsentPermission>();
+  List<AbsentPermission> _permissions = <AbsentPermission>[];
   bool _isLoading = false;
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final CalendarController _calendarController = CalendarController();
-  List<AbsentPermission> _filteredPermission = List<AbsentPermission>();
+  List<AbsentPermission> _filteredPermission = <AbsentPermission>[];
   Set<String> choices = {'Semua', 'Disetujui', 'Belum Disetujui', 'Tanggal'};
   String _selectedChoice = 'Semua';
   DateTime _selectedDate = DateTime.now();
   bool _isDateChange = false;
 
   @override
-  void setState(fn) {
+  void setState(void Function() fn) {
     if (mounted) {
       super.setState(fn);
     }
@@ -47,24 +48,30 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
       setState(() {
         _isLoading = true;
       });
-      var dataRepo = Provider.of<DataRepository>(context, listen: false);
-      Map<String, dynamic> _result = await dataRepo.getAllEmployeePermissions();
-      List<dynamic> permissions = _result['data'];
+      final dataRepo = Provider.of<DataRepository>(context, listen: false);
+      final Map<String, dynamic> _result =
+          await dataRepo.getAllEmployeePermissions();
+      final List<dynamic> permissions = _result['data'] as List<dynamic>;
 
-      List<AbsentPermission> _data =
-          permissions.map((json) => AbsentPermission.fromJson(json)).toList();
+      final List<AbsentPermission> _data = permissions
+          .map(
+              (json) => AbsentPermission.fromJson(json as Map<String, dynamic>))
+          .toList();
       setState(() {
         _permissions = _data;
         _filteredPermission = _data;
       });
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': [e.toString()]
+      });
     } finally {
       _isLoading = false;
     }
   }
 
-  _rejectPermission(AbsentPermission permission) {
+  void _rejectPermission(AbsentPermission permission) {
     Get.defaultDialog(
         title: 'Alasan Pembatalan!',
         content: Flexible(
@@ -72,7 +79,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
             padding: const EdgeInsets.all(8),
             width: Get.width * 0.9,
             child: TextFormField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   labelText: 'Alasan',
                   focusColor: Colors.blueAccent,
                   focusedBorder: UnderlineInputBorder(
@@ -89,15 +96,15 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
             Get.back();
             _sendData(permission, false);
           },
-          child: Text('OK'),
+          child: const Text('OK'),
         ));
   }
 
-  _approvePermission(AbsentPermission permission) {
+  void _approvePermission(AbsentPermission permission) {
     _sendData(permission, true);
   }
 
-  _cancelButton(String label, AbsentPermission permission) {
+  SizedBox _cancelButton(String label, AbsentPermission permission) {
     return SizedBox(
       width: Get.width,
       child: RaisedButton(
@@ -112,7 +119,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
     );
   }
 
-  _approveButton(AbsentPermission permission) {
+  SizedBox _approveButton(AbsentPermission permission) {
     return SizedBox(
       width: Get.width,
       child: RaisedButton(
@@ -122,12 +129,12 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
         onPressed: () {
           _approvePermission(permission);
         },
-        child: Text('Setujui'),
+        child: const Text('Setujui'),
       ),
     );
   }
 
-  _buildButtonSection(AbsentPermission permission) {
+  Widget _buildButtonSection(AbsentPermission permission) {
     switch (permission.approvalStatus) {
       case 'Menunggu Persetujuan':
         return Column(
@@ -140,6 +147,8 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
         return _cancelButton('Batal Setujui', permission);
       case 'Ditolak':
         return _approveButton(permission);
+      default:
+        return sizedBox;
     }
   }
 
@@ -148,26 +157,30 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
     pd.show();
     try {
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
-      Map<String, dynamic> data = {
+      final Map<String, dynamic> data = {
         'user_id': permission.user.id,
         'is_approved': isApproved,
         'permission_id': permission.id,
         'reason': _reasonController.value.text
       };
-      http.Response response = await dataRepo.approvePermission(data);
-      Map<String, dynamic> _res = jsonDecode(response.body);
-      print(response.statusCode);
+      final http.Response response = await dataRepo.approvePermission(data);
+      final Map<String, dynamic> _res =
+          jsonDecode(response.body) as Map<String, dynamic>;
       if (response.statusCode == 200) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], false);
-        Timer(Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+        showAlertDialog("success", "Sukses", _res['message'].toString(),
+            dismissible: false);
+        Timer(const Duration(seconds: 5), () => Get.off(BottomNavScreen()));
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);
       }
     } catch (e) {
       pd.hide();
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': [e.toString()]
+      });
     }
   }
 
@@ -186,41 +199,40 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
   }
 
   Widget _buildBody() {
-    if (_isLoading)
-      return Container(
+    if (_isLoading) {
+      return SizedBox(
         height: Get.height * 0.8,
-        child: Center(
+        child: const Center(
             child: SpinKitFadingCircle(
           size: 45,
           color: Colors.blueAccent,
         )),
       );
+    }
     if (_filteredPermission.isEmpty) {
-      return Container(
+      return SizedBox(
         height: Get.height * 0.6,
         child: Center(
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Container(
+                SizedBox(
                   width: Get.width * 0.5,
                   height: Get.height * 0.3,
-                  child: FlareActor(
+                  child: const FlareActor(
                     'assets/flare/not_found.flr',
-                    fit: BoxFit.contain,
                     animation: 'empty',
-                    alignment: Alignment.center,
                   ),
                 ),
-                Text('Belum ada izin yang diajukan!')
+                const Text('Belum ada izin yang diajukan!')
               ]),
         ),
       );
     }
     return Column(
       children: _filteredPermission.map((permission) {
-        DateTime dueDate = permission.dueDate;
-        DateTime startDate = permission.startDate;
+        final DateTime dueDate = permission.dueDate;
+        final DateTime startDate = permission.startDate;
         return EmployeeProposalWidget(
           title: permission.title,
           description: permission.description,
@@ -267,28 +279,27 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
     return _permissions;
   }
 
-  _selectDate() {
+  void _selectDate() {
     Get.defaultDialog(
         title: 'Pilih Tanggal Selesai',
         content: Flexible(
-          child: Container(
+          child: SizedBox(
             width: Get.width * 0.9,
             child: TableCalendar(
-              availableCalendarFormats: <CalendarFormat, String>{
+              availableCalendarFormats: const <CalendarFormat, String>{
                 CalendarFormat.month: '1 minggu',
                 CalendarFormat.twoWeeks: '1 bulan',
                 CalendarFormat.week: '2 minggu'
               },
               availableGestures: AvailableGestures.horizontalSwipe,
-              headerStyle:
-                  HeaderStyle(formatButtonTextStyle: TextStyle(fontSize: 12.0)),
+              headerStyle: const HeaderStyle(
+                  formatButtonTextStyle: TextStyle(fontSize: 12.0)),
               calendarController: _calendarController,
               startingDayOfWeek: StartingDayOfWeek.monday,
               startDay: DateTime(2021),
               endDay: DateTime(DateTime.now().year + 5),
               initialSelectedDay: _selectedDate,
               locale: 'in_ID',
-              initialCalendarFormat: CalendarFormat.month,
               onDaySelected: (day, events, holidays) {
                 Get.back();
                 setState(() {
@@ -309,7 +320,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
 
   void _searchByName(String value) {
     setState(() {
-      if (value.length > 0) {
+      if (value.isNotEmpty) {
         _filteredPermission = _filteredPermission
             .where((element) =>
                 element.user.name.toLowerCase().contains(value.toLowerCase()))
@@ -339,7 +350,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
-        title: Text('Daftar Izin Pegawai'),
+        title: const Text('Daftar Izin Pegawai'),
       ),
       body: Container(
         padding: const EdgeInsets.all(8),
@@ -349,16 +360,16 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
             children: <Widget>[
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.search),
                   labelText: 'Cari dengan nama pegawai',
                 ),
                 onChanged: _searchByName,
               ),
-              SizedBox(height: 10.0),
+              sizedBoxH10,
               Row(
                 children: <Widget>[
-                  Expanded(
+                  const Expanded(
                     child: Text(
                       'Filter : ',
                       style: TextStyle(
@@ -367,7 +378,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
                   ),
                   Expanded(
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10.0),
                           border: Border.all(color: Colors.grey[600])),
@@ -378,17 +389,18 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
                             items: choices
                                 .map(
                                   (choice) => DropdownMenuItem(
+                                    value: choice,
                                     child: Text(
                                       choice,
                                     ),
-                                    value: choice,
                                   ),
                                 )
                                 .toList(),
                             onChanged: (value) {
                               setState(() {
-                                _selectedChoice = value;
-                                _filteredPermission = _setFilter(value);
+                                _selectedChoice = value.toString();
+                                _filteredPermission =
+                                    _setFilter(value.toString());
                                 if (_nameController.value.text.isNotEmpty) {
                                   _searchByName(_nameController.value.text);
                                 }
@@ -399,9 +411,9 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
                   )
                 ],
               ),
-              Divider(),
+              const Divider(),
               _buildLabelSection(),
-              SizedBox(height: 8.0),
+              sizedBoxH8,
               _buildBody(),
             ],
           ),
