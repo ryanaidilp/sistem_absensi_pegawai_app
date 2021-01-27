@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
-Future showAlertDialog(
-    String type, String title, String content, bool dismissible) async {
+Future showAlertDialog(String type, String title, String content,
+    {bool dismissible}) async {
   final List<Widget> actions = type == 'success'
       ? []
       : [
@@ -13,7 +13,7 @@ Future showAlertDialog(
             onPressed: () {
               Get.back();
             },
-            child: Text(
+            child: const Text(
               'OK',
               style: TextStyle(
                 color: Colors.blueAccent,
@@ -26,7 +26,6 @@ Future showAlertDialog(
   return Get.defaultDialog(
       title: title,
       content: Column(
-        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           Icon(
             icon,
@@ -60,14 +59,14 @@ Future showErrorDialog(Map<String, dynamic> json) {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
-              json['message'],
+              json['message'].toString(),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10.0),
             Column(
                 children: (json['errors'] as Map<String, dynamic>)
                     .entries
-                    .map((e) => Text(e.value[0]))
+                    .map((e) => Text(e.value[0].toString()))
                     .toList()),
           ],
         ),
@@ -77,7 +76,7 @@ Future showErrorDialog(Map<String, dynamic> json) {
       onPressed: () {
         Get.back();
       },
-      child: Text(
+      child: const Text(
         'OK',
         style: TextStyle(
           color: Colors.blueAccent,
@@ -139,14 +138,10 @@ List<PageViewModel> onBoardingScreens = [
   PageViewModel(
     title: "QR Code",
     body: "Lakukan presensi cukup dengan scan QR Code",
-    image: Center(
-        child: Container(
-      child: FlareActor(
-        'assets/flare/qrcode.flr',
-        fit: BoxFit.contain,
-        animation: 'scan',
-        alignment: Alignment.center,
-      ),
+    image: const Center(
+        child: FlareActor(
+      'assets/flare/qrcode.flr',
+      animation: 'scan',
     )),
     decoration: const PageDecoration(
         titleTextStyle: TextStyle(
@@ -159,14 +154,10 @@ List<PageViewModel> onBoardingScreens = [
   PageViewModel(
     title: "Izin, Cuti, & Dinas Luar",
     body: "Ajukan Izin, Cuti, dan Dinas Luar melalui aplikasi.",
-    image: Center(
-        child: Container(
-      child: FlareActor(
-        'assets/flare/documents.flr',
-        fit: BoxFit.contain,
-        animation: 'document',
-        alignment: Alignment.center,
-      ),
+    image: const Center(
+        child: FlareActor(
+      'assets/flare/documents.flr',
+      animation: 'document',
     )),
     decoration: const PageDecoration(
         titleTextStyle: TextStyle(
@@ -179,26 +170,20 @@ List<PageViewModel> onBoardingScreens = [
 ];
 
 String calculateLateTime(DateTime startTime, String attendTime) {
-  var attendDate = startTime.year.toString() +
-      '-' +
-      startTime.month.toString().padLeft(2, '0') +
-      '-' +
-      startTime.day.toString().padLeft(2, '0');
-  var duration = DateTime.parse('$attendDate $attendTime')
-      .difference(startTime.add(Duration(minutes: 30)))
-      .inMinutes;
+  const dur = Duration(minutes: 30);
+  final attendDate =
+      '${startTime.year.toString()}-${startTime.month.toString().padLeft(2, '0')}-${startTime.day.toString().padLeft(2, '0')}';
+  final diff =
+      DateTime.parse('$attendDate $attendTime').difference(startTime.add(dur));
+  var duration = diff.inMinutes;
 
   if (duration == 0) {
-    var duration = DateTime.parse('$attendDate $attendTime')
-        .difference(startTime.add(Duration(minutes: 30)))
-        .inSeconds;
+    duration = diff.inSeconds;
     return '$duration detik';
   }
 
-  if(duration > 59) {
-    var duration = DateTime.parse('$attendDate $attendTime')
-        .difference(startTime.add(Duration(minutes: 30)))
-        .inHours;
+  if (duration > 59) {
+    duration = diff.inHours;
     return '$duration jam';
   }
 
@@ -216,6 +201,6 @@ String formatCurrency(double salary) {
 }
 
 String trimPhoneNumber(String phoneNumber) {
-  phoneNumber = phoneNumber.replaceAll(' ', '');
-  return '62' + phoneNumber.substring(1, phoneNumber.length);
+  final phone = phoneNumber.replaceAll(' ', '');
+  return '62${phone.substring(1, phone.length)}';
 }
