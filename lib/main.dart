@@ -28,16 +28,17 @@ Future<void> main() async {
   Intl.defaultLocale = 'id_ID';
   OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
   OneSignal.shared.setLocationShared(true);
-  OneSignal.shared.init(FlutterConfig.get("ONE_SIGNAL_APP_ID"), iOSSettings: {
-    OSiOSSettings.autoPrompt: false,
-    OSiOSSettings.inAppLaunchUrl: false
-  });
+  OneSignal.shared.init(FlutterConfig.get("ONE_SIGNAL_APP_ID").toString(),
+      iOSSettings: {
+        OSiOSSettings.autoPrompt: false,
+        OSiOSSettings.inAppLaunchUrl: false
+      });
   OneSignal.shared
       .setInFocusDisplayType(OSNotificationDisplayType.notification);
 
-  var initializedSettingsAndroid =
+  const initializedSettingsAndroid =
       AndroidInitializationSettings('ic_stat_onesignal_default');
-  var initializationSettings =
+  const initializationSettings =
       InitializationSettings(android: initializedSettingsAndroid);
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
@@ -71,12 +72,10 @@ class _MyAppState extends State<MyApp> {
 
 Future<void> scheduleAlarm(
     DateTime scheduledNotificationDateTime, String body) async {
-  var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+  final androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'alarm_id', 'alarm_id', 'Channel alarm',
       icon: 'ic_stat_onesignal_default',
-      enableVibration: true,
       enableLights: true,
-      playSound: true,
       priority: Priority.high,
       importance: Importance.max,
       vibrationPattern: Int64List.fromList([0, 1000, 5000, 2000]));
@@ -84,14 +83,14 @@ Future<void> scheduleAlarm(
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation('Asia/Makassar'));
 
-  var scheduleTime = tz.TZDateTime.from(
+  final scheduleTime = tz.TZDateTime.from(
       scheduledNotificationDateTime, tz.getLocation('Asia/Makassar'));
 
-  var platformChannelSpecifics =
+  final platformChannelSpecifics =
       NotificationDetails(android: androidPlatformChannelSpecifics);
 
   await flutterLocalNotificationsPlugin.zonedSchedule(
-    Random().nextInt(pow(2, 31)),
+    Random().nextInt(int.parse(pow(2, 31).toString())),
     'Pengingat',
     body,
     scheduleTime,
