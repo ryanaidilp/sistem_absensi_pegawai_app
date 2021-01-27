@@ -14,13 +14,14 @@ import 'package:spo_balaesang/models/paid_leave.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/image_detail_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/file_util.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/employee_proposal_info_widget.dart';
 import 'package:spo_balaesang/widgets/image_placeholder_widget.dart';
 
 class ChangePaidLeavePhotoScreen extends StatefulWidget {
-  ChangePaidLeavePhotoScreen({this.paidLeave});
+  const ChangePaidLeavePhotoScreen({this.paidLeave});
 
   final PaidLeave paidLeave;
 
@@ -36,9 +37,9 @@ class _ChangePaidLeavePhotoScreenState
   File _tmpFile;
   PaidLeave _paidLeave;
 
-  _openCamera() async {
-    var picture = await ImagePicker().getImage(source: ImageSource.camera);
-    var file = await compressAndGetFile(File(picture.path),
+  Future<void> _openCamera() async {
+    final picture = await ImagePicker().getImage(source: ImageSource.camera);
+    final file = await compressAndGetFile(File(picture.path),
         '/storage/emulated/0/Android/data/com.banuacoders.siap/files/Pictures/images.jpg');
     setState(() {
       _tmpFile = file;
@@ -49,27 +50,31 @@ class _ChangePaidLeavePhotoScreenState
   }
 
   Future<void> _uploadData(PaidLeave paidLeave) async {
-    ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    final ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     try {
       pd.show();
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
-      Map<String, dynamic> data = {
+      final Map<String, dynamic> data = {
         'photo': _base64Image,
         'file_name': _fileName,
         'paid_leave_id': paidLeave.id
       };
-      Map<String, dynamic> _res = await dataRepo.changePaidLeavePhoto(data);
-      print(_res.toString());
-      if (_res['success']) {
+      final Map<String, dynamic> _res =
+          await dataRepo.changePaidLeavePhoto(data);
+      if (_res['success'] as bool) {
         pd.hide();
-        showAlertDialog('success', "Sukses", _res['message'], false);
-        Timer(Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+        showAlertDialog('success', "Sukses", _res['message'].toString(),
+            dismissible: false);
+        Timer(const Duration(seconds: 5), () => Get.off(BottomNavScreen()));
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);
       }
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': [e.toString()]
+      });
       pd.hide();
     }
   }
@@ -88,7 +93,7 @@ class _ChangePaidLeavePhotoScreenState
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10.0),
             child: CachedNetworkImage(
-              placeholder: (_, __) => ImagePlaceholderWidget(
+              placeholder: (_, __) => const ImagePlaceholderWidget(
                 label: 'Memuat Foto',
                 child: SpinKitFadingCircle(
                   size: 25.0,
@@ -97,7 +102,7 @@ class _ChangePaidLeavePhotoScreenState
               ),
               imageUrl: _paidLeave.photo,
               fit: BoxFit.cover,
-              errorWidget: (_, __, ___) => ImagePlaceholderWidget(
+              errorWidget: (_, __, ___) => const ImagePlaceholderWidget(
                 label: 'Gagal memuat foto!',
                 child: Icon(
                   Icons.image_not_supported_rounded,
@@ -112,7 +117,7 @@ class _ChangePaidLeavePhotoScreenState
       );
     }
 
-    Uint8List bytes = base64Decode(_base64Image);
+    final Uint8List bytes = base64Decode(_base64Image);
     return InkWell(
       onTap: () {
         Get.to(ImageDetailScreen(
@@ -147,7 +152,7 @@ class _ChangePaidLeavePhotoScreenState
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
-        title: Text('Perbarui Lampiran'),
+        title: const Text('Perbarui Lampiran'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -156,18 +161,19 @@ class _ChangePaidLeavePhotoScreenState
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('Pastikan gembar yang akan dikirim adalah surat pengajuan cuti atau surat keterangan dokter ' +
-                  'yang sudah ditandatangani oleh pihak berwenang disertai dengan cap resmi.'),
-              SizedBox(height: 20.0),
+              const Text(
+                  'Pastikan gembar yang akan dikirim adalah surat pengajuan cuti atau surat keterangan dokter ' +
+                      'yang sudah ditandatangani oleh pihak berwenang disertai dengan cap resmi.'),
+              sizedBoxH20,
               EmployeeProposalInfoWidget(
                 title: _paidLeave.title,
                 startDate: _paidLeave.startDate,
                 dueDate: _paidLeave.dueDate,
                 label: _paidLeave.category,
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               Row(
-                children: <Widget>[
+                children: const <Widget>[
                   Text('Foto Surat Pengajuan'),
                   SizedBox(width: 5.0),
                   Text(
@@ -176,20 +182,20 @@ class _ChangePaidLeavePhotoScreenState
                   ),
                 ],
               ),
-              Text(
+              const Text(
                 'Lampirkan foto surat pengajuan atau surat lainnya seperti surat keterangan dokter, dsb.',
                 style: TextStyle(color: Colors.grey),
               ),
-              Text(
+              const Text(
                 '*tekan untuk memperbesar',
                 style: TextStyle(
                     fontSize: 12.0,
                     color: Colors.black87,
                     fontStyle: FontStyle.italic),
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               _showImage(),
-              SizedBox(height: 10.0),
+              sizedBoxH10,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -199,7 +205,7 @@ class _ChangePaidLeavePhotoScreenState
                     onPressed: _openCamera,
                     color: Colors.blueAccent,
                     textColor: Colors.white,
-                    child: Text('Ubah Foto'),
+                    child: const Text('Ubah Foto'),
                   ),
                   RaisedButton(
                     shape: RoundedRectangleBorder(
@@ -209,11 +215,11 @@ class _ChangePaidLeavePhotoScreenState
                     },
                     color: Colors.green,
                     textColor: Colors.white,
-                    child: Text('Kirim'),
+                    child: const Text('Kirim'),
                   ),
                 ],
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
             ],
           ),
         ),
