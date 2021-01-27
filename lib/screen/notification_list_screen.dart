@@ -21,16 +21,17 @@ class NotificationListScreen extends StatefulWidget {
 }
 
 class _NotificationListScreenState extends State<NotificationListScreen> {
-  List<UserNotification> notifications = List<UserNotification>();
+  List<UserNotification> notifications = [];
   bool _isLoading = false;
   DataRepository dataRepo;
   Set<String> choices = {'Tandai Semua Dibaca', 'Hapus Semua'};
   User _user;
 
   Future<void> getUser() async {
-    var sp = await SharedPreferences.getInstance();
-    var _data = sp.get(PREFS_USER_KEY);
-    Map<String, dynamic> _json = jsonDecode(_data);
+    final sp = await SharedPreferences.getInstance();
+    final _data = sp.get(prefsUserKey);
+    final Map<String, dynamic> _json =
+        jsonDecode(_data.toString()) as Map<String, dynamic>;
 
     setState(() {
       _user = User.fromJson(_json);
@@ -38,7 +39,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   }
 
   @override
-  void setState(fn) {
+  void setState(void Function() fn) {
     if (mounted) {
       super.setState(fn);
     }
@@ -49,16 +50,20 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
       setState(() {
         _isLoading = true;
       });
-      Map<String, dynamic> _result = await dataRepo.getAllNotifications();
-      List<dynamic> _notifications = _result['data'];
-      List<UserNotification> _data = _notifications
-          .map((json) => UserNotification.fromJson(json))
+      final Map<String, dynamic> _result = await dataRepo.getAllNotifications();
+      final List<dynamic> _notifications = _result['data'] as List<dynamic>;
+      final List<UserNotification> _data = _notifications
+          .map(
+              (json) => UserNotification.fromJson(json as Map<String, dynamic>))
           .toList();
       setState(() {
         notifications = _data;
       });
     } catch (e) {
-      print(e);
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': [e.toString()]
+      });
     } finally {
       setState(() {
         _isLoading = false;
@@ -67,96 +72,125 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   }
 
   Future<void> _readNotification(String id) async {
-    ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    final ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     try {
       pd.show();
-      Map<String, dynamic> data = {'notification_id': id};
-      http.Response response = await dataRepo.readNotification(data);
-      Map<String, dynamic> _res = jsonDecode(response.body);
+      final Map<String, dynamic> data = {'notification_id': id};
+      final http.Response response = await dataRepo.readNotification(data);
+      final Map<String, dynamic> _res =
+          jsonDecode(response.body) as Map<String, dynamic>;
       if (response.statusCode == 200) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], true);
+        showAlertDialog("success", "Sukses", _res['message'].toString(),
+            dismissible: true);
         _fetchNotificationsData();
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);
       }
     } catch (e) {
-      print(e);
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': [e.toString()]
+      });
       pd.hide();
     }
   }
 
   Future<void> _readAllNotifications() async {
-    ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    final ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     try {
       pd.show();
-      Map<String, dynamic> _res = await dataRepo.readAllNotifications();
-      if (_res['success']) {
+      final Map<String, dynamic> _res = await dataRepo.readAllNotifications();
+      if (_res['success'] as bool) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], true);
+        showAlertDialog("success", "Sukses", _res['message'].toString(),
+            dismissible: true);
         _fetchNotificationsData();
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);
       }
     } catch (e) {
-      print(e);
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': [e.toString()]
+      });
       pd.hide();
     }
   }
 
   Future<void> _deleteAllNotifications() async {
-    ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    final ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     try {
       pd.show();
-      Map<String, dynamic> _res = await dataRepo.deleteAllNotifications();
-      if (_res['success']) {
+      final Map<String, dynamic> _res = await dataRepo.deleteAllNotifications();
+      if (_res['success'] as bool) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], true);
+        showAlertDialog("success", "Sukses", _res['message'].toString(),
+            dismissible: true);
         _fetchNotificationsData();
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);
       }
     } catch (e) {
-      print(e);
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': [e.toString()]
+      });
       pd.hide();
     }
   }
 
+  Widget _buildMarker(bool isRead) {
+    return isRead
+        ? const SizedBox()
+        : Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50.0),
+              color: Colors.red,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 1.0),
+            child: const Text(
+              '',
+              style: TextStyle(fontSize: 10.0),
+            ),
+          );
+  }
+
   Widget _buildBody() {
-    if (_isLoading)
-      return Center(
+    if (_isLoading) {
+      return const Center(
           child: SpinKitChasingDots(
         size: 45,
         color: Colors.blueAccent,
       ));
-    if (notifications.isEmpty)
+    }
+    if (notifications.isEmpty) {
       return Center(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Container(
+              SizedBox(
                 width: Get.width * 0.5,
                 height: Get.height * 0.3,
-                child: FlareActor(
+                child: const FlareActor(
                   'assets/flare/not_found.flr',
-                  fit: BoxFit.contain,
                   animation: 'empty',
-                  alignment: Alignment.center,
                 ),
               ),
-              Text('Belum ada pemberitahuan!')
+              const Text('Belum ada pemberitahuan!')
             ]),
       );
+    }
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListView.builder(
         itemBuilder: (_, index) {
-          UserNotification notification = notifications[index];
+          final UserNotification notification = notifications[index];
           return Container(
-            margin: EdgeInsets.only(bottom: 8.0),
+            margin: const EdgeInsets.only(bottom: 8.0),
             child: Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6)),
@@ -176,29 +210,16 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                             Expanded(
                               child: Text(
                                 '${notification.data['heading']}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
-                            notification.isRead
-                                ? SizedBox()
-                                : Container(
-                                    child: Text(
-                                      '',
-                                      style: TextStyle(fontSize: 10.0),
-                                    ),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50.0),
-                                      color: Colors.red,
-                                    ),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 6.0, vertical: 1.0),
-                                  )
+                            _buildMarker(notification.isRead)
                           ],
                         ),
-                        Divider(thickness: 1.0),
-                        Text(notification.data['body'])
+                        dividerT1,
+                        Text(notification.data['body'].toString())
                       ],
                     )),
               ),
@@ -208,6 +229,32 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
         itemCount: notifications.length,
       ),
     );
+  }
+
+  List<Widget> _buildActionMenu() {
+    return notifications.isNotEmpty
+        ? <Widget>[
+            PopupMenuButton<String>(
+              itemBuilder: (BuildContext context) {
+                return choices
+                    .map((String choice) => PopupMenuItem<String>(
+                          value: choice,
+                          child: Text(choice),
+                        ))
+                    .toList();
+              },
+              onSelected: (value) {
+                if (value == choices.first) {
+                  _readAllNotifications();
+                }
+                if (value == choices.last) {
+                  _deleteAllNotifications();
+                }
+              },
+              offset: const Offset(0, 100),
+            )
+          ]
+        : [];
   }
 
   @override
@@ -222,35 +269,13 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: notifications.length > 0
-            ? <Widget>[
-                PopupMenuButton<String>(
-                  itemBuilder: (BuildContext context) {
-                    return choices
-                        .map((String choice) => PopupMenuItem<String>(
-                              child: Text(choice),
-                              value: choice,
-                            ))
-                        .toList();
-                  },
-                  onSelected: (value) {
-                    if (value == choices.first) {
-                      _readAllNotifications();
-                    }
-                    if (value == choices.last) {
-                      _deleteAllNotifications();
-                    }
-                  },
-                  offset: Offset(0, 100),
-                )
-              ]
-            : [],
-        title: Text(
+        actions: _buildActionMenu(),
+        title: const Text(
           'Pemberitahuan',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.blueAccent,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _buildBody(),
       floatingActionButton: _user?.position == 'Camat'
@@ -258,8 +283,8 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
               onPressed: () {
                 Get.to(CreateNotificationScreen());
               },
-              child: Icon(Icons.add),
               backgroundColor: Colors.blueAccent,
+              child: const Icon(Icons.add),
             )
           : null,
     );
