@@ -32,16 +32,16 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
   File _tmpFile;
   DateTime _startDate = DateTime.now();
   DateTime _dueDate = DateTime.now();
-  Map<String, dynamic> _categories = paidLeaveCategories;
+  final Map<String, dynamic> _categories = paidLeaveCategories;
   int _category = 1;
   bool _isDateChange = false;
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
-  _openCamera() async {
-    var picture = await ImagePicker().getImage(source: ImageSource.camera);
-    var file = await compressAndGetFile(File(picture.path),
+  Future<void> _openCamera() async {
+    final picture = await ImagePicker().getImage(source: ImageSource.camera);
+    final file = await compressAndGetFile(File(picture.path),
         '/storage/emulated/0/Android/data/com.banuacoders.siap/files/Pictures/images.jpg');
     setState(() {
       _tmpFile = file;
@@ -53,16 +53,16 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
 
   Widget _showImage() {
     if (_base64Image == null) {
-      return ImagePlaceholderWidget(
+      return const ImagePlaceholderWidget(
+        label: 'Ambil Foto',
         child: Icon(
           Icons.camera_alt_rounded,
           color: Colors.grey,
         ),
-        label: 'Ambil Foto',
       );
     }
 
-    Uint8List bytes = base64Decode(_base64Image);
+    final Uint8List bytes = base64Decode(_base64Image);
     return InkWell(
       onTap: () {
         Get.to(ImageDetailScreen(
@@ -87,14 +87,14 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
 
   Future<void> _uploadData() async {
     if (!_isDateChange) {
-      showAlertDialog(
-          'failed', 'Pelanggaran', 'Pilih tanggal terlebih dahulu!', true);
+      showAlertDialog('failed', 'Pelanggaran', 'Pilih tanggal terlebih dahulu!',
+          dismissible: true);
     } else {
-      ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+      final ProgressDialog pd = ProgressDialog(context, isDismissible: false);
       try {
         pd.show();
         final dataRepo = Provider.of<DataRepository>(context, listen: false);
-        Map<String, dynamic> data = {
+        final Map<String, dynamic> data = {
           'category': _category,
           'title': _titleController.value.text,
           'description': _descriptionController.value.text,
@@ -103,43 +103,46 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
           'start_date': _startDate.toIso8601String(),
           'file_name': _fileName
         };
-        Map<String, dynamic> _res = await dataRepo.paidLeave(data);
-        if (_res['success']) {
+        final Map<String, dynamic> _res = await dataRepo.paidLeave(data);
+        if (_res['success'] as bool) {
           pd.hide();
-          showAlertDialog('success', "Sukses", _res['message'], false);
-          Timer(Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+          showAlertDialog('success', "Sukses", _res['message'].toString(),
+              dismissible: false);
+          Timer(const Duration(seconds: 5), () => Get.off(BottomNavScreen()));
         } else {
           if (pd.isShowing()) pd.hide();
           showErrorDialog(_res);
         }
       } catch (e) {
-        print(e.toString());
+        showErrorDialog({
+          'message': 'Kesalahan',
+          'errors': [e.toString()]
+        });
         pd.hide();
       }
     }
   }
 
-  _selectDueDate() {
+  void _selectDueDate() {
     Get.defaultDialog(
         title: 'Pilih Tanggal Selesai',
         content: Flexible(
-          child: Container(
+          child: SizedBox(
             width: Get.width * 0.9,
             child: TableCalendar(
-              availableCalendarFormats: <CalendarFormat, String>{
+              availableCalendarFormats: const <CalendarFormat, String>{
                 CalendarFormat.month: '1 minggu',
                 CalendarFormat.twoWeeks: '1 bulan',
                 CalendarFormat.week: '2 minggu'
               },
               availableGestures: AvailableGestures.horizontalSwipe,
-              headerStyle:
-                  HeaderStyle(formatButtonTextStyle: TextStyle(fontSize: 12.0)),
+              headerStyle: const HeaderStyle(
+                  formatButtonTextStyle: TextStyle(fontSize: 12.0)),
               calendarController: _dueDateController,
               startingDayOfWeek: StartingDayOfWeek.monday,
-              startDay: DateTime.now().subtract(Duration(days: 7)),
+              startDay: DateTime.now().subtract(const Duration(days: 7)),
               initialSelectedDay: _dueDate,
               locale: 'in_ID',
-              initialCalendarFormat: CalendarFormat.month,
               onDaySelected: (day, events, holidays) {
                 Get.back();
                 setState(() {
@@ -157,27 +160,26 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
         ));
   }
 
-  _selectStartDate() {
+  void _selectStartDate() {
     Get.defaultDialog(
         title: 'Pilih Tanggal Mulai',
         content: Flexible(
-          child: Container(
+          child: SizedBox(
             width: Get.width * 0.9,
             child: TableCalendar(
-              availableCalendarFormats: <CalendarFormat, String>{
+              availableCalendarFormats: const <CalendarFormat, String>{
                 CalendarFormat.month: '1 minggu',
                 CalendarFormat.twoWeeks: '1 bulan',
                 CalendarFormat.week: '2 minggu'
               },
               availableGestures: AvailableGestures.horizontalSwipe,
-              headerStyle:
-                  HeaderStyle(formatButtonTextStyle: TextStyle(fontSize: 12.0)),
+              headerStyle: const HeaderStyle(
+                  formatButtonTextStyle: TextStyle(fontSize: 12.0)),
               calendarController: _startDateController,
               startingDayOfWeek: StartingDayOfWeek.monday,
-              startDay: DateTime.now().subtract(Duration(days: 7)),
+              startDay: DateTime.now().subtract(const Duration(days: 7)),
               initialSelectedDay: _startDate,
               locale: 'in_ID',
-              initialCalendarFormat: CalendarFormat.month,
               onDaySelected: (day, events, holidays) {
                 Get.back();
                 setState(() {
@@ -210,7 +212,7 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
-        title: Text('Ajukan Cuti'),
+        title: const Text('Ajukan Cuti'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -219,38 +221,38 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
+              const Text(
                   'Pastikan data yang dikirim sudah benar. Anda tidak dapat mengubah dokumen setelah dikirim. Jika terjadi kesalahan, hubungi administrator sistem.'),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               Row(
-                children: <Widget>[
+                children: const <Widget>[
                   Text('Subjek Cuti'),
-                  SizedBox(width: 5.0),
+                  sizedBoxW5,
                   Text(
                     '*',
                     style: TextStyle(color: Colors.red),
                   ),
                 ],
               ),
-              Text(
+              const Text(
                 'Ringkasan dari kegiatan cuti anda.',
                 style: TextStyle(color: Colors.grey),
               ),
               TextFormField(
                 keyboardType: TextInputType.text,
                 controller: _titleController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     alignLabelWithHint: true,
                     hintText: 'Judul/Subjek',
                     focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.blueAccent)),
                     labelStyle: TextStyle(color: Colors.grey)),
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               Row(
-                children: <Widget>[
+                children: const <Widget>[
                   Text('Jenis Cuti'),
-                  SizedBox(width: 5.0),
+                  sizedBoxW5,
                   Text(
                     '*',
                     style: TextStyle(color: Colors.red),
@@ -263,27 +265,27 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
                   value: _category,
                   items: _categories.entries
                       .map((option) => DropdownMenuItem<dynamic>(
-                            child: Text(option.key),
                             value: option.value,
+                            child: Text(option.key),
                           ))
                       .toList(),
                   onChanged: (value) {
                     setState(() {
-                      _category = value;
+                      _category = int.parse(value.toString());
                     });
                   }),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               Row(
-                children: <Widget>[
+                children: const <Widget>[
                   Text('Deskripsi'),
-                  SizedBox(width: 5.0),
+                  sizedBoxW5,
                   Text(
                     '*',
                     style: TextStyle(color: Colors.red),
                   ),
                 ],
               ),
-              Text(
+              const Text(
                 'Jelaskan secara singkat tentang cuti yang diajukan!',
                 style: TextStyle(color: Colors.grey),
               ),
@@ -292,25 +294,25 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
                 minLines: 1,
                 maxLines: 5,
                 controller: _descriptionController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     alignLabelWithHint: true,
                     hintText: 'Deskripsi',
                     focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.blueAccent)),
                     labelStyle: TextStyle(color: Colors.grey)),
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               Row(
-                children: <Widget>[
+                children: const <Widget>[
                   Text('Tanggal Mulai'),
-                  SizedBox(width: 5.0),
+                  sizedBoxW5,
                   Text(
                     '*',
                     style: TextStyle(color: Colors.red),
                   ),
                 ],
               ),
-              Text(
+              const Text(
                 'Pilih kapan anda mulai cuti!',
                 style: TextStyle(color: Colors.grey),
               ),
@@ -318,34 +320,32 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      '${DateFormat('EEEE, d MMMM y').format(
-                        _startDate,
-                      )}',
-                      style: TextStyle(
+                      DateFormat('EEEE, d MMMM y').format(_startDate),
+                      style: const TextStyle(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                   IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.calendar_today_rounded,
                         color: Colors.blueAccent,
                       ),
                       onPressed: _selectStartDate)
                 ],
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               Row(
-                children: <Widget>[
+                children: const <Widget>[
                   Text('Tanggal Selesai'),
-                  SizedBox(width: 5.0),
+                  sizedBoxW5,
                   Text(
                     '*',
                     style: TextStyle(color: Colors.red),
                   ),
                 ],
               ),
-              Text(
+              const Text(
                 'Pilih sampai kapan anda cuti!',
                 style: TextStyle(color: Colors.grey),
               ),
@@ -353,45 +353,43 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      '${DateFormat('EEEE, d MMMM y').format(
-                        _dueDate,
-                      )}',
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      DateFormat('EEEE, d MMMM y').format(_dueDate),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
                   IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.calendar_today_rounded,
                         color: Colors.blueAccent,
                       ),
                       onPressed: _selectDueDate)
                 ],
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               Row(
-                children: <Widget>[
+                children: const <Widget>[
                   Text('Foto Surat Pengajuan'),
-                  SizedBox(width: 5.0),
+                  sizedBoxW5,
                   Text(
                     '*',
                     style: TextStyle(color: Colors.red),
                   ),
                 ],
               ),
-              Text(
+              const Text(
                 'Lampirkan foto surat pengajuan cuti seperti surat keterangan sakit dsb.',
                 style: TextStyle(color: Colors.grey),
               ),
-              Text(
+              const Text(
                 '*tekan untuk memperbesar',
                 style: TextStyle(
                     fontSize: 12.0,
                     color: Colors.black87,
                     fontStyle: FontStyle.italic),
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               _showImage(),
-              SizedBox(height: 10.0),
+              sizedBoxH10,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -410,11 +408,11 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
                     onPressed: _uploadData,
                     color: Colors.green,
                     textColor: Colors.white,
-                    child: Text('Kirim'),
+                    child: const Text('Kirim'),
                   ),
                 ],
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
             ],
           ),
         ),
