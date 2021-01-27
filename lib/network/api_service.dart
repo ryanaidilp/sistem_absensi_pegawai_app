@@ -16,7 +16,7 @@ class ApiService {
     final SharedPreferences localStorage =
         await SharedPreferences.getInstance();
 
-    token = jsonDecode(localStorage.getString(PREFS_TOKEN_KEY)) as String;
+    token = jsonDecode(localStorage.getString(prefsTokenKey)) as String;
   }
 
   Future<Map<String, dynamic>> getEndpointData(
@@ -29,27 +29,29 @@ class ApiService {
     }
     final response = await http.get(uri, headers: _setHeaders());
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      if (data['success']) {
+      final Map<String, dynamic> data =
+          json.decode(response.body) as Map<String, dynamic>;
+      if (data['success'] as bool) {
         return data;
       }
     }
-    print(
-        'Request $url failed\nResponse: ${response.statusCode} ${response.reasonPhrase}');
     throw response;
   }
 
   Future<http.Response> postEndpointWithoutToken(
       {@required Endpoint endpoint, Map<String, dynamic> data}) async {
     final url = api.endpointUri(endpoint);
-    return await http.post(url, body: data);
+    final response = await http.post(url, body: data);
+    return response;
   }
 
   Future<http.Response> postEndpointWithToken(
       {@required Endpoint endpoint, Map<String, dynamic> data}) async {
     await _getToken();
     final url = api.endpointUri(endpoint);
-    return await http.post(url, body: jsonEncode(data), headers: _setHeaders());
+    final response =
+        http.post(url, body: jsonEncode(data), headers: _setHeaders());
+    return response;
   }
 
   Map<String, String> _setHeaders() => <String, String>{
