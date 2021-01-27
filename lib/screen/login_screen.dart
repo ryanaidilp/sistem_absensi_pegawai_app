@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: _phoneController,
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
-          focusedBorder: UnderlineInputBorder(
+          focusedBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.blueAccent)),
           prefixIcon: Icon(
             Icons.phone_android,
@@ -66,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: _passwordController,
       keyboardType: TextInputType.text,
       decoration: InputDecoration(
-          focusedBorder: UnderlineInputBorder(
+          focusedBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.blueAccent)),
           suffixIcon: GestureDetector(
             onTap: () {
@@ -124,19 +124,6 @@ class _LoginScreenState extends State<LoginScreen> {
             left: -getBigDiameter / 4,
             top: -getBigDiameter / 4,
             child: Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Image.asset(
-                    'assets/logo/logo.png',
-                    width: 200,
-                  ),
-                  Text(
-                    'Sistem Absensi Pegawai',
-                    style: TextStyle(fontSize: 12.0, color: Colors.white),
-                  ),
-                ],
-              ),
               width: getBigDiameter,
               height: getBigDiameter,
               decoration: BoxDecoration(
@@ -146,6 +133,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter),
               ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Image.asset(
+                    'assets/logo/logo.png',
+                    width: 200,
+                  ),
+                  const Text(
+                    'Sistem Absensi Pegawai',
+                    style: TextStyle(fontSize: 12.0, color: Colors.white),
+                  ),
+                ],
+              ),
             ),
           ),
           Align(
@@ -153,9 +153,10 @@ class _LoginScreenState extends State<LoginScreen> {
             child: ListView(
               children: <Widget>[
                 ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
                   child: Container(
-                    margin: EdgeInsets.fromLTRB(5.0, 350, 5.0, 10),
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 25),
+                    margin: const EdgeInsets.fromLTRB(5.0, 350, 5.0, 10),
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 25),
                     child: Card(
                       elevation: 6.0,
                       child: Column(
@@ -166,12 +167,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  borderRadius: BorderRadius.circular(6),
                 ),
                 Align(
                   alignment: Alignment.centerRight,
                   child: Container(
-                    margin: EdgeInsets.only(right: 20.0, bottom: 20.0),
+                    margin: const EdgeInsets.only(right: 20.0, bottom: 20.0),
                     child: InkWell(
                       onTap: () {
                         Get.to(ForgotPassScreen(), fullscreenDialog: true);
@@ -184,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.fromLTRB(20, 0, 20, 30),
+                  margin: const EdgeInsets.fromLTRB(20, 0, 20, 30),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
@@ -192,6 +192,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: MediaQuery.of(context).size.width * 0.5,
                         height: 40.0,
                         child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            gradient: LinearGradient(
+                                colors: [
+                                  Colors.lightBlue[700],
+                                  Colors.lightBlue[900]
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight),
+                          ),
                           child: Material(
                             color: Colors.transparent,
                             borderRadius: BorderRadius.circular(10.0),
@@ -218,31 +228,37 @@ class _LoginScreenState extends State<LoginScreen> {
                                         final dataRepository =
                                             Provider.of<DataRepository>(context,
                                                 listen: false);
-                                        http.Response response =
+                                        final http.Response response =
                                             await dataRepository.login(data);
                                         final Map<String, dynamic> result =
-                                            jsonDecode(response.body);
+                                            jsonDecode(response.body)
+                                                as Map<String, dynamic>;
                                         if (response.statusCode == 200) {
                                           prefs.setString(
-                                              PREFS_TOKEN_KEY,
-                                              jsonEncode(result[JSON_DATA_FIELD]
-                                                  [PREFS_TOKEN_KEY]));
+                                              prefsTokenKey,
+                                              jsonEncode(result[jsonDataField]
+                                                  [prefsTokenKey]));
                                           prefs.setString(
-                                              PREFS_USER_KEY,
+                                              prefsUserKey,
                                               jsonEncode(
-                                                  result[JSON_DATA_FIELD]));
+                                                  result[jsonDataField]));
                                           OneSignal.shared.setExternalUserId(
-                                              result[JSON_DATA_FIELD]
-                                                      [USER_ID_FIELD]
+                                              result[jsonDataField][userIdField]
                                                   .toString());
                                           Get.off(BottomNavScreen());
                                         } else {
                                           showErrorDialog(result);
                                         }
                                       } on SocketException catch (e) {
-                                        print(e.message);
+                                        showErrorDialog({
+                                          'message': 'Kesalahan',
+                                          'errors': [e.message]
+                                        });
                                       } catch (e) {
-                                        print(e);
+                                        showErrorDialog({
+                                          'message': 'Kesalahan',
+                                          'errors': [e.toString()]
+                                        });
                                       } finally {
                                         setState(() {
                                           _isLoading = false;
@@ -251,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     },
                               child: Center(
                                 child: _isLoading
-                                    ? SizedBox(
+                                    ? const SizedBox(
                                         height: 30.0,
                                         width: 30.0,
                                         child: CircularProgressIndicator(
@@ -259,7 +275,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               Colors.white),
                                         ),
                                       )
-                                    : Text(
+                                    : const Text(
                                         'MASUK',
                                         style: TextStyle(
                                             color: Colors.white,
@@ -268,16 +284,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            gradient: LinearGradient(
-                                colors: [
-                                  Colors.lightBlue[700],
-                                  Colors.lightBlue[900]
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight),
-                          ),
                         ),
                       )
                     ],
@@ -285,7 +291,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
+                  children: const <Widget>[
                     Text(
                       'v4.3.0',
                       style: TextStyle(
