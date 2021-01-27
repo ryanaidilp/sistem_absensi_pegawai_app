@@ -9,8 +9,8 @@ class Location {
 
   factory Location.fromJson(Map<String, dynamic> json) {
     return Location(
-        latitude: double.parse(json[LOCATION_LATITUDE_FIELD].toString()),
-        longitude: double.parse(json[LOCATION_LONGITUDE_FIELD].toString()),
-        address: json[LOCATION_ADDRESS_FIELD] as String);
+        latitude: double.parse(json[locationLatitudeField].toString()),
+        longitude: double.parse(json[locationLongitudeField].toString()),
+        address: json[locationAddressField] as String);
   }
 }

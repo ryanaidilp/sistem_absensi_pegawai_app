@@ -25,16 +25,18 @@ class AbsentPermission {
 
   factory AbsentPermission.fromJson(Map<String, dynamic> json) {
     return AbsentPermission(
-        id: json[ABSENT_PERMISSION_ID_FIELD] as int,
-        title: json[ABSENT_PERMISSION_TITLE_FIELD] as String,
-        description: json[ABSENT_PERMISSION_DESCRIPTION_FIELD] as String,
-        isApproved: json[ABSENT_PERMISSION_IS_APPROVED_FIELD] as bool,
-        photo: json[ABSENT_PERMISSION_PHOTO_FIELD] as String,
-        approvalStatus: json[APPROVAL_STATUS_FIELD] as String,
-        dueDate: DateTime.parse(json[ABSENT_PERMISSION_DUE_DATE_FIELD]),
-        startDate: DateTime.parse(json[ABSENT_PERMISSION_START_DATE_FIELD]),
-        user: json[ABSENT_PERMISSION_USER_FIELD] != null
-            ? User.fromJson(json[ABSENT_PERMISSION_USER_FIELD])
+        id: json[absentPermissionIdField] as int,
+        title: json[absentPermissionTitleField] as String,
+        description: json[absentPermissionDescriptionField] as String,
+        isApproved: json[absentPermissionIsApprovedField] as bool,
+        photo: json[absentPermissionPhotoField] as String,
+        approvalStatus: json[approvalStatusField] as String,
+        dueDate: DateTime.parse(json[absentPermissionDueDateField].toString()),
+        startDate:
+            DateTime.parse(json[absentPermissionStartDateField].toString()),
+        user: json[absentPermissionUserField] != null
+            ? User.fromJson(
+                json[absentPermissionUserField] as Map<String, dynamic>)
             : null);
   }
 }
