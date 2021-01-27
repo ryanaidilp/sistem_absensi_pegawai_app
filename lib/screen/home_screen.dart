@@ -705,6 +705,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void dispose() {
+    _countdownController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     Future.wait([_getUser(), _getAllEmployee()]);
