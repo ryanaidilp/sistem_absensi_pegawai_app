@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 
 class NextPresenceEmptyCardWidget extends StatelessWidget {
   const NextPresenceEmptyCardWidget(
@@ -47,19 +48,19 @@ class NextPresenceEmptyCardWidget extends StatelessWidget {
                     DateFormat.EEEE().format(DateTime.now()),
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(width: 5.0),
+                  sizedBoxW5,
                   const Text('|'),
-                  const SizedBox(width: 5.0),
+                  sizedBoxW5,
                   Text(
                     DateFormat.yMMMd().format(DateTime.now()),
                   ),
-                  const SizedBox(width: 5.0),
+                  sizedBoxW5,
                   const Text('|'),
-                  const SizedBox(width: 5.0),
+                  sizedBoxW5,
                   Text(topLabel),
                 ],
               ),
-              Divider(
+              const Divider(
                 thickness: 1.0,
                 color: Colors.black26,
               ),
@@ -71,34 +72,34 @@ class NextPresenceEmptyCardWidget extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         '$firstLabel :',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      Text('$firstContent'),
-                      const SizedBox(height: 10.0),
+                      Text(firstContent),
+                      sizedBoxH10,
                       Text(
                         '$secondLabel :',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 2.0),
-                      Text('$secondContent'),
-                      const SizedBox(height: 10.0),
+                      sizedBoxH2,
+                      Text(secondContent),
+                      sizedBoxH10,
                       Text(
                         '$thirdLabel :',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 2.0),
+                      sizedBoxH2,
                       Text(
-                        '$thirdContent',
+                        thirdContent,
                         style: TextStyle(color: color),
                       ),
-                      const SizedBox(height: 10.0),
+                      sizedBoxH10,
                       Text(
                         '$fourthLabel :',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 2.0),
+                      sizedBoxH2,
                       AutoSizeText(
-                        '$fourthContent',
+                        fourthContent,
                         minFontSize: 10.0,
                         maxFontSize: 12.0,
                       )
@@ -107,10 +108,10 @@ class NextPresenceEmptyCardWidget extends StatelessWidget {
                   Expanded(
                     child: Column(children: <Widget>[
                       trailingTop,
-                      const SizedBox(height: 2.0),
+                      sizedBoxH2,
                       Text(
-                        '$trailingLabel',
-                        style: TextStyle(
+                        trailingLabel,
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.blueGrey,
                         ),
