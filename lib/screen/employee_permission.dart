@@ -153,7 +153,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
   }
 
   Future<void> _sendData(AbsentPermission permission, bool isApproved) async {
-    ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    final ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     pd.show();
     try {
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
