@@ -7,6 +7,7 @@ import 'package:spo_balaesang/models/paid_leave.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/change_paid_leave_photo_screen.dart';
 import 'package:spo_balaesang/screen/create_paid_leave_screen.dart';
+import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/employee_proposal_widget.dart';
 
 class PaidLeaveListScreen extends StatefulWidget {
@@ -19,7 +20,7 @@ class _PaidLeaveListScreenState extends State<PaidLeaveListScreen> {
   bool _isLoading = false;
 
   @override
-  void setState(fn) {
+  void setState(void Function() fn) {
     if (mounted) {
       super.setState(fn);
     }
@@ -30,16 +31,21 @@ class _PaidLeaveListScreenState extends State<PaidLeaveListScreen> {
       setState(() {
         _isLoading = true;
       });
-      var dataRepo = Provider.of<DataRepository>(context, listen: false);
-      Map<String, dynamic> _result = await dataRepo.getAllPaidLeave();
-      List<dynamic> paidLeaves = _result['data'];
-      List<PaidLeave> _data =
-          paidLeaves.map((json) => PaidLeave.fromJson(json)).toList();
+      final DataRepository dataRepo =
+          Provider.of<DataRepository>(context, listen: false);
+      final Map<String, dynamic> _result = await dataRepo.getAllPaidLeave();
+      final List<dynamic> paidLeaves = _result['data'] as List<dynamic>;
+      final List<PaidLeave> _data = paidLeaves
+          .map((json) => PaidLeave.fromJson(json as Map<String, dynamic>))
+          .toList();
       setState(() {
         _paidLeaves = _data;
       });
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': [e.toString()]
+      });
     } finally {
       _isLoading = false;
     }
@@ -53,7 +59,7 @@ class _PaidLeaveListScreenState extends State<PaidLeaveListScreen> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return Center(
+      return const Center(
           child: SpinKitFadingGrid(
         size: 45,
         color: Colors.blueAccent,
@@ -65,17 +71,15 @@ class _PaidLeaveListScreenState extends State<PaidLeaveListScreen> {
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Container(
+              SizedBox(
                 width: Get.width * 0.5,
                 height: Get.height * 0.3,
-                child: FlareActor(
+                child: const FlareActor(
                   'assets/flare/not_found.flr',
-                  fit: BoxFit.contain,
                   animation: 'empty',
-                  alignment: Alignment.center,
                 ),
               ),
-              Text('Belum ada Cuti yang diajukan!')
+              const Text('Belum ada Cuti yang diajukan!')
             ]),
       );
     }
@@ -89,8 +93,8 @@ class _PaidLeaveListScreenState extends State<PaidLeaveListScreen> {
   }
 
   Widget _buildPaidLeaveItem(PaidLeave paidLeave) {
-    var startDate = paidLeave.startDate;
-    var dueDate = paidLeave.dueDate;
+    final startDate = paidLeave.startDate;
+    final dueDate = paidLeave.dueDate;
     return EmployeeProposalWidget(
       title: paidLeave.title,
       description: paidLeave.description,
@@ -118,7 +122,7 @@ class _PaidLeaveListScreenState extends State<PaidLeaveListScreen> {
         onPressed: () {
           Get.to(CreatePaidLeaveScreen());
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
       body: _buildBody(),
     );
