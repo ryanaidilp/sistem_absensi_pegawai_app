@@ -11,7 +11,6 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/absent_permission.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
-import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/employee_proposal_widget.dart';
@@ -170,7 +169,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
         pd.hide();
         showAlertDialog("success", "Sukses", _res['message'].toString(),
             dismissible: false);
-        Timer(const Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+        _fetchPermissionData();
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);
