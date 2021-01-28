@@ -50,9 +50,9 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
   }
 
   Future<void> _fetchPresenceData() async {
-    final ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    final ProgressDialog pd = ProgressDialog(context, isDismissible: true);
+    final isShowing = await pd.show();
     try {
-      pd.show();
       setState(() {
         _isLoading = true;
       });
@@ -92,7 +92,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
         }
       });
     } finally {
-      if (pd.isShowing()) {
+      if (isShowing) {
         await pd.hide();
       }
       setState(() {
@@ -280,7 +280,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            employee.name,
+                            employee.name ?? '',
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
                             ),
@@ -293,7 +293,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
                                 'Jabatan',
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
-                              Text(employee.position)
+                              Text(employee.position ?? '')
                             ],
                           ),
                           sizedBoxH4,
@@ -304,7 +304,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
                                 'Bagian ',
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
-                              Text(employee.department)
+                              Text(employee.department ?? '')
                             ],
                           ),
                           sizedBoxH4,
@@ -315,7 +315,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
                                 'Status',
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
-                              Text(employee.status)
+                              Text(employee.status ?? '')
                             ],
                           ),
                           _buildPnsSection(employee),
