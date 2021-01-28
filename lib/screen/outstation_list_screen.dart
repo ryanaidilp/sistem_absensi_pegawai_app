@@ -1,12 +1,15 @@
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/outstation.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/change_outstation_photo_screen.dart';
 import 'package:spo_balaesang/screen/create_outstation_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/employee_proposal_widget.dart';
 
@@ -18,6 +21,7 @@ class OutstationListScreen extends StatefulWidget {
 class _OutstationListScreenState extends State<OutstationListScreen> {
   List<Outstation> _outstations = <Outstation>[];
   bool _isLoading = false;
+  DateTime _date;
 
   @override
   void setState(void Function() fn) {
@@ -32,7 +36,8 @@ class _OutstationListScreenState extends State<OutstationListScreen> {
         _isLoading = true;
       });
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
-      final Map<String, dynamic> _result = await dataRepo.getAllOutstation();
+      final Map<String, dynamic> _result =
+          await dataRepo.getAllOutstation(_date);
       final List<dynamic> outstations = _result['data'] as List<dynamic>;
       final List<Outstation> _data = outstations
           .map((json) => Outstation.fromJson(json as Map<String, dynamic>))
@@ -57,55 +62,71 @@ class _OutstationListScreenState extends State<OutstationListScreen> {
   @override
   void initState() {
     super.initState();
+    _date = DateTime.now();
     _fetchOutstationData();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    DatePicker.showDatePicker(context,
+        initialDateTime: _date,
+        minDateTime: DateTime(2021),
+        maxDateTime: DateTime(DateTime.now().year + 5), onConfirm: (picked, _) {
+      if (picked != null) {
+        setState(() {
+          _date = picked;
+        });
+        _fetchOutstationData();
+      }
+    }, locale: DateTimePickerLocale.id, dateFormat: 'MMMM-y');
   }
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(
-          child: SpinKitFadingFour(
-        size: 45,
-        color: Colors.blueAccent,
-      ));
-    }
-    if (_outstations.isEmpty) {
-      return Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                width: Get.width * 0.5,
-                height: Get.height * 0.3,
-                child: const FlareActor(
-                  'assets/flare/not_found.flr',
-                  animation: 'empty',
-                ),
-              ),
-              const Text('Belum ada Dinas Luar yang diajukan!')
-            ]),
+      return SizedBox(
+        height: Get.height * 0.7,
+        child: const Center(
+            child: SpinKitFadingFour(
+          size: 45,
+          color: Colors.blueAccent,
+        )),
       );
     }
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ListView.builder(
-        itemBuilder: (_, index) {
-          final Outstation outstation = _outstations[index];
-          final DateTime dueDate = _outstations[index].dueDate;
-          final DateTime startDate = _outstations[index].startDate;
-          return EmployeeProposalWidget(
-            title: outstation.title,
-            description: outstation.description,
-            dueDate: dueDate,
-            startDate: startDate,
-            approvalStatus: outstation.approvalStatus,
-            isApproved: outstation.isApproved,
-            heroTag: outstation.id.toString(),
-            photo: outstation.photo,
-            updateWidget: ChangeOutstationPhotoScreen(outstation: outstation),
-          );
-        },
-        itemCount: _outstations.length,
-      ),
+    if (_outstations.isEmpty) {
+      return SizedBox(
+        height: Get.height * 0.7,
+        child: Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(
+                  width: Get.width * 0.5,
+                  height: Get.height * 0.3,
+                  child: const FlareActor(
+                    'assets/flare/not_found.flr',
+                    animation: 'empty',
+                  ),
+                ),
+                const Text('Belum ada Dinas Luar yang diajukan!')
+              ]),
+        ),
+      );
+    }
+    return Column(
+      children: _outstations.map((Outstation outstation) {
+        final DateTime dueDate = outstation.dueDate;
+        final DateTime startDate = outstation.startDate;
+        return EmployeeProposalWidget(
+          title: outstation.title,
+          description: outstation.description,
+          dueDate: dueDate,
+          startDate: startDate,
+          approvalStatus: outstation.approvalStatus,
+          isApproved: outstation.isApproved,
+          heroTag: outstation.id.toString(),
+          photo: outstation.photo,
+          updateWidget: ChangeOutstationPhotoScreen(outstation: outstation),
+        );
+      }).toList(),
     );
   }
 
@@ -123,6 +144,43 @@ class _OutstationListScreenState extends State<OutstationListScreen> {
           },
           child: const Icon(Icons.add),
         ),
-        body: _buildBody());
+        body: Container(
+          height: Get.height,
+          padding: const EdgeInsets.all(8.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Text(
+                  'Pilih Tahun & Bulan : ',
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      DateFormat.yMMMM('id_ID').format(_date),
+                      style: const TextStyle(
+                        fontSize: 22.0,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    IconButton(
+                        icon: Icon(
+                          Icons.calendar_today_rounded,
+                          color: Colors.blueAccent[400],
+                        ),
+                        onPressed: () {
+                          _selectDate(context);
+                        })
+                  ],
+                ),
+                sizedBoxH4,
+                dividerT1,
+                sizedBoxH4,
+                _buildBody()
+              ],
+            ),
+          ),
+        ));
   }
 }
