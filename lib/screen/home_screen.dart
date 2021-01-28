@@ -233,7 +233,8 @@ class _HomeScreenState extends State<HomeScreen> {
       _percentage = 0;
     }
 
-    user.presences.map((presence) {
+    // ignore: avoid_function_literals_in_foreach_calls
+    user.presences.forEach((presence) {
       switch (presence.status) {
         case 'Tepat Waktu':
         case 'Dinas Luar':
