@@ -140,10 +140,11 @@ class DataRepository {
     return result;
   }
 
-  Future<Map<String, dynamic>> getAllPermissions() async {
+  Future<Map<String, dynamic>> getAllPermissions(DateTime date) async {
     Map<String, dynamic> data;
     try {
-      data = await apiService.getEndpointData(endpoint: Endpoint.permission);
+      data = await apiService.getEndpointData(
+          endpoint: Endpoint.permission, query: {'date': date.toString()});
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
