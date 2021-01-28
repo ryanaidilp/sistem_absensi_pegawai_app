@@ -87,7 +87,9 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
     } finally {
       if (pd.isShowing()) {

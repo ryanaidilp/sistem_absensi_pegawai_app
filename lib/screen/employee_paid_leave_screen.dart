@@ -56,7 +56,9 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
     } finally {
       setState(() {
@@ -96,7 +98,9 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
       pd.hide();
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
     }
   }

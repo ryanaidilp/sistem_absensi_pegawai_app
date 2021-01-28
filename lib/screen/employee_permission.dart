@@ -64,7 +64,9 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
     } finally {
       _isLoading = false;
@@ -179,7 +181,9 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
       pd.hide();
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
     }
   }

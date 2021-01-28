@@ -41,7 +41,9 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
       pd.hide();
     }

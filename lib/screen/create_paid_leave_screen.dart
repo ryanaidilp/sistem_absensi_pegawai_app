@@ -116,7 +116,9 @@ class _CreatePaidLeaveScreenState extends State<CreatePaidLeaveScreen> {
       } catch (e) {
         showErrorDialog({
           'message': 'Kesalahan',
-          'errors': [e.toString()]
+          'errors': {
+            'exception': ['Terjadi kesalahan!']
+          }
         });
         pd.hide();
       }

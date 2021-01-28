@@ -62,7 +62,9 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
     } finally {
       setState(() {
@@ -91,7 +93,9 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
       pd.hide();
     }
@@ -114,7 +118,9 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
       pd.hide();
     }
@@ -137,7 +143,9 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
       pd.hide();
     }

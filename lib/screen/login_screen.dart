@@ -252,12 +252,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                       } on SocketException catch (e) {
                                         showErrorDialog({
                                           'message': 'Kesalahan',
-                                          'errors': [e.message]
+                                          'errors': {
+                                            'exception': [e.message]
+                                          }
                                         });
                                       } catch (e) {
                                         showErrorDialog({
                                           'message': 'Kesalahan',
-                                          'errors': [e.toString()]
+                                          'errors': {
+                                            'exception': ['Terjadi kesalahan!']
+                                          }
                                         });
                                       } finally {
                                         setState(() {

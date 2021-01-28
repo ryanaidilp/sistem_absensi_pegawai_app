@@ -43,7 +43,9 @@ class _OutstationListScreenState extends State<OutstationListScreen> {
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
     } finally {
       setState(() {
