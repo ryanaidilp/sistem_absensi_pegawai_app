@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:spo_balaesang/screen/image_detail_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/image_placeholder_widget.dart';
 
@@ -56,7 +57,7 @@ class EmployeeProposalWidget extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SizedBox(height: 4.0),
+          sizedBoxH4,
           Row(
             children: <Widget>[
               Text(
@@ -64,19 +65,19 @@ class EmployeeProposalWidget extends StatelessWidget {
                 style: labelTextStyle.copyWith(fontSize: 12.0),
               ),
               Text(
-                '$employeeName',
-                style: TextStyle(
+                employeeName,
+                style: const TextStyle(
                   fontSize: 12.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 5.0),
+          sizedBoxH5,
         ],
       );
     }
-    return SizedBox(height: 5.0);
+    return sizedBoxH5;
   }
 
   Widget _buildCategorySection() {
@@ -84,7 +85,7 @@ class EmployeeProposalWidget extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SizedBox(height: 4.0),
+          sizedBoxH4,
           Row(
             children: <Widget>[
               Text(
@@ -92,33 +93,33 @@ class EmployeeProposalWidget extends StatelessWidget {
                 style: labelTextStyle.copyWith(fontSize: 12.0),
               ),
               Text(
-                '$category',
-                style: TextStyle(fontSize: 12.0),
+                category,
+                style: const TextStyle(fontSize: 12.0),
               ),
             ],
           ),
         ],
       );
     }
-    return SizedBox();
+    return sizedBox;
   }
 
   Widget _buildButtonSection() {
     if (isApprovalCard) {
       return Column(
         children: [
-          Divider(thickness: 1),
+          dividerT1,
           button,
         ],
       );
     }
-    return SizedBox();
+    return sizedBox;
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 16.0),
+      margin: const EdgeInsets.only(bottom: 16.0),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 4.0,
@@ -128,12 +129,13 @@ class EmployeeProposalWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  '$title',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0),
+                  title,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w600, fontSize: 16.0),
                 ),
-                SizedBox(height: 5.0),
-                Divider(thickness: 1.0),
-                SizedBox(height: 5.0),
+                sizedBoxH5,
+                dividerT1,
+                sizedBoxH5,
                 Row(
                   children: <Widget>[
                     Text(
@@ -141,7 +143,7 @@ class EmployeeProposalWidget extends StatelessWidget {
                       style: labelTextStyle.copyWith(fontSize: 12.0),
                     ),
                     Text(
-                      '$approvalStatus',
+                      approvalStatus,
                       style: TextStyle(
                           fontSize: 12.0,
                           color: _checkStatusColor(approvalStatus)),
@@ -150,52 +152,51 @@ class EmployeeProposalWidget extends StatelessWidget {
                 ),
                 _buildCategorySection(),
                 _buildEmployeeNameSection(),
-                Divider(thickness: 1.0),
-                SizedBox(height: 5.0),
-                Text(
+                dividerT1,
+                sizedBoxH5,
+                const Text(
                   'Masa Berlaku : ',
                   style: TextStyle(fontSize: 12.0, color: Colors.grey),
                 ),
-                SizedBox(height: 5.0),
+                sizedBoxH5,
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Icon(
+                    const Icon(
                       Icons.calendar_today_rounded,
                       size: 16.0,
                     ),
-                    SizedBox(width: 5.0),
+                    sizedBoxW5,
                     Text(
                       '${startDate.day}/${startDate.month}/${startDate.year} - ${dueDate.day}/${dueDate.month}/${dueDate.year}',
-                      style: TextStyle(fontSize: 12.0),
+                      style: const TextStyle(fontSize: 12.0),
                     ),
                   ],
                 ),
-                SizedBox(height: 10.0),
-                Text(
+                sizedBoxH10,
+                const Text(
                   'Deskripsi : ',
                   style: TextStyle(fontSize: 12.0, color: Colors.grey),
                 ),
                 AutoSizeText(
-                  '$description',
+                  description,
                   maxFontSize: 12.0,
                   minFontSize: 10.0,
                   maxLines: 4,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 10.0),
-                Text(
+                sizedBoxH10,
+                const Text(
                   'Lampiran : ',
                   style: TextStyle(fontSize: 12.0, color: Colors.grey),
                 ),
-                Text(
+                const Text(
                   '*tekan untuk memperbesar',
                   style: TextStyle(
                       fontSize: 12.0,
                       color: Colors.black87,
                       fontStyle: FontStyle.italic),
                 ),
-                SizedBox(height: 5.0),
+                sizedBoxH5,
                 InkWell(
                   onLongPress: () {
                     if (updateWidget != null) {
@@ -213,7 +214,7 @@ class EmployeeProposalWidget extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10.0),
                       child: CachedNetworkImage(
-                        placeholder: (_, __) => ImagePlaceholderWidget(
+                        placeholder: (_, __) => const ImagePlaceholderWidget(
                           label: 'Memuat Foto',
                           child: SpinKitFadingCircle(
                             size: 25.0,
@@ -222,7 +223,8 @@ class EmployeeProposalWidget extends StatelessWidget {
                         ),
                         imageUrl: photo,
                         fit: BoxFit.cover,
-                        errorWidget: (_, __, ___) => ImagePlaceholderWidget(
+                        errorWidget: (_, __, ___) =>
+                            const ImagePlaceholderWidget(
                           label: 'Gagal memuat foto!',
                           child: Icon(
                             Icons.image_not_supported_rounded,

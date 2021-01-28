@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ForgotPassScreen extends StatelessWidget {
@@ -36,19 +37,6 @@ class ForgotPassScreen extends StatelessWidget {
             left: -getBigDiameter / 4,
             top: -getBigDiameter / 4,
             child: Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Image.asset(
-                    'assets/logo/logo.png',
-                    width: 200,
-                  ),
-                  Text(
-                    'Sistem Absensi Pegawai',
-                    style: TextStyle(fontSize: 12.0, color: Colors.white),
-                  ),
-                ],
-              ),
               width: getBigDiameter,
               height: getBigDiameter,
               decoration: BoxDecoration(
@@ -58,6 +46,19 @@ class ForgotPassScreen extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter),
               ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Image.asset(
+                    'assets/logo/logo.png',
+                    width: 200,
+                  ),
+                  const Text(
+                    'Sistem Absensi Pegawai',
+                    style: TextStyle(fontSize: 12.0, color: Colors.white),
+                  ),
+                ],
+              ),
             ),
           ),
           Align(
@@ -65,10 +66,11 @@ class ForgotPassScreen extends StatelessWidget {
             child: ListView(
               children: <Widget>[
                 ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
                   child: Container(
                     margin:
                         EdgeInsets.fromLTRB(5.0, Get.height * 0.35, 5.0, 10),
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 25),
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 25),
                     child: Card(
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
@@ -77,25 +79,25 @@ class ForgotPassScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           children: <Widget>[
-                            SizedBox(height: 15.0),
-                            Text(
+                            sizedBoxH16,
+                            const Text(
                               'Fajrian Aidil Pratama',
                               style: TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            Text(
+                            const Text(
                               'Administrator\nFounder of @BanuaCoders',
                               style: TextStyle(color: Colors.grey),
                               textAlign: TextAlign.center,
                             ),
-                            SizedBox(height: 2.0),
-                            Divider(
+                            sizedBoxH2,
+                            const Divider(
                               color: Colors.black26,
                               thickness: 1,
                             ),
-                            SizedBox(height: 2.0),
+                            sizedBoxH2,
                             Text(
                               'Tekan tombol dibawah untuk menghubungi administrator sistem dan melaporkan masalah anda',
                               textAlign: TextAlign.center,
@@ -111,24 +113,22 @@ class ForgotPassScreen extends StatelessWidget {
                                     launch('tel:ADMIN_PHONE_NUMBER');
                                   },
                                   color: Colors.blueAccent,
-                                  icon: Icon(Icons.phone),
-                                  enableFeedback: true,
+                                  icon: const Icon(Icons.phone),
                                   tooltip: 'Hubungi via Telpon',
                                 ),
                                 IconButton(
                                   onPressed: () async {
-                                    var whatsappUrl =
+                                    const whatsappUrl =
                                         "whatsapp://send?phone=ADMIN_PHONE_NUMBER";
                                     await canLaunch(whatsappUrl)
                                         ? launch(whatsappUrl)
                                         : Get.defaultDialog(
                                             title: 'Gagal',
-                                            content: Text(
+                                            content: const Text(
                                                 'WhatsApp tidak ditemukan!'));
                                   },
                                   color: Colors.green[600],
-                                  icon: FaIcon(FontAwesomeIcons.whatsapp),
-                                  enableFeedback: true,
+                                  icon: const FaIcon(FontAwesomeIcons.whatsapp),
                                   tooltip: 'Hubungi via WA',
                                 ),
                               ],
@@ -138,7 +138,6 @@ class ForgotPassScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  borderRadius: BorderRadius.circular(6),
                 ),
               ],
             ),

@@ -35,26 +35,24 @@ class Yearly {
 
   factory Yearly.fromJson(Map<String, dynamic> json) {
     return Yearly(
-        lateCount: json[REPORT_LATE_COUNT_FIELD],
+        lateCount: json[reportLateCountField] as int,
         attendancePercentage:
-            double.parse(json[REPORT_ATTENDANCE_PERCENTAGE_FIELD].toString()),
-        absent: json[YEARLY_ABSENT_FIELD] as Map<String, dynamic>,
+            double.parse(json[reportAttendancePercentageFieldField].toString()),
+        absent: json[yearlyAbsentField] as Map<String, dynamic>,
         absentPermission:
-            json[YEARLY_ABSENT_PERMISSION_FIELD] as Map<String, dynamic>,
-        outstation: json[YEARLY_OUTSTATION_FIELD] as Map<String, dynamic>,
-        leaveEarlyCount: json[REPORT_LEAVE_EARLY_COUNT_FIELD] as int,
-        notMorningParadeCount:
-            json[REPORT_NOT_MORNING_PARADE_COUNT_FIELD] as int,
-        earlyLunchBreakCount: json[REPORT_EARLY_LUNCH_BREAK_COUNT_FIELD] as int,
+            json[yearlyAbsentPermissionField] as Map<String, dynamic>,
+        outstation: json[yearlyOutstationField] as Map<String, dynamic>,
+        leaveEarlyCount: json[reportLeaveEarlyFieldCountField] as int,
+        notMorningParadeCount: json[reportNotMorningParadeCountField] as int,
+        earlyLunchBreakCount: json[reportEarlyLunchBreakCountField] as int,
         notComeAfterLunchBreakCount:
-            json[REPORT_NOT_COME_AFTER_LUNCH_BREAK_COUNT_FIELD] as int,
-        annualLeave: json[REPORT_ANNUAL_LEAVE_FIELD] as Map<String, dynamic>,
+            json[reportNotComeAfterLunchBreakCountField] as int,
+        annualLeave: json[reportAnnualLeaveField] as Map<String, dynamic>,
         importantReasonLeave:
-            json[REPORT_IMPORTANT_REASON_LEAVE_FIELD] as Map<String, dynamic>,
-        sickLeave: json[REPORT_SICK_LEAVE_FIELD] as Map<String, dynamic>,
-        maternityLeave:
-            json[REPORT_MATERNITY_LEAVE_FIELD] as Map<String, dynamic>,
+            json[reportImportantReasonLeaveField] as Map<String, dynamic>,
+        sickLeave: json[reportSickLeaveField] as Map<String, dynamic>,
+        maternityLeave: json[reportMaternityLeaveField] as Map<String, dynamic>,
         outOfLiabilityLeave:
-            json[REPORT_OUT_OF_LIABILITY_LEAVE_FIELD] as Map<String, dynamic>);
+            json[reportOutOfLiabilityLeaveField] as Map<String, dynamic>);
   }
 }

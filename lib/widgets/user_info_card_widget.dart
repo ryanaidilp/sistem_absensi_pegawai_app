@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 
 class UserInfoCardWidget extends StatelessWidget {
   const UserInfoCardWidget(
@@ -20,7 +21,7 @@ class UserInfoCardWidget extends StatelessWidget {
 
   Widget _buildPnsInfoSection() {
     if (status == 'Honorer') {
-      return SizedBox();
+      return sizedBox;
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,14 +34,14 @@ class UserInfoCardWidget extends StatelessWidget {
               style: TextStyle(color: Colors.grey[700]),
             ),
             Text(
-              '$group',
-              style: TextStyle(
+              group ?? '',
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
-        SizedBox(height: 4.0),
+        sizedBoxH4,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -49,14 +50,14 @@ class UserInfoCardWidget extends StatelessWidget {
               style: TextStyle(color: Colors.grey[700]),
             ),
             Text(
-              '${rank?.toUpperCase()}',
-              style: TextStyle(
+              rank?.toUpperCase() ?? '',
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
-        SizedBox(height: 4.0),
+        sizedBoxH4,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -65,14 +66,14 @@ class UserInfoCardWidget extends StatelessWidget {
               style: TextStyle(color: Colors.grey[700]),
             ),
             Text(
-              '$nip',
-              style: TextStyle(
+              nip ?? '',
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
-        SizedBox(height: 4.0),
+        sizedBoxH4,
       ],
     );
   }
@@ -94,7 +95,7 @@ class UserInfoCardWidget extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   color: Colors.grey[700]),
             ),
-            Divider(color: Colors.black38),
+            const Divider(color: Colors.black38),
             Center(
               child: Column(
                 children: <Widget>[
@@ -106,14 +107,14 @@ class UserInfoCardWidget extends StatelessWidget {
                         style: TextStyle(color: Colors.grey[700]),
                       ),
                       Text(
-                        '$name',
-                        style: TextStyle(
+                        name ?? '',
+                        style: const TextStyle(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 4.0),
+                  sizedBoxH4,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
@@ -122,14 +123,14 @@ class UserInfoCardWidget extends StatelessWidget {
                         style: TextStyle(color: Colors.grey[700]),
                       ),
                       Text(
-                        '$position',
-                        style: TextStyle(
+                        position ?? '',
+                        style: const TextStyle(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 4.0),
+                  sizedBoxH4,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
@@ -138,14 +139,14 @@ class UserInfoCardWidget extends StatelessWidget {
                         style: TextStyle(color: Colors.grey[700]),
                       ),
                       Text(
-                        '$department',
-                        style: TextStyle(
+                        department ?? '',
+                        style: const TextStyle(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 4.0),
+                  sizedBoxH4,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
@@ -154,14 +155,14 @@ class UserInfoCardWidget extends StatelessWidget {
                         style: TextStyle(color: Colors.grey[700]),
                       ),
                       Text(
-                        '$status',
-                        style: TextStyle(
+                        status ?? '',
+                        style: const TextStyle(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 4.0),
+                  sizedBoxH4,
                   _buildPnsInfoSection(),
                 ],
               ),

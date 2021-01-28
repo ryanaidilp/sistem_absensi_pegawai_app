@@ -17,6 +17,7 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/image_detail_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/file_util.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/image_placeholder_widget.dart';
@@ -38,16 +39,14 @@ class _PresenceScreenState extends State<PresenceScreen> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController controller;
 
-  _openCamera() async {
+  Future<void> _openCamera() async {
     if (_address == null || _address.isEmpty) {
-      showAlertDialog(
-          'failure',
-          'Lokasi tidak ditemukan.',
+      showAlertDialog('failure', 'Lokasi tidak ditemukan.',
           'Pastikan anda sudah menyalakan akses lokasi dan mengizinkan aplikasi untuk mengakses lokasi anda',
-          false);
+          dismissible: false);
     } else {
-      var picture = await ImagePicker().getImage(source: ImageSource.camera);
-      var file = await compressAndGetFile(File(picture.path),
+      final picture = await ImagePicker().getImage(source: ImageSource.camera);
+      final file = await compressAndGetFile(File(picture.path),
           '/storage/emulated/0/Android/data/com.banuacoders.siap/files/Pictures/images.jpg');
       setState(() {
         _tmpFile = file;
@@ -69,21 +68,19 @@ class _PresenceScreenState extends State<PresenceScreen> {
         this.controller?.pauseCamera();
         _uploadData();
       } else {
-        showAlertDialog(
-            'failure',
-            'Gagal',
+        showAlertDialog('failure', 'Gagal',
             'Lokasi tidak ditemukan.\nPastikan lokasi sudah diaktifkan!',
-            false);
+            dismissible: false);
       }
     });
   }
 
   Future<void> _uploadData() async {
-    ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    final ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     try {
       pd.show();
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
-      Map<String, dynamic> data = {
+      final Map<String, dynamic> data = {
         'code': _code,
         'latitude': _latitude,
         'longitude': _longitude,
@@ -91,33 +88,40 @@ class _PresenceScreenState extends State<PresenceScreen> {
         'photo': _base64Image,
         'file_name': _fileName
       };
-      http.Response response = await dataRepo.presence(data);
-      Map<String, dynamic> _res = jsonDecode(response.body);
+      final http.Response response = await dataRepo.presence(data);
+      final Map<String, dynamic> _res =
+          jsonDecode(response.body) as Map<String, dynamic>;
       if (response.statusCode == 200) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], false);
-        Timer(Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+        showAlertDialog("success", "Sukses", _res['message'].toString(),
+            dismissible: false);
+        Timer(const Duration(seconds: 5), () => Get.off(BottomNavScreen()));
       } else {
-        this.controller?.resumeCamera();
+        controller?.resumeCamera();
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);
       }
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
       pd.hide();
     }
   }
 
-  getUserLocation() async {
+  Future<void> _getUserLocation() async {
     if (await Permission.location.serviceStatus.isDisabled) {
       Permission.location.shouldShowRequestRationale;
-      final AndroidIntent intent =
+      const AndroidIntent intent =
           AndroidIntent(action: 'android.settings.LOCATION_SOURCE_SETTINGS');
       intent.launch();
     }
-    Position position = await Geolocator().getCurrentPosition(
+    final Position position = await Geolocator().getCurrentPosition(
         desiredAccuracy: LocationAccuracy.bestForNavigation);
-    var address = await placemarkFromCoordinates(
+    final address = await placemarkFromCoordinates(
         position.latitude, position.longitude,
         localeIdentifier: 'id');
     setState(() {
@@ -130,16 +134,16 @@ class _PresenceScreenState extends State<PresenceScreen> {
 
   Widget _showImage() {
     if (_base64Image == null) {
-      return ImagePlaceholderWidget(
+      return const ImagePlaceholderWidget(
+        label: 'Ambil Foto',
         child: Icon(
           Icons.camera_alt_rounded,
           color: Colors.grey,
         ),
-        label: 'Ambil Foto',
       );
     }
 
-    Uint8List bytes = base64Decode(_base64Image);
+    final Uint8List bytes = base64Decode(_base64Image);
     return InkWell(
       onTap: () {
         Get.to(ImageDetailScreen(
@@ -164,12 +168,12 @@ class _PresenceScreenState extends State<PresenceScreen> {
 
   Widget _buildQrScanner() {
     if (_address == null || _base64Image == null) {
-      return Text(
+      return const Text(
         'Scanner akan aktif setelah lokasi berhasil dideteksi dan anda telah mengambil foto',
         style: TextStyle(color: Colors.grey),
       );
     }
-    return Container(
+    return SizedBox(
         height: 300.0,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20.0),
@@ -177,7 +181,6 @@ class _PresenceScreenState extends State<PresenceScreen> {
             key: qrKey,
             onQRViewCreated: _onQRViewCreated,
             overlay: QrScannerOverlayShape(
-              borderColor: Colors.red,
               borderRadius: 10,
               borderLength: 30,
               borderWidth: 10,
@@ -189,9 +192,9 @@ class _PresenceScreenState extends State<PresenceScreen> {
 
   Widget _buildPlaceholderQR() {
     if (_address == null || _base64Image == null) {
-      return SizedBox();
+      return const SizedBox();
     }
-    return Text(
+    return const Text(
       'Arahkan kamera ke layar komputer',
       style: TextStyle(color: Colors.grey),
     );
@@ -200,7 +203,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
   @override
   void initState() {
     super.initState();
-    getUserLocation();
+    _getUserLocation();
   }
 
   @override
@@ -215,7 +218,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
-        title: Text('Presensi'),
+        title: const Text('Presensi'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -225,9 +228,9 @@ class _PresenceScreenState extends State<PresenceScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Row(
-                children: <Widget>[
+                children: const <Widget>[
                   Text('Scanner'),
-                  SizedBox(width: 5.0),
+                  sizedBoxW5,
                   Text(
                     '*',
                     style: TextStyle(color: Colors.red),
@@ -236,11 +239,11 @@ class _PresenceScreenState extends State<PresenceScreen> {
               ),
               _buildPlaceholderQR(),
               _buildQrScanner(),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               Row(
-                children: <Widget>[
+                children: const <Widget>[
                   Text('Lokasi'),
-                  SizedBox(width: 5.0),
+                  sizedBoxW5,
                   Text(
                     '*',
                     style: TextStyle(color: Colors.red),
@@ -248,33 +251,35 @@ class _PresenceScreenState extends State<PresenceScreen> {
                 ],
               ),
               Text(
-                '${(_address == null || _address.isEmpty) ? 'Memuat lokasi..' : _address}',
-                style: TextStyle(color: Colors.grey),
+                (_address == null || _address.isEmpty)
+                    ? 'Memuat lokasi..'
+                    : _address,
+                style: const TextStyle(color: Colors.grey),
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               Row(
-                children: <Widget>[
+                children: const <Widget>[
                   Text('Foto Diri'),
-                  SizedBox(width: 5.0),
+                  sizedBoxW5,
                   Text(
                     '*',
                     style: TextStyle(color: Colors.red),
                   ),
                 ],
               ),
-              Text(
+              const Text(
                 'Ambil foto selfie anda sebagai bukti bahwa anda melakukan presensi di kantor tanpa diwakili orang lain. Pastikan wajah terlihat jelas.',
                 style: TextStyle(color: Colors.grey),
               ),
-              SizedBox(height: 10.0),
-              Text(
+              sizedBoxH10,
+              const Text(
                 '*): Absen akan dibatalkan jika foto tidak sesuai dengan ketentuan. Tekan untuk memperbesar.',
                 style: TextStyle(
                     fontSize: 10.0,
                     color: Colors.blueAccent,
                     fontStyle: FontStyle.italic),
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               _showImage(),
               RaisedButton(
                 shape: RoundedRectangleBorder(

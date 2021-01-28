@@ -26,16 +26,16 @@ class PaidLeave {
   final User user;
 
   factory PaidLeave.fromJson(Map<String, dynamic> json) => PaidLeave(
-      id: json[PAID_LEAVE_ID_FIELD] as int,
-      title: json[PAID_LEAVE_TITLE_FIELD] as String,
-      category: json[PAID_LEAVE_CATEGORY_FIELD] as String,
-      description: json[PAID_LEAVE_DESCRIPTION_FIELD] as String,
-      isApproved: json[PAID_LEAVE_IS_APPROVED_FIELD] as bool,
-      approvalStatus: json[APPROVAL_STATUS_FIELD] as String,
-      startDate: DateTime.parse(json[PAID_LEAVE_START_DATE_FIELD]),
-      dueDate: DateTime.parse(json[PAID_LEAVE_DUE_DATE_FIELD]),
-      photo: json[PAID_LEAVE_PHOTO_FIELD] as String,
-      user: json[PAID_LEAVE_USER_FIELD] != null
-          ? User.fromJson(json[PAID_LEAVE_USER_FIELD])
+      id: json[paidLeaveIdField] as int,
+      title: json[paidLeaveTitleField] as String,
+      category: json[paidLeaveCategoryField] as String,
+      description: json[paidLeaveDescriptionField] as String,
+      isApproved: json[paidLeaveIsApprovedField] as bool,
+      approvalStatus: json[approvalStatusField] as String,
+      startDate: DateTime.parse(json[paidLeaveStartDateField].toString()),
+      dueDate: DateTime.parse(json[paidLeaveDueDateField].toString()),
+      photo: json[paidLeavePhotoField] as String,
+      user: json[paidLeaveUserField] != null
+          ? User.fromJson(json[paidLeaveUserField] as Map<String, dynamic>)
           : null);
 }

@@ -9,6 +9,7 @@ import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/network/api.dart';
 import 'package:spo_balaesang/network/api_service.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
+import 'package:spo_balaesang/utils/view_util.dart';
 
 class DataRepository {
   DataRepository({@required this.apiService});
@@ -21,21 +22,31 @@ class DataRepository {
     try {
       final Map<String, dynamic> _data =
           await apiService.getEndpointData(endpoint: Endpoint.users);
-      final List<dynamic> _result = _data['data'];
-      if (prefs.containsKey(PREFS_EMPLOYEE_KEY)) {
-        prefs.remove(PREFS_EMPLOYEE_KEY);
+      final List<dynamic> _result = _data['data'] as List<dynamic>;
+      if (prefs.containsKey(prefsEmployeeKey)) {
+        prefs.remove(prefsEmployeeKey);
         prefs.reload();
       }
-      prefs.setString(PREFS_EMPLOYEE_KEY, jsonEncode(_data));
-      employee =
-          _result.map((dynamic json) => Employee.fromJson(json)).toList();
+      prefs.setString(prefsEmployeeKey, jsonEncode(_data));
+      employee = _result
+          .map(
+              (dynamic json) => Employee.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on SocketException {
-      Map<String, dynamic> data =
-          jsonDecode(prefs.getString(PREFS_EMPLOYEE_KEY));
-      final List<dynamic> _data = data['data'];
-      employee = _data.map((dynamic json) => Employee.fromJson(json)).toList();
+      final Map<String, dynamic> data =
+          jsonDecode(prefs.getString(prefsEmployeeKey)) as Map<String, dynamic>;
+      final List<dynamic> _data = data['data'] as List<dynamic>;
+      employee = _data
+          .map(
+              (dynamic json) => Employee.fromJson(json as Map<String, dynamic>))
+          .toList();
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return employee;
   }
@@ -46,14 +57,19 @@ class DataRepository {
     try {
       final Map<String, dynamic> _data =
           await apiService.getEndpointData(endpoint: Endpoint.my);
-      prefs.remove(PREFS_USER_KEY);
+      prefs.remove(prefsUserKey);
       prefs.reload();
-      prefs.setString(PREFS_USER_KEY, jsonEncode(_data['data']));
-      user = User.fromJson(_data['data']);
+      prefs.setString(prefsUserKey, jsonEncode(_data['data']));
+      user = User.fromJson(_data['data'] as Map<String, dynamic>);
     } on SocketException {
       return null;
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return user;
   }
@@ -65,7 +81,12 @@ class DataRepository {
           await apiService.getEndpointData(endpoint: Endpoint.logout);
       response = _data;
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return response;
   }
@@ -76,7 +97,12 @@ class DataRepository {
       response = await apiService.postEndpointWithoutToken(
           endpoint: Endpoint.login, data: data);
     } catch (e) {
-      debugPrint(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return response;
   }
@@ -85,9 +111,14 @@ class DataRepository {
     Response response;
     try {
       response = await apiService.postEndpointWithToken(
-          endpoint: Endpoint.change_pass, data: data);
+          endpoint: Endpoint.changePass, data: data);
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return response;
   }
@@ -95,32 +126,49 @@ class DataRepository {
   Future<Map<String, dynamic>> permission(Map<String, dynamic> data) async {
     Map<String, dynamic> result;
     try {
-      var response = await apiService.postEndpointWithToken(
+      final response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.permission, data: data);
-      result = jsonDecode(response.body);
+      result = jsonDecode(response.body) as Map<String, dynamic>;
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return result;
   }
 
-  Future<Map<String, dynamic>> getAllPermissions() async {
+  Future<Map<String, dynamic>> getAllPermissions(DateTime date) async {
     Map<String, dynamic> data;
     try {
-      data = await apiService.getEndpointData(endpoint: Endpoint.permission);
+      data = await apiService.getEndpointData(
+          endpoint: Endpoint.permission, query: {'date': date.toString()});
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return data;
   }
 
-  Future<Map<String, dynamic>> getAllEmployeePermissions() async {
+  Future<Map<String, dynamic>> getAllEmployeePermissions(DateTime date) async {
     Map<String, dynamic> data;
     try {
       data = await apiService.getEndpointData(
-          endpoint: Endpoint.employeePermission);
+          endpoint: Endpoint.employeePermission,
+          query: {'date': date.toString()});
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return data;
   }
@@ -131,7 +179,12 @@ class DataRepository {
       response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.approvePermission, data: data);
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return response;
   }
@@ -140,11 +193,16 @@ class DataRepository {
       Map<String, dynamic> data) async {
     Map<String, dynamic> result;
     try {
-      var response = await apiService.postEndpointWithToken(
+      final response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.changePermissionPhoto, data: data);
-      result = jsonDecode(response.body);
+      result = jsonDecode(response.body) as Map<String, dynamic>;
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return result;
   }
@@ -152,32 +210,49 @@ class DataRepository {
   Future<Map<String, dynamic>> outstation(Map<String, dynamic> data) async {
     Map<String, dynamic> result;
     try {
-      var response = await apiService.postEndpointWithToken(
+      final response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.outstation, data: data);
-      result = jsonDecode(response.body);
+      result = jsonDecode(response.body) as Map<String, dynamic>;
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return result;
   }
 
-  Future<Map<String, dynamic>> getAllOutstation() async {
+  Future<Map<String, dynamic>> getAllOutstation(DateTime date) async {
     Map<String, dynamic> data;
     try {
-      data = await apiService.getEndpointData(endpoint: Endpoint.outstation);
+      data = await apiService.getEndpointData(
+          endpoint: Endpoint.outstation, query: {'date': date.toString()});
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return data;
   }
 
-  Future<Map<String, dynamic>> getAllEmployeeOutstation() async {
+  Future<Map<String, dynamic>> getAllEmployeeOutstation(DateTime date) async {
     Map<String, dynamic> data;
     try {
       data = await apiService.getEndpointData(
-          endpoint: Endpoint.employeeOutstation);
+          endpoint: Endpoint.employeeOutstation,
+          query: {'date': date.toString()});
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return data;
   }
@@ -188,7 +263,12 @@ class DataRepository {
       response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.approveOutstation, data: data);
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return response;
   }
@@ -197,11 +277,16 @@ class DataRepository {
       Map<String, dynamic> data) async {
     Map<String, dynamic> result;
     try {
-      var response = await apiService.postEndpointWithToken(
+      final response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.changeOutstationPhoto, data: data);
-      result = jsonDecode(response.body);
+      result = jsonDecode(response.body) as Map<String, dynamic>;
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return result;
   }
@@ -211,7 +296,12 @@ class DataRepository {
     try {
       data = await apiService.getEndpointData(endpoint: Endpoint.notifications);
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return data;
   }
@@ -226,7 +316,12 @@ class DataRepository {
             'month': date.month.toString()
           });
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return data;
   }
@@ -237,7 +332,12 @@ class DataRepository {
       response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.notifications, data: data);
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return response;
   }
@@ -248,7 +348,12 @@ class DataRepository {
       data = await apiService.getEndpointData(
           endpoint: Endpoint.readNotifications);
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return data;
   }
@@ -259,7 +364,12 @@ class DataRepository {
       data = await apiService.getEndpointData(
           endpoint: Endpoint.deleteNotifications);
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return data;
   }
@@ -268,11 +378,16 @@ class DataRepository {
       Map<String, dynamic> data) async {
     Map<String, dynamic> result;
     try {
-      var response = await apiService.postEndpointWithToken(
+      final response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.sendNotifications, data: data);
-      result = jsonDecode(response.body);
+      result = jsonDecode(response.body) as Map<String, dynamic>;
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return result;
   }
@@ -283,28 +398,45 @@ class DataRepository {
       response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.presence, data: data);
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return response;
   }
 
-  Future<Map<String, dynamic>> getAllPaidLeave() async {
+  Future<Map<String, dynamic>> getAllPaidLeave(DateTime date) async {
     Map<String, dynamic> data;
     try {
-      data = await apiService.getEndpointData(endpoint: Endpoint.paidLeave);
+      data = await apiService.getEndpointData(
+          endpoint: Endpoint.paidLeave, query: {'date': date.toString()});
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return data;
   }
 
-  Future<Map<String, dynamic>> getAllEmployeePaidLeave() async {
+  Future<Map<String, dynamic>> getAllEmployeePaidLeave(DateTime date) async {
     Map<String, dynamic> data;
     try {
       data = await apiService.getEndpointData(
-          endpoint: Endpoint.employeePaidLeave);
+          endpoint: Endpoint.employeePaidLeave,
+          query: {'date': date.toString()});
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return data;
   }
@@ -313,11 +445,16 @@ class DataRepository {
       Map<String, dynamic> data) async {
     Map<String, dynamic> result;
     try {
-      var response = await apiService.postEndpointWithToken(
+      final response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.changePaidLeavePhoto, data: data);
-      result = jsonDecode(response.body);
+      result = jsonDecode(response.body) as Map<String, dynamic>;
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return result;
   }
@@ -328,7 +465,12 @@ class DataRepository {
       response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.approvePaidLeave, data: data);
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return response;
   }
@@ -336,11 +478,16 @@ class DataRepository {
   Future<Map<String, dynamic>> paidLeave(Map<String, dynamic> data) async {
     Map<String, dynamic> result;
     try {
-      var response = await apiService.postEndpointWithToken(
+      final response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.paidLeave, data: data);
-      result = jsonDecode(response.body);
+      result = jsonDecode(response.body) as Map<String, dynamic>;
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return result;
   }
@@ -353,7 +500,12 @@ class DataRepository {
         'date': date.toString(),
       });
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return data;
   }
@@ -364,7 +516,12 @@ class DataRepository {
       response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.cancelAttendance, data: data);
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
     return response;
   }

@@ -11,8 +11,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/models/paid_leave.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
-import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
-import 'package:spo_balaesang/utils/extensions.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/employee_proposal_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -24,34 +23,40 @@ class EmployeePaidLeaveScreen extends StatefulWidget {
 }
 
 class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
-  List<PaidLeave> _paidLeaves = List<PaidLeave>();
+  List<PaidLeave> _paidLeaves = <PaidLeave>[];
   bool _isLoading = false;
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final CalendarController _calendarController = CalendarController();
-  List<PaidLeave> _filteredPaidLeave = List<PaidLeave>();
-  Set<String> choices = {'Semua', 'Disetujui', 'Belum Disetujui', 'Tanggal'};
+  List<PaidLeave> _filteredPaidLeave = <PaidLeave>[];
+  Set<String> choices = {'Semua', 'Disetujui', 'Belum Disetujui'};
   String _selectedChoice = 'Semua';
   DateTime _selectedDate = DateTime.now();
-  bool _isDateChange = false;
 
   Future<void> _fetchPaidLeaveData() async {
     try {
       setState(() {
         _isLoading = true;
       });
-      var dataRepo = Provider.of<DataRepository>(context, listen: false);
-      Map<String, dynamic> _result = await dataRepo.getAllEmployeePaidLeave();
-      List<dynamic> paidLeaves = _result['data'];
+      final dataRepo = Provider.of<DataRepository>(context, listen: false);
+      final Map<String, dynamic> _result =
+          await dataRepo.getAllEmployeePaidLeave(_selectedDate);
+      final List<dynamic> paidLeaves = _result['data'] as List<dynamic>;
 
-      List<PaidLeave> _data =
-          paidLeaves.map((json) => PaidLeave.fromJson(json)).toList();
-      if (_data.isNotEmpty) {
+      final List<PaidLeave> _data = paidLeaves
+          .map((json) => PaidLeave.fromJson(json as Map<String, dynamic>))
+          .toList();
+      setState(() {
         _paidLeaves = _data;
         _filteredPaidLeave = _data;
-      }
+      });
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     } finally {
       setState(() {
         _isLoading = false;
@@ -59,35 +64,41 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
     }
   }
 
-  _approvePaidLeave(PaidLeave paidLeave) {
+  void _approvePaidLeave(PaidLeave paidLeave) {
     _sendData(paidLeave, true);
   }
 
   Future<void> _sendData(PaidLeave paidLeave, bool isApproved) async {
-    ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    final ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     pd.show();
     try {
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
-      Map<String, dynamic> data = {
+      final Map<String, dynamic> data = {
         'user_id': paidLeave.user.id,
         'is_approved': isApproved,
         'paid_leave_id': paidLeave.id,
         'reason': _reasonController.value.text
       };
-      http.Response response = await dataRepo.approvePaidLeave(data);
-      Map<String, dynamic> _res = jsonDecode(response.body);
-      print(response.statusCode);
+      final http.Response response = await dataRepo.approvePaidLeave(data);
+      final Map<String, dynamic> _res =
+          jsonDecode(response.body) as Map<String, dynamic>;
       if (response.statusCode == 200) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], false);
-        Timer(Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+        showAlertDialog("success", "Sukses", _res['message'].toString(),
+            dismissible: true);
+        _fetchPaidLeaveData();
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);
       }
     } catch (e) {
       pd.hide();
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
   }
 
@@ -106,7 +117,7 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
   }
 
   @override
-  void setState(fn) {
+  void setState(void Function() fn) {
     if (mounted) {
       super.setState(fn);
     }
@@ -114,9 +125,9 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return Container(
+      return SizedBox(
         height: Get.height * 0.8,
-        child: Center(
+        child: const Center(
             child: SpinKitFadingGrid(
           size: 45,
           color: Colors.blueAccent,
@@ -125,23 +136,21 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
     }
 
     if (_paidLeaves.isEmpty) {
-      return Container(
+      return SizedBox(
         height: Get.height * 0.6,
         child: Center(
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Container(
+                SizedBox(
                   width: Get.width * 0.5,
                   height: Get.height * 0.3,
-                  child: FlareActor(
+                  child: const FlareActor(
                     'assets/flare/not_found.flr',
-                    fit: BoxFit.contain,
                     animation: 'empty',
-                    alignment: Alignment.center,
                   ),
                 ),
-                Text('Belum ada Cuti yang diajukan!')
+                const Text('Belum ada Cuti yang diajukan!')
               ]),
         ),
       );
@@ -153,7 +162,7 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
     );
   }
 
-  _rejectPaidLeave(PaidLeave paidLeave) {
+  void _rejectPaidLeave(PaidLeave paidLeave) {
     Get.defaultDialog(
         title: 'Alasan Pembatalan!',
         content: Flexible(
@@ -162,7 +171,7 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
             width: Get.width * 0.9,
             child: TextFormField(
               controller: _reasonController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   labelText: 'Alasan',
                   focusColor: Colors.blueAccent,
                   focusedBorder: UnderlineInputBorder(
@@ -178,11 +187,11 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
             Get.back();
             _sendData(paidLeave, false);
           },
-          child: Text('OK'),
+          child: const Text('OK'),
         ));
   }
 
-  _cancelButton(String label, PaidLeave paidLeave) {
+  SizedBox _cancelButton(String label, PaidLeave paidLeave) {
     return SizedBox(
       width: Get.width,
       child: RaisedButton(
@@ -197,7 +206,7 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
     );
   }
 
-  _approveButton(PaidLeave paidLeave) {
+  SizedBox _approveButton(PaidLeave paidLeave) {
     return SizedBox(
       width: Get.width,
       child: RaisedButton(
@@ -207,12 +216,12 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
         onPressed: () {
           _approvePaidLeave(paidLeave);
         },
-        child: Text('Setujui'),
+        child: const Text('Setujui'),
       ),
     );
   }
 
-  _buildButtonSection(PaidLeave paidLeave) {
+  Widget _buildButtonSection(PaidLeave paidLeave) {
     switch (paidLeave.approvalStatus) {
       case 'Menunggu Persetujuan':
         return Column(
@@ -225,12 +234,14 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
         return _cancelButton('Batal Setujui', paidLeave);
       case 'Ditolak':
         return _approveButton(paidLeave);
+      default:
+        return sizedBox;
     }
   }
 
   Widget _buildPaidLeaveItem(PaidLeave paidLeave) {
-    var startDate = paidLeave.startDate;
-    var dueDate = paidLeave.dueDate;
+    final startDate = paidLeave.startDate;
+    final dueDate = paidLeave.dueDate;
     return EmployeeProposalWidget(
       isApprovalCard: true,
       isPaidLeave: true,
@@ -261,55 +272,35 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
           .toList();
     }
 
-    if (value == 'Tanggal') {
-      if (!_isDateChange) {
-        _selectDate();
-      }
-      return _paidLeaves.where((element) {
-        setState(() {
-          _isDateChange = false;
-        });
-        return element.startDate.isSameDate(_selectedDate) ||
-            element.dueDate.isSameDate(_selectedDate);
-      }).toList();
-    }
-
     return _paidLeaves;
   }
 
-  _selectDate() {
+  void _selectDate() {
     Get.defaultDialog(
-        title: 'Pilih Tanggal Selesai',
+        title: 'Pilih Tanggal',
         content: Flexible(
-          child: Container(
+          child: SizedBox(
             width: Get.width * 0.9,
             child: TableCalendar(
-              availableCalendarFormats: <CalendarFormat, String>{
+              availableCalendarFormats: const <CalendarFormat, String>{
                 CalendarFormat.month: '1 minggu',
                 CalendarFormat.twoWeeks: '1 bulan',
                 CalendarFormat.week: '2 minggu'
               },
               availableGestures: AvailableGestures.horizontalSwipe,
-              headerStyle:
-                  HeaderStyle(formatButtonTextStyle: TextStyle(fontSize: 12.0)),
+              headerStyle: const HeaderStyle(
+                  formatButtonTextStyle: TextStyle(fontSize: 12.0)),
               calendarController: _calendarController,
               startingDayOfWeek: StartingDayOfWeek.monday,
               startDay: DateTime(2021),
               endDay: DateTime(DateTime.now().year + 5),
               initialSelectedDay: _selectedDate,
               locale: 'in_ID',
-              initialCalendarFormat: CalendarFormat.month,
               onDaySelected: (day, events, holidays) {
                 Get.back();
                 setState(() {
                   _selectedDate = day;
-                  if (!_isDateChange) {
-                    _isDateChange = true;
-                  }
-                  _filteredPaidLeave = _setFilter(_selectedChoice);
-                  if (_nameController.value.text.isNotEmpty) {
-                    _searchByName(_nameController.value.text);
-                  }
+                  _fetchPaidLeaveData();
                 });
               },
             ),
@@ -319,11 +310,13 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
 
   void _searchByName(String value) {
     setState(() {
-      if (value.length > 0) {
-        _filteredPaidLeave = _filteredPaidLeave
-            .where((element) =>
-                element.user.name.toLowerCase().contains(value.toLowerCase()))
-            .toList();
+      if (value.isNotEmpty) {
+        if (_filteredPaidLeave.isNotEmpty) {
+          _filteredPaidLeave = _filteredPaidLeave
+              .where((element) =>
+                  element.user.name.toLowerCase().contains(value.toLowerCase()))
+              .toList();
+        }
       } else {
         _filteredPaidLeave = _setFilter(_selectedChoice);
       }
@@ -349,7 +342,7 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
-        title: Text('Daftar Cuti Pegawai'),
+        title: const Text('Daftar Cuti Pegawai'),
       ),
       body: Container(
         padding: const EdgeInsets.all(8),
@@ -359,16 +352,16 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
             children: <Widget>[
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.search),
                   labelText: 'Cari dengan nama pegawai',
                 ),
                 onChanged: _searchByName,
               ),
-              SizedBox(height: 10.0),
+              sizedBoxH10,
               Row(
                 children: <Widget>[
-                  Expanded(
+                  const Expanded(
                     child: Text(
                       'Filter : ',
                       style: TextStyle(
@@ -377,7 +370,7 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
                   ),
                   Expanded(
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10.0),
                           border: Border.all(color: Colors.grey[600])),
@@ -388,17 +381,18 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
                             items: choices
                                 .map(
                                   (choice) => DropdownMenuItem(
+                                    value: choice,
                                     child: Text(
                                       choice,
                                     ),
-                                    value: choice,
                                   ),
                                 )
                                 .toList(),
                             onChanged: (value) {
                               setState(() {
-                                _selectedChoice = value;
-                                _filteredPaidLeave = _setFilter(value);
+                                _selectedChoice = value.toString();
+                                _filteredPaidLeave =
+                                    _setFilter(value.toString());
                                 if (_nameController.value.text.isNotEmpty) {
                                   _searchByName(_nameController.value.text);
                                 }
@@ -409,9 +403,33 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
                   )
                 ],
               ),
-              Divider(),
+              const Text(
+                'Pilih Tahun & Bulan : ',
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    DateFormat.yMMMMEEEEd('id_ID').format(_selectedDate),
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  IconButton(
+                      icon: Icon(
+                        Icons.calendar_today_rounded,
+                        color: Colors.blueAccent[400],
+                      ),
+                      onPressed: () {
+                        _selectDate();
+                      })
+                ],
+              ),
+              dividerT1,
+              sizedBoxH4,
               _buildLabelSection(),
-              SizedBox(height: 8.0),
+              sizedBoxH8,
               _buildBody(),
             ],
           ),

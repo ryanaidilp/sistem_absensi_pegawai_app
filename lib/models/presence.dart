@@ -25,16 +25,16 @@ class Presence {
 
   factory Presence.fromJson(Map<String, dynamic> json) {
     return Presence(
-      id: json[USER_ID_FIELD] as int,
-      date: DateTime.parse(json[PRESENCE_DATE_FIELD].toString()),
-      codeType: json[PRESENCE_CODE_TYPE_FIELD] as String,
-      status: json[PRESENCE_STATUS_FIELD] as String,
-      attendTime: json[PRESENCE_ATTEND_TIME_FIELD] as String,
+      id: json[userIdField] as int,
+      date: DateTime.parse(json[presenceDateField].toString()),
+      codeType: json[presenceCodeTypeField] as String,
+      status: json[presenceStatusField] as String,
+      attendTime: json[presenceAttendTimeField] as String,
       location: Location.fromJson(
-          json[PRESENCE_LOCATION_FIELD] as Map<String, dynamic>),
-      photo: json[PRESENCE_PHOTO_FIELD] as String,
-      startTime: DateTime.parse(json[PRESENCE_START_TIME_FIELD].toString()),
-      endTime: DateTime.parse(json[PRESENCE_END_TIME_FIELD].toString()),
+          json[presenceLocationField] as Map<String, dynamic>),
+      photo: json[presencePhotoField] as String,
+      startTime: DateTime.parse(json[presenceStartTimeField].toString()),
+      endTime: DateTime.parse(json[presenceEndTimeField].toString()),
     );
   }
 }

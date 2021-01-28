@@ -16,10 +16,10 @@ class UserNotification {
 
   factory UserNotification.fromJson(Map<String, dynamic> json) {
     return UserNotification(
-        id: json[NOTIFICATION_ID_FIELD] as String,
-        notifiableId: json[NOTIFICATION_NOTIFIABLE_ID_FIELD] as int,
-        notifiableType: json[NOTIFICATION_NOTIFIABLE_TYPE_FIELD] as String,
-        data: json[JSON_DATA_FIELD] as Map<String, dynamic>,
-        isRead: json[NOTIFICATION_IS_READ_FIELD] as bool);
+        id: json[notificationIdField] as String,
+        notifiableId: json[notificationNotifiableIdField] as int,
+        notifiableType: json[notificationNotifiableTypeField] as String,
+        data: json[jsonDataField] as Map<String, dynamic>,
+        isRead: json[notificationIsReadField] as bool);
   }
 }

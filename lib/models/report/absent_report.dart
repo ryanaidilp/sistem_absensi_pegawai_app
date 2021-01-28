@@ -19,13 +19,15 @@ class AbsentReport {
   final int totalWorkDay;
 
   factory AbsentReport.fromJson(Map<String, dynamic> json) => AbsentReport(
-      daily: (json[ABSENT_REPORT_DAILY_FIELD] as List<dynamic>)
-          .map((item) => Daily.fromJson(item))
+      daily: (json[absentReportDailyField] as List<dynamic>)
+          .map((item) => Daily.fromJson(item as Map<String, dynamic>))
           .toList(),
-      monthly: Monthly.fromJson(json[ABSENT_REPORT_MONTHLY_FIELD]),
-      yearly: Yearly.fromJson(json[ABSENT_REPORT_YEARLY_FIELD]),
-      holidays: (json[ABSENT_REPORT_HOLIDAYS_FIELD] as List<dynamic>)
-          .map((item) => Holiday.fromJson(item))
+      monthly: Monthly.fromJson(
+          json[absentReportMonthlyField] as Map<String, dynamic>),
+      yearly: Yearly.fromJson(
+          json[absentReportYearlyField] as Map<String, dynamic>),
+      holidays: (json[absentReportHolidaysField] as List<dynamic>)
+          .map((item) => Holiday.fromJson(item as Map<String, dynamic>))
           .toList(),
-      totalWorkDay: json[REPORT_TOTAL_WORK_DAY_FIELD] as int);
+      totalWorkDay: json[reportTotalWorkDayField] as int);
 }

@@ -10,7 +10,7 @@ class Holiday {
   factory Holiday.fromJson(Map<String, dynamic> json) => Holiday(
       date: json == null
           ? DateTime.now()
-          : DateTime.parse(json[HOLIDAY_DATE_FIELD].toString()),
-      name: json[HOLIDAY_NAME_FIELD] as String,
-      description: json[HOLIDAY_DESCRIPTION_FIELD] as String);
+          : DateTime.parse(json[holidayDateField].toString()),
+      name: json[holidayNameField] as String,
+      description: json[holidayDescriptionField] as String);
 }

@@ -3,7 +3,7 @@ import 'package:flutter_config/flutter_config.dart';
 enum Endpoint {
   login,
   logout,
-  change_pass,
+  changePass,
   users,
   presence,
   my,
@@ -28,14 +28,14 @@ enum Endpoint {
 }
 
 class API {
-  final String host = FlutterConfig.get("BASE_URL");
+  final String host = FlutterConfig.get("BASE_URL").toString();
 
   String endpointUri(Endpoint endpoint) => '$host/api/${_paths[endpoint]}';
 
-  static Map<Endpoint, String> _paths = {
+  static final Map<Endpoint, String> _paths = {
     Endpoint.login: 'login',
     Endpoint.logout: 'logout',
-    Endpoint.change_pass: 'change_password',
+    Endpoint.changePass: 'change_password',
     Endpoint.users: 'user',
     Endpoint.presence: 'presence',
     Endpoint.my: 'my',

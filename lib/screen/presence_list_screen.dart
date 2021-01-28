@@ -12,12 +12,13 @@ import 'package:spo_balaesang/models/employee.dart';
 import 'package:spo_balaesang/models/presence.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/employee_presence_card_widget.dart';
 import 'package:spo_balaesang/widgets/user_info_card_widget.dart';
 
 class PresenceListScreen extends StatefulWidget {
-  PresenceListScreen({this.employee, this.date});
+  const PresenceListScreen({this.employee, this.date});
 
   final Employee employee;
   final DateTime date;
@@ -44,7 +45,7 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
     super.dispose();
   }
 
-  _cancelAttendance(Presence outstation) {
+  void _cancelAttendance(Presence outstation) {
     Get.defaultDialog(
         title: 'Alasan Pembatalan!',
         content: Flexible(
@@ -53,7 +54,7 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
             width: Get.width * 0.9,
             child: TextFormField(
               controller: _reasonController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   labelText: 'Alasan',
                   focusColor: Colors.blueAccent,
                   focusedBorder: UnderlineInputBorder(
@@ -69,33 +70,39 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
             Get.back();
             _sendData(outstation);
           },
-          child: Text('OK'),
+          child: const Text('OK'),
         ));
   }
 
   Future<void> _sendData(Presence presence) async {
-    ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    final ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     pd.show();
     try {
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
-      Map<String, dynamic> data = {
+      final Map<String, dynamic> data = {
         'presence_id': presence.id,
         'reason': _reasonController.value.text
       };
-      http.Response response = await dataRepo.cancelAttendance(data);
-      Map<String, dynamic> _res = jsonDecode(response.body);
-      print(response.statusCode);
+      final http.Response response = await dataRepo.cancelAttendance(data);
+      final Map<String, dynamic> _res =
+          jsonDecode(response.body) as Map<String, dynamic>;
       if (response.statusCode == 200) {
         pd.hide();
-        showAlertDialog("success", "Sukses", _res['message'], false);
-        Timer(Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+        showAlertDialog("success", "Sukses", _res['message'].toString(),
+            dismissible: false);
+        Timer(const Duration(seconds: 5), () => Get.off(BottomNavScreen()));
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);
       }
     } catch (e) {
       pd.hide();
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
   }
 
@@ -104,7 +111,7 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
       return Center(
         child: Column(
           children: <Widget>[
-            Container(
+            SizedBox(
               width: Get.width * 0.6,
               height: 300,
               child: const FlareActor(
@@ -120,10 +127,10 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
 
     return Column(
       children: employee.presences.map((presence) {
-        Color color = checkStatusColor(presence.status);
+        final Color color = checkStatusColor(presence.status);
         String status = presence.status;
         if (presence.status == 'Terlambat') {
-          var duration =
+          final duration =
               calculateLateTime(presence.startTime, presence.attendTime);
           status += ' $duration';
         }
@@ -144,10 +151,10 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
                   borderRadius: BorderRadius.circular(10)),
               color: Colors.red[600],
               textColor: Colors.white,
-              child: Text('Batalkan'),
               onPressed: () {
                 _cancelAttendance(presence);
               },
+              child: const Text('Batalkan'),
             ),
           ),
         );
@@ -159,16 +166,16 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Presensi'),
+        title: const Text('Presensi'),
         backgroundColor: Colors.blueAccent,
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Container(
+              SizedBox(
                 width: Get.width,
                 child: UserInfoCardWidget(
                   name: employee.name,
@@ -180,7 +187,7 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
                   status: employee.status,
                 ),
               ),
-              SizedBox(height: 10.0),
+              sizedBoxH10,
               Text(
                 'Daftar Kehadiran',
                 style: labelTextStyle.copyWith(
@@ -188,10 +195,10 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              SizedBox(height: 10.0),
+              sizedBoxH10,
               Text(
                   'Tanggal Presensi: ${DateFormat.yMMMMEEEEd('id_ID').format(date)}'),
-              SizedBox(height: 8.0),
+              sizedBoxH8,
               _buildPresenceSection()
             ],
           ),
