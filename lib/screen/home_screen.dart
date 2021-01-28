@@ -170,7 +170,9 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
     }
   }
@@ -201,11 +203,18 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
     } finally {
       setState(() {
         isLoading = false;
+        _countdownController = CountdownTimerController(
+            onEnd: () {
+              _getUser();
+            },
+            endTime: checkTime());
       });
     }
   }
@@ -380,7 +389,12 @@ class _HomeScreenState extends State<HomeScreen> {
         user.nextPresence.startTime.isAfter(DateTime.now())) {
       return user?.nextPresence?.startTime?.millisecondsSinceEpoch;
     }
-    return user?.nextPresence?.endTime?.millisecondsSinceEpoch;
+    if (user != null &&
+        user.nextPresence != null &&
+        user.nextPresence.endTime.isAfter(DateTime.now())) {
+      return user?.nextPresence?.endTime?.millisecondsSinceEpoch;
+    }
+    return 0;
   }
 
   String _checkTimeLabel() {
@@ -511,6 +525,21 @@ class _HomeScreenState extends State<HomeScreen> {
     return Colors.red[800];
   }
 
+  Widget _buildCountdownSection() {
+    if (_countdownController == null) {
+      return const Text('Memuat Timer...');
+    }
+
+    return CountdownTimer(
+      controller: _countdownController,
+      emptyWidget: const AutoSizeText(
+        'Semua absen hari ini telah selesai',
+        maxFontSize: 12.0,
+        minFontSize: 10.0,
+      ),
+    );
+  }
+
   Widget _buildTimerSection() {
     if (isLoading) {
       return _buildShimmerSection(Get.width, 180);
@@ -609,14 +638,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       sizedBoxH2,
-                      CountdownTimer(
-                        controller: _countdownController,
-                        emptyWidget: const AutoSizeText(
-                          'Semua absen hari ini telah selesai',
-                          maxFontSize: 12.0,
-                          minFontSize: 10.0,
-                        ),
-                      ),
+                      _buildCountdownSection(),
                     ],
                   ),
                   Expanded(child: _buildStatusSection()),
@@ -714,11 +736,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Future.wait([_getUser(), _getAllEmployee()]);
-    _countdownController = CountdownTimerController(
-        onEnd: () {
-          _getUser();
-        },
-        endTime: checkTime());
   }
 
   Widget _buildUnreadNotificationCount() {
@@ -782,7 +799,9 @@ class _HomeScreenState extends State<HomeScreen> {
             } catch (e) {
               showErrorDialog({
                 'message': 'Kesalahan',
-                'errors': [e.toString()]
+                'errors': {
+                  'exception': ['Terjadi kesalahan!']
+                }
               });
             } finally {
               if (showing) {
