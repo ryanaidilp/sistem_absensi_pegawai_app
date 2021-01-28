@@ -13,7 +13,6 @@ import 'package:spo_balaesang/models/paid_leave.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
-import 'package:spo_balaesang/utils/extensions.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/employee_proposal_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -31,10 +30,9 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
   final TextEditingController _nameController = TextEditingController();
   final CalendarController _calendarController = CalendarController();
   List<PaidLeave> _filteredPaidLeave = <PaidLeave>[];
-  Set<String> choices = {'Semua', 'Disetujui', 'Belum Disetujui', 'Tanggal'};
+  Set<String> choices = {'Semua', 'Disetujui', 'Belum Disetujui'};
   String _selectedChoice = 'Semua';
   DateTime _selectedDate = DateTime.now();
-  bool _isDateChange = false;
 
   Future<void> _fetchPaidLeaveData() async {
     try {
@@ -43,16 +41,16 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
       });
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
       final Map<String, dynamic> _result =
-          await dataRepo.getAllEmployeePaidLeave();
+          await dataRepo.getAllEmployeePaidLeave(_selectedDate);
       final List<dynamic> paidLeaves = _result['data'] as List<dynamic>;
 
       final List<PaidLeave> _data = paidLeaves
           .map((json) => PaidLeave.fromJson(json as Map<String, dynamic>))
           .toList();
-      if (_data.isNotEmpty) {
+      setState(() {
         _paidLeaves = _data;
         _filteredPaidLeave = _data;
-      }
+      });
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
@@ -275,25 +273,12 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
           .toList();
     }
 
-    if (value == 'Tanggal') {
-      if (!_isDateChange) {
-        _selectDate();
-      }
-      return _paidLeaves.where((element) {
-        setState(() {
-          _isDateChange = false;
-        });
-        return element.startDate.isSameDate(_selectedDate) ||
-            element.dueDate.isSameDate(_selectedDate);
-      }).toList();
-    }
-
     return _paidLeaves;
   }
 
   void _selectDate() {
     Get.defaultDialog(
-        title: 'Pilih Tanggal Selesai',
+        title: 'Pilih Tanggal',
         content: Flexible(
           child: SizedBox(
             width: Get.width * 0.9,
@@ -316,13 +301,7 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
                 Get.back();
                 setState(() {
                   _selectedDate = day;
-                  if (!_isDateChange) {
-                    _isDateChange = true;
-                  }
-                  _filteredPaidLeave = _setFilter(_selectedChoice);
-                  if (_nameController.value.text.isNotEmpty) {
-                    _searchByName(_nameController.value.text);
-                  }
+                  _fetchPaidLeaveData();
                 });
               },
             ),
@@ -333,10 +312,12 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
   void _searchByName(String value) {
     setState(() {
       if (value.isNotEmpty) {
-        _filteredPaidLeave = _filteredPaidLeave
-            .where((element) =>
-                element.user.name.toLowerCase().contains(value.toLowerCase()))
-            .toList();
+        if (_filteredPaidLeave.isNotEmpty) {
+          _filteredPaidLeave = _filteredPaidLeave
+              .where((element) =>
+                  element.user.name.toLowerCase().contains(value.toLowerCase()))
+              .toList();
+        }
       } else {
         _filteredPaidLeave = _setFilter(_selectedChoice);
       }
@@ -423,7 +404,31 @@ class _EmployeePaidLeaveScreenState extends State<EmployeePaidLeaveScreen> {
                   )
                 ],
               ),
-              const Divider(),
+              const Text(
+                'Pilih Tahun & Bulan : ',
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    DateFormat.yMMMMEEEEd('id_ID').format(_selectedDate),
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  IconButton(
+                      icon: Icon(
+                        Icons.calendar_today_rounded,
+                        color: Colors.blueAccent[400],
+                      ),
+                      onPressed: () {
+                        _selectDate();
+                      })
+                ],
+              ),
+              dividerT1,
+              sizedBoxH4,
               _buildLabelSection(),
               sizedBoxH8,
               _buildBody(),
