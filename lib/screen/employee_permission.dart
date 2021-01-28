@@ -13,7 +13,6 @@ import 'package:spo_balaesang/models/absent_permission.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
-import 'package:spo_balaesang/utils/extensions.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/employee_proposal_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -31,10 +30,9 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
   final TextEditingController _nameController = TextEditingController();
   final CalendarController _calendarController = CalendarController();
   List<AbsentPermission> _filteredPermission = <AbsentPermission>[];
-  Set<String> choices = {'Semua', 'Disetujui', 'Belum Disetujui', 'Tanggal'};
+  Set<String> choices = {'Semua', 'Disetujui', 'Belum Disetujui'};
   String _selectedChoice = 'Semua';
   DateTime _selectedDate = DateTime.now();
-  bool _isDateChange = false;
 
   @override
   void setState(void Function() fn) {
@@ -50,7 +48,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
       });
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
       final Map<String, dynamic> _result =
-          await dataRepo.getAllEmployeePermissions();
+          await dataRepo.getAllEmployeePermissions(_selectedDate);
       final List<dynamic> permissions = _result['data'] as List<dynamic>;
 
       final List<AbsentPermission> _data = permissions
@@ -267,25 +265,12 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
           .toList();
     }
 
-    if (value == 'Tanggal') {
-      if (!_isDateChange) {
-        _selectDate();
-      }
-      return _permissions.where((element) {
-        setState(() {
-          _isDateChange = false;
-        });
-        return element.startDate.isSameDate(_selectedDate) ||
-            element.dueDate.isSameDate(_selectedDate);
-      }).toList();
-    }
-
     return _permissions;
   }
 
   void _selectDate() {
     Get.defaultDialog(
-        title: 'Pilih Tanggal Selesai',
+        title: 'Pilih Tanggal',
         content: Flexible(
           child: SizedBox(
             width: Get.width * 0.9,
@@ -308,13 +293,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
                 Get.back();
                 setState(() {
                   _selectedDate = day;
-                  if (!_isDateChange) {
-                    _isDateChange = true;
-                  }
-                  _filteredPermission = _setFilter(_selectedChoice);
-                  if (_nameController.value.text.isNotEmpty) {
-                    _searchByName(_nameController.value.text);
-                  }
+                  _fetchPermissionData();
                 });
               },
             ),
@@ -325,10 +304,12 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
   void _searchByName(String value) {
     setState(() {
       if (value.isNotEmpty) {
-        _filteredPermission = _filteredPermission
-            .where((element) =>
-                element.user.name.toLowerCase().contains(value.toLowerCase()))
-            .toList();
+        if (_filteredPermission.isNotEmpty) {
+          _filteredPermission = _filteredPermission
+              .where((element) =>
+                  element.user.name.toLowerCase().contains(value.toLowerCase()))
+              .toList();
+        }
       } else {
         _filteredPermission = _setFilter(_selectedChoice);
       }
@@ -415,7 +396,32 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
                   )
                 ],
               ),
-              const Divider(),
+              sizedBoxH10,
+              const Text(
+                'Pilih Tahun & Bulan : ',
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    DateFormat.yMMMMEEEEd('id_ID').format(_selectedDate),
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  IconButton(
+                      icon: Icon(
+                        Icons.calendar_today_rounded,
+                        color: Colors.blueAccent[400],
+                      ),
+                      onPressed: () {
+                        _selectDate();
+                      })
+                ],
+              ),
+              dividerT1,
+              sizedBoxH4,
               _buildLabelSection(),
               sizedBoxH8,
               _buildBody(),
