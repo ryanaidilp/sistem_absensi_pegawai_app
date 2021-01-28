@@ -45,7 +45,9 @@ class _PermissionListScreenState extends State<PermissionListScreen> {
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
     }
   }

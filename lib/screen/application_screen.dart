@@ -115,7 +115,9 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
     }
   }

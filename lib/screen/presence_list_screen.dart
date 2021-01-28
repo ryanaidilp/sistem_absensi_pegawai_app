@@ -99,7 +99,9 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
       pd.hide();
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
     }
   }

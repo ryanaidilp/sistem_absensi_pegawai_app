@@ -63,7 +63,9 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
     } finally {
       setState(() {
@@ -181,7 +183,9 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
       pd.hide();
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
     }
   }
@@ -362,6 +366,7 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
             children: <Widget>[
               TextFormField(
                 controller: _nameController,
+                onChanged: _searchByName,
                 decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.search),
                     labelText: 'Cari dengan nama pegawai'),

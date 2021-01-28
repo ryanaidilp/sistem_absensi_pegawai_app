@@ -44,7 +44,9 @@ class _PaidLeaveListScreenState extends State<PaidLeaveListScreen> {
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
-        'errors': [e.toString()]
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
       });
     } finally {
       _isLoading = false;

@@ -163,10 +163,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     }
                   } catch (e) {
                     pd.hide();
-                    showErrorDialog({
-                      'message': 'Kesalahan',
-                      'errors': [e.toString()]
-                    });
+                     showErrorDialog({
+                'message': 'Kesalahan',
+                'errors': {'exception':['Terjadi kesalahan!']}
+              });
                   }
                 },
                 textColor: Colors.white,
