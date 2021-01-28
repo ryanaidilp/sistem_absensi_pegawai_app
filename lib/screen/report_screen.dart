@@ -78,12 +78,7 @@ class _ReportScreenState extends State<ReportScreen> {
             .value as List<Holiday>;
       });
     } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
+      //
     } finally {
       setState(() {
         _isLoading = false;
