@@ -333,7 +333,8 @@ class _ReportScreenState extends State<ReportScreen> {
       return 0;
     }
 
-    presences.map((presence) {
+    // ignore: avoid_function_literals_in_foreach_calls
+    presences.forEach((presence) {
       switch (presence.attendStatus) {
         case 'Tepat Waktu':
         case 'Dinas Luar':
