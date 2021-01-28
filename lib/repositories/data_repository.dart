@@ -424,11 +424,12 @@ class DataRepository {
     return data;
   }
 
-  Future<Map<String, dynamic>> getAllEmployeePaidLeave() async {
+  Future<Map<String, dynamic>> getAllEmployeePaidLeave(DateTime date) async {
     Map<String, dynamic> data;
     try {
       data = await apiService.getEndpointData(
-          endpoint: Endpoint.employeePaidLeave);
+          endpoint: Endpoint.employeePaidLeave,
+          query: {'date': date.toString()});
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
