@@ -13,7 +13,6 @@ import 'package:spo_balaesang/models/outstation.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
-import 'package:spo_balaesang/utils/extensions.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/employee_proposal_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -31,10 +30,9 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
   final TextEditingController _nameController = TextEditingController();
   final CalendarController _calendarController = CalendarController();
   List<Outstation> _filteredOutstation = <Outstation>[];
-  Set<String> choices = {'Semua', 'Disetujui', 'Belum Disetujui', 'Tanggal'};
+  Set<String> choices = {'Semua', 'Disetujui', 'Belum Disetujui'};
   String _selectedChoice = 'Semua';
   DateTime _selectedDate = DateTime.now();
-  bool _isDateChange = false;
 
   @override
   void setState(void Function() fn) {
@@ -50,7 +48,7 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
       });
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
       final Map<String, dynamic> _result =
-          await dataRepo.getAllEmployeeOutstation();
+          await dataRepo.getAllEmployeeOutstation(_selectedDate);
       final List<dynamic> outstations = _result['data'] as List<dynamic>;
 
       final _data = outstations
@@ -269,19 +267,6 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
           .toList();
     }
 
-    if (value == 'Tanggal') {
-      if (!_isDateChange) {
-        _selectDate();
-      }
-      return _outstations.where((element) {
-        setState(() {
-          _isDateChange = false;
-        });
-        return element.startDate.isSameDate(_selectedDate) ||
-            element.dueDate.isSameDate(_selectedDate);
-      }).toList();
-    }
-
     return _outstations;
   }
 
@@ -310,13 +295,7 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
                 Get.back();
                 setState(() {
                   _selectedDate = day;
-                  if (!_isDateChange) {
-                    _isDateChange = true;
-                  }
-                  _filteredOutstation = _setFilter(_selectedChoice);
-                  if (_nameController.value.text.isNotEmpty) {
-                    _searchByName(_nameController.value.text);
-                  }
+                  _fetchOutstationData();
                 });
               },
             ),
@@ -327,10 +306,12 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
   void _searchByName(String value) {
     setState(() {
       if (value.isNotEmpty) {
-        _filteredOutstation = _filteredOutstation
-            .where((element) =>
-                element.user.name.toLowerCase().contains(value.toLowerCase()))
-            .toList();
+        if (_filteredOutstation.isNotEmpty) {
+          _filteredOutstation = _filteredOutstation
+              .where((element) =>
+                  element.user.name.toLowerCase().contains(value.toLowerCase()))
+              .toList();
+        }
       } else {
         _filteredOutstation = _setFilter(_selectedChoice);
       }
@@ -416,7 +397,31 @@ class _EmployeeOutstationScreenState extends State<EmployeeOutstationScreen> {
                   )
                 ],
               ),
-              const Divider(),
+              const Text(
+                'Pilih Tahun & Bulan : ',
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    DateFormat.yMMMMEEEEd('id_ID').format(_selectedDate),
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  IconButton(
+                      icon: Icon(
+                        Icons.calendar_today_rounded,
+                        color: Colors.blueAccent[400],
+                      ),
+                      onPressed: () {
+                        _selectDate();
+                      })
+                ],
+              ),
+              dividerT1,
+              sizedBoxH4,
               _buildLabelSection(),
               sizedBoxH8,
               _buildBody(),

@@ -240,11 +240,12 @@ class DataRepository {
     return data;
   }
 
-  Future<Map<String, dynamic>> getAllEmployeeOutstation() async {
+  Future<Map<String, dynamic>> getAllEmployeeOutstation(DateTime date) async {
     Map<String, dynamic> data;
     try {
       data = await apiService.getEndpointData(
-          endpoint: Endpoint.employeeOutstation);
+          endpoint: Endpoint.employeeOutstation,
+          query: {'date': date.toString()});
     } catch (e) {
       showErrorDialog({
         'message': 'Kesalahan',
