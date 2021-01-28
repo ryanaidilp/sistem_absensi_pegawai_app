@@ -8,13 +8,15 @@ class Daily {
   final List<DailyData> attendances;
 
   factory Daily.fromJson(Map<String, dynamic> json) {
-    List<dynamic> _presences = json[DAILY_PRESENCES_FIELD] as List<dynamic>;
+    final List<dynamic> _presences = json[dailyPresencesField] as List<dynamic>;
 
     return Daily(
-      date: DateTime.parse(json[DAILY_DATE_FIELD].toString()),
+      date: DateTime.parse(json[dailyDateField].toString()),
       attendancePercentage:
-          double.parse(json[REPORT_ATTENDANCE_PERCENTAGE_FIELD].toString()),
-      attendances: _presences.map((json) => DailyData.fromJson(json)).toList(),
+          double.parse(json[reportAttendancePercentageFieldField].toString()),
+      attendances: _presences
+          .map((json) => DailyData.fromJson(json as Map<String, dynamic>))
+          .toList(),
     );
   }
 }
@@ -36,19 +38,19 @@ class DailyData {
   final String photo;
 
   factory DailyData.fromJson(Map<String, dynamic> json) => DailyData(
-      attendTime: json[DAILY_DATA_ATTEND_TIME_FIELD],
-      attendType: json[DAILY_DATA_ATTEND_TYPE_FIELD],
-      attendStatus: json[DAILY_DATA_ATTEND_STATUS_FIELD],
-      startTime: DateTime.parse(json[PRESENCE_START_TIME_FIELD]),
-      address: json[LOCATION_ADDRESS_FIELD] as String,
-      photo: json[PRESENCE_PHOTO_FIELD] as String);
+      attendTime: json[dailyDataAttendTimeField].toString(),
+      attendType: json[dailyDataAttendTypeField].toString(),
+      attendStatus: json[dailyDataAttendStatusField].toString(),
+      startTime: DateTime.parse(json[presenceStartTimeField].toString()),
+      address: json[locationAddressField] as String,
+      photo: json[presencePhotoField] as String);
 
   Map<String, dynamic> toMap() => <String, dynamic>{
-        DAILY_DATA_ATTEND_TYPE_FIELD: this.attendType,
-        DAILY_DATA_ATTEND_TIME_FIELD: this.attendTime,
-        DAILY_DATA_ATTEND_STATUS_FIELD: this.attendStatus,
-        PRESENCE_START_TIME_FIELD: this.startTime.toString(),
-        LOCATION_ADDRESS_FIELD: this.address,
-        PRESENCE_PHOTO_FIELD: this.photo
+        dailyDataAttendTypeField: attendType,
+        dailyDataAttendTimeField: attendTime,
+        dailyDataAttendStatusField: attendStatus,
+        presenceStartTimeField: startTime.toString(),
+        locationAddressField: address,
+        presencePhotoField: photo
       };
 }

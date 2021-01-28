@@ -10,6 +10,8 @@ import 'package:spo_balaesang/models/employee.dart';
 import 'package:spo_balaesang/models/holiday.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/presence_list_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
+import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class EmployeeAttendanceScreen extends StatefulWidget {
@@ -22,11 +24,11 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
   final CalendarController _calendarController = CalendarController();
   bool _isLoading = false;
   DateTime _selectedDate = DateTime.now();
-  Map<DateTime, List<dynamic>> _holidays = new Map();
+  final Map<DateTime, List<dynamic>> _holidays = {};
   List<Employee> _employees;
-  List<Holiday> _selectedHolidays = List();
+  List<Holiday> _selectedHolidays = [];
 
-  _onDaySelected(DateTime value, List events, List holidays) {
+  void _onDaySelected(DateTime value, List events, List holidays) {
     setState(() {
       _selectedDate = value;
       if (holidays is List<Holiday>) {
@@ -48,22 +50,26 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
   }
 
   Future<void> _fetchPresenceData() async {
-    ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    final ProgressDialog pd = ProgressDialog(context, isDismissible: true);
+    final isShowing = await pd.show();
     try {
-      pd.show();
       setState(() {
         _isLoading = true;
       });
-      var dataRepo = Provider.of<DataRepository>(context, listen: false);
-      Map<String, dynamic> _result =
+      final dataRepo = Provider.of<DataRepository>(context, listen: false);
+      final Map<String, dynamic> _result =
           await dataRepo.getEmployeePresence(_selectedDate);
       if (_result.isNotEmpty) {
-        List<dynamic> holidays = _result['data']['holidays'];
-        List<dynamic> employees = _result['data']['employees'];
-        List<Holiday> _dataHoliday =
-            holidays.map((element) => Holiday.fromJson(element)).toList();
-        List<Employee> _dataEmployee =
-            employees.map((json) => Employee.fromJson(json)).toList();
+        final List<dynamic> holidays =
+            _result['data']['holidays'] as List<dynamic>;
+        final List<dynamic> employees =
+            _result['data']['employees'] as List<dynamic>;
+        final List<Holiday> _dataHoliday = holidays
+            .map((element) => Holiday.fromJson(element as Map<String, dynamic>))
+            .toList();
+        final List<Employee> _dataEmployee = employees
+            .map((json) => Employee.fromJson(json as Map<String, dynamic>))
+            .toList();
         if (_dataHoliday.isNotEmpty && _holidays.isEmpty) {
           setState(() {
             _holidays.addEntries(_dataHoliday
@@ -71,7 +77,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
             _selectedHolidays = _holidays.entries
                 .firstWhere(
                     (element) => element.key.isAtSameMomentAs(DateTime.now()))
-                .value;
+                .value as List<Holiday>;
           });
         }
         if (_dataEmployee != null) {
@@ -79,9 +85,14 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
         }
       }
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     } finally {
-      if (pd.isShowing()) {
+      if (isShowing) {
         await pd.hide();
       }
       setState(() {
@@ -97,13 +108,12 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
       child: TableCalendar(
         startingDayOfWeek: StartingDayOfWeek.monday,
         calendarController: _calendarController,
-        availableCalendarFormats: <CalendarFormat, String>{
+        availableCalendarFormats: const <CalendarFormat, String>{
           CalendarFormat.month: '1 minggu',
           CalendarFormat.twoWeeks: '1 bulan',
           CalendarFormat.week: '2 minggu'
         },
         startDay: DateTime(2021),
-        initialCalendarFormat: CalendarFormat.month,
         onDaySelected: _onDaySelected,
         availableGestures: AvailableGestures.horizontalSwipe,
         holidays: _holidays,
@@ -112,7 +122,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
   }
 
   @override
-  void setState(fn) {
+  void setState(void Function() fn) {
     if (mounted) super.setState(fn);
   }
 
@@ -130,12 +140,12 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
 
   Widget _buildPnsSection(Employee employee) {
     if (employee.status != 'PNS') {
-      return SizedBox();
+      return sizedBox;
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(height: 4.0),
+        sizedBoxH4,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -143,10 +153,10 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
               'Golongan',
               style: TextStyle(color: Colors.grey[600]),
             ),
-            Text('${employee.group}')
+            Text(employee.group ?? '')
           ],
         ),
-        SizedBox(height: 4.0),
+        sizedBoxH4,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -154,7 +164,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
               'NIP',
               style: TextStyle(color: Colors.grey[600]),
             ),
-            Text(employee.nip)
+            Text(employee.nip ?? '')
           ],
         ),
       ],
@@ -163,9 +173,9 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
 
   Widget _buildEmployeeListSection() {
     if (_isLoading) {
-      return Container(
+      return SizedBox(
         height: Get.height * 0.7,
-        child: Center(
+        child: const Center(
           child: SpinKitFadingCircle(
             size: 45,
             color: Colors.blueAccent,
@@ -177,7 +187,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
     if (_selectedHolidays.isNotEmpty) {
       return Column(
         children: _selectedHolidays
-            .map((holiday) => Container(
+            .map((holiday) => SizedBox(
                   width: Get.width,
                   child: Card(
                     child: ListTile(
@@ -190,11 +200,11 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
       );
     }
 
-    if ((_selectedDate.weekday == 6 || _selectedDate.weekday == 7)) {
+    if ((_selectedDate.weekday == 6) || (_selectedDate.weekday == 7)) {
       return Center(
         child: Column(
           children: <Widget>[
-            Container(
+            SizedBox(
               width: Get.width * 0.6,
               height: 300,
               child: const FlareActor(
@@ -203,7 +213,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
               ),
             ),
             const Text('Akhir Pekan'),
-            const SizedBox(height: 20.0)
+            sizedBoxH20
           ],
         ),
       );
@@ -213,7 +223,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
       return Center(
         child: Column(
           children: <Widget>[
-            Container(
+            SizedBox(
               width: Get.width * 0.6,
               height: 200,
               child: const FlareActor(
@@ -223,14 +233,14 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
               ),
             ),
             const Text('Gagal memuat data'),
-            const SizedBox(height: 20.0),
+            sizedBoxH20,
             RaisedButton(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6)),
               color: Colors.blueAccent,
               textColor: Colors.white,
               onPressed: _fetchPresenceData,
-              child: Text('Coba Lagi'),
+              child: const Text('Coba Lagi'),
             )
           ],
         ),
@@ -241,14 +251,14 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
       return Center(
         child: Column(
           children: <Widget>[
-            Container(
+            SizedBox(
               width: Get.width * 0.6,
               height: 300,
               child: const FlareActor('assets/flare/not_found.flr',
                   animation: 'empty'),
             ),
             const Text('Tidak ada data presensi'),
-            const SizedBox(height: 20.0)
+            sizedBoxH20
           ],
         ),
       );
@@ -259,23 +269,23 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
         children: _employees
             .map((employee) => Container(
                   width: Get.width,
-                  margin: EdgeInsets.only(bottom: 8.0),
+                  margin: const EdgeInsets.only(bottom: 8.0),
                   child: Card(
                     elevation: 2.0,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                     child: Padding(
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            employee.name,
-                            style: TextStyle(
+                            employee.name ?? '',
+                            style: const TextStyle(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          Divider(thickness: 1.0),
+                          dividerT1,
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
@@ -283,10 +293,10 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
                                 'Jabatan',
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
-                              Text(employee.position)
+                              Text(employee.position ?? '')
                             ],
                           ),
-                          SizedBox(height: 4.0),
+                          sizedBoxH4,
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
@@ -294,10 +304,10 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
                                 'Bagian ',
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
-                              Text(employee.department)
+                              Text(employee.department ?? '')
                             ],
                           ),
-                          SizedBox(height: 4.0),
+                          sizedBoxH4,
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
@@ -305,12 +315,12 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
                                 'Status',
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
-                              Text(employee.status)
+                              Text(employee.status ?? '')
                             ],
                           ),
                           _buildPnsSection(employee),
-                          SizedBox(height: 4.0),
-                          Divider(thickness: 1.0),
+                          sizedBoxH4,
+                          dividerT1,
                           Center(
                             child: SizedBox(
                               width: Get.width * 0.9,
@@ -323,7 +333,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
                                   Get.to(PresenceListScreen(
                                       employee: employee, date: _selectedDate));
                                 },
-                                child: Text('Lihat data kehadiran'),
+                                child: const Text('Lihat data kehadiran'),
                               ),
                             ),
                           )
@@ -342,7 +352,7 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
-        title: Text('Presensi Pegawai'),
+        title: const Text('Presensi Pegawai'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -350,18 +360,18 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('Pilih Tanggal : ',
+              const Text('Pilih Tanggal : ',
                   style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.w600,
                   )),
-              SizedBox(height: 4.0),
+              sizedBoxH4,
               _buildTableCalendar(),
-              Divider(thickness: 1.0),
+              dividerT1,
               Text(
                 'Daftar Hadir Pegawai : ${DateFormat.yMMMMEEEEd('id_ID').format(_selectedDate)}',
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               _buildEmployeeListSection()
             ],
           ),

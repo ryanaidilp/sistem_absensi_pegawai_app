@@ -18,11 +18,11 @@ class Monthly {
 
   factory Monthly.fromJson(Map<String, dynamic> json) => Monthly(
       attendancePercentage:
-          double.parse(json[REPORT_ATTENDANCE_PERCENTAGE_FIELD].toString()),
-      lateCount: json[REPORT_LATE_COUNT_FIELD] as int,
-      leaveEarlyCount: json[REPORT_LEAVE_EARLY_COUNT_FIELD] as int,
-      notMorningParadeCount: json[REPORT_NOT_MORNING_PARADE_COUNT_FIELD] as int,
-      earlyLunchBreakCount: json[REPORT_EARLY_LUNCH_BREAK_COUNT_FIELD] as int,
+          double.parse(json[reportAttendancePercentageFieldField].toString()),
+      lateCount: json[reportLateCountField] as int,
+      leaveEarlyCount: json[reportLeaveEarlyFieldCountField] as int,
+      notMorningParadeCount: json[reportNotMorningParadeCountField] as int,
+      earlyLunchBreakCount: json[reportEarlyLunchBreakCountField] as int,
       notComeAfterLunchBreakCount:
-          json[REPORT_NOT_COME_AFTER_LUNCH_BREAK_COUNT_FIELD] as int);
+          json[reportNotComeAfterLunchBreakCountField] as int);
 }

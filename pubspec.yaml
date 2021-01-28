@@ -66,6 +66,7 @@ dependencies:
   photo_view:
   flutter_native_splash: 0.1.9
   flutter_spinkit: 4.1.2+1
+  lint:
 
 dev_dependencies:
   flutter_test:

@@ -36,15 +36,16 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
   List<Presence> _presences;
 
   Future<void> getUser() async {
-    var sp = await SharedPreferences.getInstance();
-    var _data = sp.get(PREFS_USER_KEY);
-    var _alarm = false;
-    if (sp.containsKey(PREFS_ALARM_KEY)) {
-      _alarm = sp.get(PREFS_ALARM_KEY);
+    final sp = await SharedPreferences.getInstance();
+    final _data = sp.get(prefsUserKey);
+    bool _alarm = false;
+    if (sp.containsKey(prefsAlarmKey)) {
+      _alarm = sp.get(prefsAlarmKey) as bool;
     } else {
-      sp.setBool(PREFS_ALARM_KEY, _alarm);
+      sp.setBool(prefsAlarmKey, _alarm);
     }
-    Map<String, dynamic> _json = jsonDecode(_data);
+    final Map<String, dynamic> _json =
+        jsonDecode(_data.toString()) as Map<String, dynamic>;
     if (_alarm) {
       await flutterLocalNotificationsPlugin.cancelAll();
     }
@@ -65,13 +66,13 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
           content: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
-              children: <Widget>[
+              children: const <Widget>[
                 Icon(
                   Icons.dangerous,
                   color: Colors.red,
                   size: 72,
                 ),
-                const SizedBox(height: 10.0),
+                sizedBoxH10,
                 Text('Apakah anda yakin ingin keluar dari aplikasi?'),
               ],
             ),
@@ -87,18 +88,18 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                       Provider.of<DataRepository>(context, listen: false);
                   final Map<String, dynamic> _response =
                       await dataRepo.logout();
-                  if (_response['success']) {
-                    SharedPreferences prefs =
+                  if (_response['success'] as bool) {
+                    final SharedPreferences prefs =
                         await SharedPreferences.getInstance();
-                    prefs.remove(PREFS_TOKEN_KEY);
-                    prefs.remove(PREFS_USER_KEY);
-                    prefs.remove(PREFS_ALARM_KEY);
+                    prefs.remove(prefsTokenKey);
+                    prefs.remove(prefsUserKey);
+                    prefs.remove(prefsAlarmKey);
                     pd.hide();
                     OneSignal.shared.removeExternalUserId();
                     Get.off(LoginScreen());
                   }
                 },
-                child: Text('Ya',
+                child: const Text('Ya',
                     style: TextStyle(
                       color: Colors.blueAccent,
                     ))),
@@ -106,58 +107,65 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 onPressed: () {
                   Get.back();
                 },
-                child: Text('Tidak',
+                child: const Text('Tidak',
                     style: TextStyle(
                       color: Colors.blueAccent,
                     ))),
           ]);
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
     }
   }
 
   Future<void> _handleSelected(bool value) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.reload();
-    prefs.setBool(PREFS_ALARM_KEY, value);
+    prefs.setBool(prefsAlarmKey, value);
     setState(() {
       _isAlarmActive = value;
     });
     if (value) {
       _presences.forEach(_setAlarm);
-      showAlertDialog(
-          'success', 'Sukses', 'Berhasil mengaktifkan alarm!', true);
+      showAlertDialog('success', 'Sukses', 'Berhasil mengaktifkan alarm!',
+          dismissible: true);
     } else {
       await flutterLocalNotificationsPlugin.cancelAll();
-      showAlertDialog(
-          'success', 'Sukses', 'Berhasil menonaktifkan alarm!', true);
+      showAlertDialog('success', 'Sukses', 'Berhasil menonaktifkan alarm!',
+          dismissible: true);
     }
   }
 
   void _setAlarm(Presence presence) {
+    const dur10Min = Duration(minutes: 10);
+    const dur1Day = Duration(days: 1);
     if (presence.startTime.isAfter(DateTime.now())) {
-      scheduleAlarm(presence.startTime.subtract(Duration(minutes: 10)),
+      scheduleAlarm(presence.startTime.subtract(dur10Min),
           '${presence.codeType} akan dimulai dalam 10 menit!');
     } else {
       if (presence.startTime.weekday < DateTime.friday) {
-        scheduleAlarm(presence.startTime.add(Duration(days: 1)),
+        scheduleAlarm(presence.startTime.add(dur1Day),
             '${presence.codeType} akan dimulai dalam 10 menit!');
       }
     }
 
     if (presence.endTime.isAfter(DateTime.now())) {
-      scheduleAlarm(presence.endTime.subtract(Duration(minutes: 10)),
+      scheduleAlarm(presence.endTime.subtract(dur10Min),
           '${presence.codeType} akan selesai dalam 10 menit!');
     } else {
       if (presence.endTime.weekday < DateTime.friday) {
-        scheduleAlarm(presence.endTime.add(Duration(days: 1)),
+        scheduleAlarm(presence.endTime.add(dur1Day),
             '${presence.codeType} akan selesai dalam 10 menit!');
       }
     }
   }
 
   @override
-  void setState(fn) {
+  void setState(void Function() fn) {
     if (mounted) {
       super.setState(fn);
     }
@@ -171,28 +179,28 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
 
   Widget _buildStakeholderMenu() {
     if (user?.position != 'Camat') {
-      return SizedBox();
+      return sizedBox;
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
+        const Text(
           'Atasan',
           style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 18.0,
               color: Colors.blueAccent),
         ),
-        Divider(thickness: 1.0),
-        SizedBox(height: 10.0),
+        dividerT1,
+        sizedBoxH10,
         Card(
           elevation: 2.0,
           child: InkWell(
             onTap: () {
               Get.to(EmployeeAttendanceScreen());
             },
-            child: ListTile(
+            child: const ListTile(
               dense: false,
               leading: Icon(
                 Icons.playlist_add_check_rounded,
@@ -210,14 +218,14 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
             ),
           ),
         ),
-        SizedBox(height: 10.0),
+        sizedBoxH10,
         Card(
           elevation: 2.0,
           child: InkWell(
             onTap: () {
               Get.to(EmployeePermissionScreen());
             },
-            child: ListTile(
+            child: const ListTile(
               leading: Icon(
                 Icons.playlist_add_check_rounded,
                 color: Colors.green,
@@ -234,14 +242,14 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
             ),
           ),
         ),
-        SizedBox(height: 10.0),
+        sizedBoxH10,
         Card(
           elevation: 2.0,
           child: InkWell(
             onTap: () {
               Get.to(EmployeeOutstationScreen());
             },
-            child: ListTile(
+            child: const ListTile(
               leading: Icon(
                 Icons.playlist_add_check_rounded,
                 color: Colors.green,
@@ -258,14 +266,14 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
             ),
           ),
         ),
-        SizedBox(height: 10.0),
+        sizedBoxH10,
         Card(
           elevation: 2.0,
           child: InkWell(
             onTap: () {
               Get.to(EmployeePaidLeaveScreen());
             },
-            child: ListTile(
+            child: const ListTile(
               leading: Icon(
                 Icons.playlist_add_check_rounded,
                 color: Colors.green,
@@ -282,26 +290,26 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
             ),
           ),
         ),
-        SizedBox(height: 30.0),
+        sizedBoxH30,
       ],
     );
   }
 
   Widget _buildCutiSection() {
     if (user?.status == 'Honorer') {
-      return SizedBox();
+      return sizedBox;
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(height: 10.0),
+        sizedBoxH10,
         Card(
           elevation: 2.0,
           child: InkWell(
             onTap: () {
               Get.to(PaidLeaveListScreen());
             },
-            child: ListTile(
+            child: const ListTile(
               leading: Icon(
                 Icons.card_giftcard_rounded,
                 color: Colors.red,
@@ -339,53 +347,53 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
+              const Text(
                 'Pengaturan & Personalisasi',
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 18.0,
                     color: Colors.blueAccent),
               ),
-              Divider(thickness: 1.0),
-              SizedBox(height: 10.0),
+              dividerT1,
+              sizedBoxH10,
               Card(
                 elevation: 2.0,
                 child: SwitchListTile(
                   onChanged: _handleSelected,
                   activeColor: Colors.blueAccent,
                   value: _isAlarmActive,
-                  secondary: Icon(
+                  secondary: const Icon(
                     Icons.alarm,
                     color: Colors.indigo,
                     size: 32.0,
                   ),
-                  title: Text(
+                  title: const Text(
                     'Aktifkan Alarm Absensi',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text(
+                  subtitle: const Text(
                     'Pengingat waktu absen',
                     style: TextStyle(color: Colors.black87),
                   ),
                 ),
               ),
-              SizedBox(height: 30.0),
-              Text(
+              sizedBoxH30,
+              const Text(
                 'Presensi',
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 18.0,
                     color: Colors.blueAccent),
               ),
-              Divider(thickness: 1.0),
-              SizedBox(height: 10.0),
+              dividerT1,
+              sizedBoxH10,
               Card(
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
                     Get.to(ReportScreen());
                   },
-                  child: ListTile(
+                  child: const ListTile(
                     leading: Icon(
                       Icons.bar_chart_rounded,
                       color: Colors.deepOrangeAccent,
@@ -402,14 +410,14 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 10.0),
+              sizedBoxH10,
               Card(
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
                     Get.to(PermissionListScreen());
                   },
-                  child: ListTile(
+                  child: const ListTile(
                     leading: Icon(
                       Icons.calendar_today_rounded,
                       color: Colors.purple,
@@ -426,7 +434,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 10.0),
+              sizedBoxH10,
               Card(
                 elevation: 2.0,
                 child: InkWell(
@@ -439,11 +447,11 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                       color: Colors.yellow[800],
                       size: 32.0,
                     ),
-                    title: Text(
+                    title: const Text(
                       'Dinas Luar',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text(
+                    subtitle: const Text(
                       'Pengajuan dan riwayat Dinas Luar',
                       style: TextStyle(color: Colors.black87),
                     ),
@@ -451,23 +459,23 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 ),
               ),
               _buildCutiSection(),
-              SizedBox(height: 30.0),
+              sizedBoxH30,
               _buildStakeholderMenu(),
-              Text(
+              const Text(
                 'Bantuan',
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 18.0,
                     color: Colors.blueAccent),
               ),
-              Divider(thickness: 1.0),
+              dividerT1,
               Card(
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
                     Get.to(ForgotPassScreen());
                   },
-                  child: ListTile(
+                  child: const ListTile(
                     leading: Icon(
                       Icons.warning,
                       color: Colors.pink,
@@ -484,7 +492,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 10.0),
+              sizedBoxH10,
               Card(
                 elevation: 2.0,
                 child: InkWell(
@@ -497,33 +505,33 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                       color: Colors.lime[800],
                       size: 32.0,
                     ),
-                    title: Text(
+                    title: const Text(
                       'Rujukan',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text(
+                    subtitle: const Text(
                       'Daftar aturan yang menjadi rujukan SiAP Balaesang',
                       style: TextStyle(color: Colors.black87),
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 30.0),
-              Text(
+              sizedBoxH30,
+              const Text(
                 'Akun',
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 18.0,
                     color: Colors.blueAccent),
               ),
-              Divider(thickness: 1.0),
+              dividerT1,
               Card(
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
                     Get.to(ChangePasswordScreen());
                   },
-                  child: ListTile(
+                  child: const ListTile(
                     leading: Icon(
                       Icons.lock_outline,
                       color: Colors.blueAccent,
@@ -540,7 +548,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 10.0),
+              sizedBoxH10,
               Card(
                 elevation: 2.0,
                 child: InkWell(
@@ -555,11 +563,11 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                         color: Colors.red[800],
                         size: 32.0,
                       ),
-                      title: Text(
+                      title: const Text(
                         'Keluar Dari Aplikasi',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      subtitle: Text(
+                      subtitle: const Text(
                         'Keluar dari aplikasi dan menghapus sesi saat ini. Gunakan ini jika aplikasi terasa berat atau anda ingin mengganti akun.',
                         style: TextStyle(color: Colors.black87),
                       ),

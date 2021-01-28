@@ -6,6 +6,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
+import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 
 class CreateNotificationScreen extends StatefulWidget {
@@ -19,25 +20,31 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
   final TextEditingController _descriptionController = TextEditingController();
 
   Future<void> _sendNotification() async {
-    ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    final ProgressDialog pd = ProgressDialog(context, isDismissible: false);
     try {
       pd.show();
       final dataRepo = Provider.of<DataRepository>(context, listen: false);
-      Map<String, dynamic> data = {
+      final Map<String, dynamic> data = {
         'title': _titleController.value.text,
         'content': _descriptionController.value.text,
       };
-      Map<String, dynamic> _res = await dataRepo.sendNotification(data);
-      if (_res['success']) {
+      final Map<String, dynamic> _res = await dataRepo.sendNotification(data);
+      if (_res['success'] as bool) {
         pd.hide();
-        showAlertDialog('success', "Sukses", _res['message'], false);
-        Timer(Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+        showAlertDialog('success', "Sukses", _res['message'].toString(),
+            dismissible: false);
+        Timer(const Duration(seconds: 5), () => Get.off(BottomNavScreen()));
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);
       }
     } catch (e) {
-      print(e.toString());
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
       pd.hide();
     }
   }
@@ -59,7 +66,7 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
-        title: Text('Buat Pemberitahuan'),
+        title: const Text('Buat Pemberitahuan'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -69,9 +76,9 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Row(
-                children: <Widget>[
+                children: const <Widget>[
                   Text('Judul Pemberitahuan'),
-                  SizedBox(width: 5.0),
+                  sizedBoxW5,
                   Text(
                     '*',
                     style: TextStyle(color: Colors.red),
@@ -81,18 +88,18 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
               TextFormField(
                 keyboardType: TextInputType.text,
                 controller: _titleController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     alignLabelWithHint: true,
                     hintText: 'Judul',
                     focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.blueAccent)),
                     labelStyle: TextStyle(color: Colors.grey)),
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               Row(
-                children: <Widget>[
+                children: const <Widget>[
                   Text('Isi Pemberitahuan'),
-                  SizedBox(width: 5.0),
+                  sizedBoxW5,
                   Text(
                     '*',
                     style: TextStyle(color: Colors.red),
@@ -104,14 +111,14 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
                 minLines: 1,
                 maxLines: 5,
                 controller: _descriptionController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     alignLabelWithHint: true,
                     hintText: 'Deskripsi',
                     focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.blueAccent)),
                     labelStyle: TextStyle(color: Colors.grey)),
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -121,11 +128,11 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
                     onPressed: _sendNotification,
                     color: Colors.blueAccent,
                     textColor: Colors.white,
-                    child: Text('Kirim'),
+                    child: const Text('Kirim'),
                   ),
                 ],
               ),
-              SizedBox(height: 20.0),
+              sizedBoxH20,
             ],
           ),
         ),

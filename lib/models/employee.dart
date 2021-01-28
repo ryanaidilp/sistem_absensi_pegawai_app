@@ -27,18 +27,18 @@ class Employee {
 
   factory Employee.fromJson(Map<String, dynamic> json) {
     return Employee(
-        nip: json[USER_NIP_FIELD] as String,
-        name: json[USER_NAME_FIELD] as String,
-        phone: json[USER_PHONE_FIELD] as String,
-        gender: json[USER_GENDER_FIELD] as String,
-        department: json[USER_DEPARTMENT_FIELD] as String,
-        rank: json[USER_RANK_FIELD] as String,
-        group: json[USER_GROUP_FIELD] as String,
-        status: json[USER_STATUS_FIELD] as String,
-        position: json[USER_POSITION_FIELD] as String,
-        presences: json[USER_PRESENCES_FIELD] != null
-            ? (json[USER_PRESENCES_FIELD] as List<dynamic>)
-                .map((json) => Presence.fromJson(json))
+        nip: json[userNipField] as String,
+        name: json[userNameField] as String,
+        phone: json[userPhoneField] as String,
+        gender: json[userGenderField] as String,
+        department: json[userDepartmentField] as String,
+        rank: json[userRankField] as String,
+        group: json[userGroupField] as String,
+        status: json[userStatusField] as String,
+        position: json[userPositionField] as String,
+        presences: json[userPresencesField] != null
+            ? (json[userPresencesField] as List<dynamic>)
+                .map((json) => Presence.fromJson(json as Map<String, dynamic>))
                 .toList()
             : null);
   }

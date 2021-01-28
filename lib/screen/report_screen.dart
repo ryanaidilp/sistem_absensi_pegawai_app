@@ -35,17 +35,18 @@ class _ReportScreenState extends State<ReportScreen> {
   DateTime _year;
   DateTime _selectedDate = DateTime.now();
   CalendarController _calendarController;
-  Map<DateTime, List<dynamic>> _events = new Map();
+  final Map<DateTime, List<dynamic>> _events = {};
   List<DailyData> _selectedEvents;
   List<Holiday> _selectedHolidays;
-  Map<DateTime, List<dynamic>> _holidays = new Map();
+  final Map<DateTime, List<dynamic>> _holidays = {};
   User _user;
-  TextEditingController _salaryController = TextEditingController();
+  final TextEditingController _salaryController = TextEditingController();
   double _salary = 0;
 
   Future<void> _loadUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    User user = User.fromJson(jsonDecode(prefs.getString(PREFS_USER_KEY)));
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final User user = User.fromJson(
+        jsonDecode(prefs.getString(prefsUserKey)) as Map<String, dynamic>);
     if (user != null) {
       setState(() {
         _user = user;
@@ -58,8 +59,9 @@ class _ReportScreenState extends State<ReportScreen> {
       setState(() {
         _isLoading = true;
       });
-      Map<String, dynamic> _result = await _dataRepo.getStatistics(_year);
-      AbsentReport absentReport = AbsentReport.fromJson(_result['data']);
+      final Map<String, dynamic> _result = await _dataRepo.getStatistics(_year);
+      final AbsentReport absentReport =
+          AbsentReport.fromJson(_result['data'] as Map<String, dynamic>);
       setState(() {
         _absentReport = absentReport;
         _events.addEntries(absentReport.daily
@@ -67,16 +69,16 @@ class _ReportScreenState extends State<ReportScreen> {
         _holidays.addEntries(absentReport.holidays
             .map((holiday) => MapEntry(holiday.date, <Holiday>[holiday])));
         if (_events.entries.last.key.isSameDate(DateTime.now())) {
-          _selectedEvents = _events.entries.last.value;
+          _selectedEvents = _events.entries.last.value as List<DailyData>;
         } else {
           _selectedEvents = [];
         }
         _selectedHolidays = _holidays.entries
             .firstWhere((element) => element.key.isSameDate(DateTime.now()))
-            .value;
+            .value as List<Holiday>;
       });
     } catch (e) {
-      print(e.toString());
+      //
     } finally {
       setState(() {
         _isLoading = false;
@@ -86,15 +88,17 @@ class _ReportScreenState extends State<ReportScreen> {
 
   void _onDaySelected(DateTime day, List events, List holidays) {
     setState(() {
-      if (events is List<DailyData>)
+      if (events is List<DailyData>) {
         _selectedEvents = events;
-      else
+      } else {
         _selectedEvents = [];
+      }
 
-      if (holidays is List<Holiday>)
+      if (holidays is List<Holiday>) {
         _selectedHolidays = holidays;
-      else
+      } else {
         _selectedHolidays = [];
+      }
 
       _selectedDate = day;
     });
@@ -140,29 +144,29 @@ class _ReportScreenState extends State<ReportScreen> {
 
   Widget _buildSalaryCalculator() {
     if (_user?.status == 'PNS') {
-      return SizedBox();
+      return sizedBox;
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
           'Kalkulator Gaji : ${DateFormat.yMMMM('id_ID').format(_year)}',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16.0,
             fontWeight: FontWeight.w600,
           ),
         ),
-        Divider(),
+        const Divider(),
         Card(
           child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 TextFormField(
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   controller: _salaryController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelStyle: TextStyle(color: Colors.blueAccent),
                     border: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.blueAccent)),
@@ -172,7 +176,6 @@ class _ReportScreenState extends State<ReportScreen> {
                     ),
                     labelText: 'Jumlah Gaji Bulanan',
                   ),
-                  maxLines: 1,
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
                     if (value.isNotEmpty) {
@@ -182,50 +185,51 @@ class _ReportScreenState extends State<ReportScreen> {
                     }
                   },
                 ),
-                SizedBox(height: 2),
-                Divider(color: Colors.black26),
+                sizedBoxH2,
+                const Divider(color: Colors.black26),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text('Kehadiran      : '),
+                    const Text('Kehadiran      : '),
                     Text(
-                      '${formatPercentage(_absentReport.monthly.attendancePercentage)}',
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      formatPercentage(
+                          _absentReport.monthly.attendancePercentage),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     )
                   ],
                 ),
-                SizedBox(height: 6),
+                sizedBoxH6,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text('Gaji Bulanan  : '),
+                    const Text('Gaji Bulanan  : '),
                     Text(
-                      '${formatCurrency(_salary)}',
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      formatCurrency(_salary),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     )
                   ],
                 ),
-                SizedBox(height: 6),
+                sizedBoxH6,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text('Potongan       : '),
+                    const Text('Potongan       : '),
                     Text(
                       formatCurrency(_countSalaryCuts()),
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     )
                   ],
                 ),
-                SizedBox(height: 6),
-                Divider(color: Colors.black26),
-                SizedBox(height: 6),
+                sizedBoxH6,
+                const Divider(color: Colors.black26),
+                sizedBoxH6,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text('Total               : '),
+                    const Text('Total               : '),
                     Text(
                       formatCurrency(_countTotalSalary()),
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     )
                   ],
                 ),
@@ -233,17 +237,17 @@ class _ReportScreenState extends State<ReportScreen> {
             ),
           ),
         ),
-        Divider(),
-        SizedBox(height: 10.0),
+        const Divider(),
+        sizedBoxH10,
       ],
     );
   }
 
   Widget _buildBody() {
     if (_isLoading) {
-      return Container(
+      return SizedBox(
         height: Get.height * 0.7,
-        child: Center(
+        child: const Center(
           child: SpinKitFadingCircle(
             size: 45,
             color: Colors.blueAccent,
@@ -255,7 +259,7 @@ class _ReportScreenState extends State<ReportScreen> {
       return Center(
         child: Column(
           children: <Widget>[
-            Container(
+            SizedBox(
               width: Get.width * 0.6,
               height: 200,
               child: const FlareActor(
@@ -272,7 +276,7 @@ class _ReportScreenState extends State<ReportScreen> {
               color: Colors.blueAccent,
               textColor: Colors.white,
               onPressed: _fetchReportData,
-              child: Text('Coba Lagi'),
+              child: const Text('Coba Lagi'),
             )
           ],
         ),
@@ -282,30 +286,31 @@ class _ReportScreenState extends State<ReportScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         _buildStatisticSection(_absentReport, _year),
-        Divider(),
-        SizedBox(height: 10.0),
+        const Divider(),
+        sizedBoxH10,
         _buildSalaryCalculator(),
-        Text(
+        const Text(
           'Kalender Presensi : ',
           style: TextStyle(
             fontSize: 16.0,
             fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(height: 10.0),
-        Divider(),
+        sizedBoxH10,
+        const Divider(),
         _buildTableCalendar(),
-        Divider(),
+        const Divider(),
         Text(
           'Presensi ${DateFormat.yMMMMEEEEd('id_ID').format(_selectedDate)} : ',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14.0,
             fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(height: 10.0),
+        sizedBoxH10,
         AnimatedSwitcher(
-            duration: Duration(milliseconds: 300), child: _buildEventList())
+            duration: const Duration(milliseconds: 300),
+            child: _buildEventList())
       ],
     );
   }
@@ -328,6 +333,7 @@ class _ReportScreenState extends State<ReportScreen> {
       return 0;
     }
 
+    // ignore: avoid_function_literals_in_foreach_calls
     presences.forEach((presence) {
       switch (presence.attendStatus) {
         case 'Tepat Waktu':
@@ -362,13 +368,12 @@ class _ReportScreenState extends State<ReportScreen> {
       child: TableCalendar(
         startingDayOfWeek: StartingDayOfWeek.monday,
         calendarController: _calendarController,
-        availableCalendarFormats: <CalendarFormat, String>{
+        availableCalendarFormats: const <CalendarFormat, String>{
           CalendarFormat.month: '1 minggu',
           CalendarFormat.twoWeeks: '1 bulan',
           CalendarFormat.week: '2 minggu'
         },
         startDay: DateTime(2021),
-        initialCalendarFormat: CalendarFormat.month,
         onDaySelected: _onDaySelected,
         availableGestures: AvailableGestures.horizontalSwipe,
         builders: CalendarBuilders(
@@ -400,25 +405,25 @@ class _ReportScreenState extends State<ReportScreen> {
       height: 16.0,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6),
-        shape: BoxShape.rectangle,
         color: _calendarController.isSelected(date)
             ? _checkAttendancePercentageColor(
-                _countAttendancePercentage(events))
+                _countAttendancePercentage(events as List<DailyData>))
             : _calendarController.isToday(date)
                 ? _calendarController.isSelected(date)
                     ? _checkAttendancePercentageColor(
-                        _countAttendancePercentage(events))
+                        _countAttendancePercentage(events as List<DailyData>))
                     : Colors.white
                 : Colors.white,
       ),
       child: Center(
         child: Text(
-          '${formatPercentage(_countAttendancePercentage(events).toPrecision(0))}',
+          formatPercentage(_countAttendancePercentage(events as List<DailyData>)
+              .toPrecision(0)),
           style: TextStyle(
             color: _calendarController.isSelected(date)
                 ? Colors.white
                 : _checkAttendancePercentageColor(
-                    _countAttendancePercentage(events)),
+                    _countAttendancePercentage(events as List<DailyData>)),
             fontSize: 10.0,
             fontWeight: FontWeight.bold,
           ),
@@ -432,7 +437,7 @@ class _ReportScreenState extends State<ReportScreen> {
       return Center(
         child: Column(
           children: <Widget>[
-            Container(
+            SizedBox(
               width: Get.width * 0.6,
               height: 300,
               child: const FlareActor(
@@ -448,7 +453,7 @@ class _ReportScreenState extends State<ReportScreen> {
               color: Colors.blueAccent,
               textColor: Colors.white,
               onPressed: _fetchReportData,
-              child: Text('Coba Lagi'),
+              child: const Text('Coba Lagi'),
             )
           ],
         ),
@@ -464,7 +469,7 @@ class _ReportScreenState extends State<ReportScreen> {
                     child: ListTile(
                       title: Text(
                         'Libur Nasional : ${holiday.name}',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       subtitle: Text(
                         holiday.description,
@@ -480,7 +485,7 @@ class _ReportScreenState extends State<ReportScreen> {
       return Center(
         child: Column(
           children: <Widget>[
-            Container(
+            SizedBox(
               width: Get.width * 0.6,
               height: 300,
               child: const FlareActor(
@@ -497,11 +502,11 @@ class _ReportScreenState extends State<ReportScreen> {
 
     return Column(
       children: _selectedEvents.map((event) {
-        Color color = checkStatusColor(event.attendStatus);
-        String status = '${event.attendStatus}';
+        final Color color = checkStatusColor(event.attendStatus);
+        String status = event.attendStatus ?? '';
         if (event.attendStatus == 'Terlambat') {
-          var duration = calculateLateTime(event.startTime, event.attendTime);
-          status = '${event.attendStatus} $duration})';
+          final duration = calculateLateTime(event.startTime, event.attendTime);
+          status = '${event.attendStatus} $duration';
         }
         return EmployeePresenceCardWidget(
           presenceType: event.attendType,
@@ -535,7 +540,7 @@ class _ReportScreenState extends State<ReportScreen> {
     _fetchReportData();
   }
 
-  _selectYear(BuildContext context) async {
+  Future<void> _selectYear(BuildContext context) async {
     DatePicker.showDatePicker(context,
         initialDateTime: _year,
         minDateTime: DateTime(2021),
@@ -564,8 +569,8 @@ class _ReportScreenState extends State<ReportScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               _buildUserInfoSection(),
-              Divider(thickness: 1.0),
-              Text(
+              dividerT1,
+              const Text(
                 'Pilih Tahun & Bulan : ',
               ),
               Row(
@@ -573,7 +578,7 @@ class _ReportScreenState extends State<ReportScreen> {
                 children: <Widget>[
                   Text(
                     DateFormat.yMMMM('id_ID').format(_year),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 22.0,
                       fontWeight: FontWeight.w600,
                     ),
@@ -588,7 +593,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       })
                 ],
               ),
-              Divider(thickness: 1.0),
+              dividerT1,
               _buildBody(),
             ],
           ),

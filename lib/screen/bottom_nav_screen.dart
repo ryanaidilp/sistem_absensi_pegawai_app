@@ -8,7 +8,7 @@ class BottomNavScreen extends StatefulWidget {
 }
 
 class _BottomNavScreenState extends State<BottomNavScreen> {
-  List<Widget> _screens = [HomeScreen(), ApplicationScreen()];
+  final List<Widget> _screens = [HomeScreen(), ApplicationScreen()];
   int _currentIndex = 0;
 
   final Map<String, dynamic> _bottomNavItems = {
@@ -29,11 +29,10 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
           showUnselectedLabels: true,
-          showSelectedLabels: true,
           selectedItemColor: Colors.blueAccent,
-          selectedLabelStyle:
-              TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
-          unselectedLabelStyle: TextStyle(
+          selectedLabelStyle: const TextStyle(
+              color: Colors.blueAccent, fontWeight: FontWeight.bold),
+          unselectedLabelStyle: const TextStyle(
             color: Colors.grey,
             fontWeight: FontWeight.normal,
           ),
@@ -43,7 +42,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
                     key,
                     BottomNavigationBarItem(
                       label: key,
-                      icon: Icon(value),
+                      icon: Icon(value as IconData),
                     ),
                   ))
               .values
