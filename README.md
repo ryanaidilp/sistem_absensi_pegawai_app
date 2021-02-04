@@ -1,12 +1,12 @@
 <p align="center">
-    <img src="https://i.ibb.co/jGgBj1n/icon.png"/>
+    <img src="https://i.ibb.co/jGgBj1n/icon.png" height="200"/>
 </p>
 
-<h1 align="center">SIAP</h1>
+<h1 align="center">SiAP</h1>
 
 Aplikasi Android untuk manajemen data presensi pegawai di lingkungan kantor pemerintahan Kecamatan Balaesang. Aplikasi ini dibangun dengan [Flutter](https://flutter.dev)
 
-[![SIAP](https://i.ibb.co/MGrChNR/banner.png)](https://play.google.com/store/apps/details?id=com.banuacoders.siap)
+[![SIAP](https://i.ibb.co/Xz9Dppd/thumb.png)](https://play.google.com/store/apps/details?id=com.banuacoders.siap)
 
 ## About
 
@@ -22,41 +22,12 @@ Permasalahan timbul saat sebagian besar pegawai tidak jujur dalam mengisi absen 
     BASE_URL=BASE URL ONLINE
     LOCAL_URL=LOCAL_URL #Jika kamu ingin menyambungkian ke server di localhost
     ONE_SIGNAL_APP_ID=APP ID UNTUK ONE SIGNAL
-``` 
+```
 
 Isikan variabel sesuai dengan konfigurasi anda.
 
 Untuk mendapatkan `ONE_SIGNAL_APP_ID`, buat akun di [One Signal](https://app.onesignal.com) lalu ikuti petunjuk cara untuk mendapatkan `APP_KEY` melalui dokumentasi resmi One Signal.
 
-
 ## Screenshoot
 
-- *Login Screen*
-  ![Login Screen](https://i.ibb.co/fxCP1FX/login.png)
-
-- *Home* diluar jadwal presensi
-  ![Home](https://i.ibb.co/r4w2J0R/home-not-absent.png)
-
-- *Home* saat jadwal presensi
-  ![Home2](https://i.ibb.co/FDJfPMd/home.png)
-
-- Halaman aplikasi
-  ![Application](https://i.ibb.co/Rgnhp4j/application-screen.png)
-
-- Halaman aplikasi pimpinan
-  ![Application2](https://i.ibb.co/GkMHxDk/application-screen-2.png)
-
-- Absensi (*QR Scanner*)
-  ![Scanner](https://i.ibb.co/5kXRkRM/presensi.png)
-
-- Daftar Pegawai
-  ![Employee List](https://i.ibb.co/qpW6sBV/employee-screen.png)
-
-- Ubah Password
-  ![Change Password](https://i.ibb.co/FKk6Vzv/change-pass.png)
-
-- Pengajuan Izin
-  ![Create Permission](https://i.ibb.co/GM2rQjH/create-permission.png)
-
-- Daftar Izin yang diajukan
-  ![Permission List](https://i.ibb.co/FmgzWKF/permission-list.png)
+![Splash Screen](https://i.ibb.co/p4n5K3D/splash-screen.gif)![Login Screen](https://i.ibb.co/5TmZYTT/login-screen.gif)![Home Screen](https://i.ibb.co/qyJB11s/home-screen.gif)![Notifications List & Create Notification Screen](https://i.ibb.co/NtH4pbT/notification-list-screen.gif)![Presence Screen](https://i.ibb.co/SVGrL5r/presence-screen.gif)![Employee List Screen](https://i.ibb.co/4dGZXR3/employee-list-screen.gif)![Statistics Screen](https://i.ibb.co/5n2gGzc/statistics-screen.gif)![Statistics Screen](https://i.ibb.co/RYtT7gH/statistics-screen-2.gif)![Absent Permissions Screen](https://i.ibb.co/XSFKdX6/absent-permission-screen.gif)![Outstations Screen](https://i.ibb.co/VqSvMQF/outstation-screen.gif)![Paid Leaves Screen](https://i.ibb.co/zV6m0C8/paid-leave-screen.gif)![Employee Presence Screen](https://i.ibb.co/KXMyMq6/employee-presence-list.gif)![Employee Presence List Screen](https://i.ibb.co/bN1cBnJ/employee-presence-screen-2.gif)
