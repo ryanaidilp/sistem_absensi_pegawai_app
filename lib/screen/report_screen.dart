@@ -143,14 +143,16 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Widget _buildSalaryCalculator() {
+    final String date = DateFormat.yMMMM('id_ID').format(_year);
+    String label = 'Kalkulator Gaji : $date';
     if (_user?.status == 'PNS') {
-      return sizedBox;
+      label = 'Kalkulator Tunjangan : $date';
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          'Kalkulator Gaji : ${DateFormat.yMMMM('id_ID').format(_year)}',
+          label,
           style: const TextStyle(
             fontSize: 16.0,
             fontWeight: FontWeight.w600,
