@@ -27,6 +27,7 @@ Permasalahan timbul saat sebagian besar pegawai tidak jujur dalam mengisi absen 
 Isikan variabel sesuai dengan konfigurasi anda.
 
 Untuk mendapatkan `ONE_SIGNAL_APP_ID`, buat akun di [One Signal](https://app.onesignal.com) lalu ikuti petunjuk cara untuk mendapatkan `APP_KEY` melalui dokumentasi resmi One Signal.
+Pastikan `ONE_SIGNAL_APP_ID` pada aplikasi ini sama dengan yang digunakan di aplikasi [backend](https://github.com/ryanaidilp/sistem_absensi_pegawai)
 
 ## Screenshoot
 
