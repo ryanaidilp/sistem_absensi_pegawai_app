@@ -551,7 +551,7 @@ class _HomeScreenState extends State<HomeScreen> {
       double fontSize = 14;
       if (status == 'Terlambat') {
         final duration = calculateLateTime(
-            user.nextPresence.startTime.add(const Duration(minutes: 30)),
+            user.nextPresence.startTime,
             user.nextPresence.attendTime);
         status += ' $duration';
         fontSize = 12;
