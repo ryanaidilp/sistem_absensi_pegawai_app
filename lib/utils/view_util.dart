@@ -4,12 +4,14 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
+import 'extensions.dart';
+
 Future showAlertDialog(String type, String title, String content,
     {bool dismissible}) async {
   final List<Widget> actions = type == 'success'
       ? []
       : [
-          FlatButton(
+          TextButton(
             onPressed: () {
               Get.back();
             },
@@ -72,7 +74,7 @@ Future showErrorDialog(Map<String, dynamic> json) {
         ),
       ],
     ),
-    cancel: FlatButton(
+    cancel: TextButton(
       onPressed: () {
         Get.back();
       },
@@ -203,4 +205,32 @@ String formatCurrency(double salary) {
 String trimPhoneNumber(String phoneNumber) {
   final phone = phoneNumber.replaceAll(' ', '');
   return '62${phone.substring(1, phone.length)}';
+}
+
+Widget dowBuilder(BuildContext context, DateTime date) {
+  TextStyle _style = const TextStyle(color: Colors.black);
+  if (date.isWeekend()) {
+    _style = const TextStyle(color: Colors.red);
+  }
+  final text = DateFormat.E().format(date);
+  return Center(
+    child: Text(
+      text,
+      style: _style,
+    ),
+  );
+}
+
+Widget calendarBuilder(DateTime date, {bool isNotEmpty}) {
+  TextStyle _style = const TextStyle(color: Colors.black);
+  if (isNotEmpty || date.isWeekend()) {
+    _style = const TextStyle(color: Colors.red);
+  }
+  final text = DateFormat.d().format(date);
+  return Center(
+    child: Text(
+      text,
+      style: _style,
+    ),
+  );
 }
