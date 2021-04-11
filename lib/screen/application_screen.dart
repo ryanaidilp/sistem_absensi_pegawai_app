@@ -78,7 +78,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
             ),
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
                 onPressed: () async {
                   Get.back();
                   final ProgressDialog pd =
@@ -96,14 +96,14 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                     prefs.remove(prefsAlarmKey);
                     pd.hide();
                     OneSignal.shared.removeExternalUserId();
-                    Get.off(LoginScreen());
+                    Get.off(() => LoginScreen());
                   }
                 },
                 child: const Text('Ya',
                     style: TextStyle(
                       color: Colors.blueAccent,
                     ))),
-            FlatButton(
+            TextButton(
                 onPressed: () {
                   Get.back();
                 },
@@ -198,7 +198,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
           elevation: 2.0,
           child: InkWell(
             onTap: () {
-              Get.to(EmployeeAttendanceScreen());
+              Get.to(() => EmployeeAttendanceScreen());
             },
             child: const ListTile(
               dense: false,
@@ -223,7 +223,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
           elevation: 2.0,
           child: InkWell(
             onTap: () {
-              Get.to(EmployeePermissionScreen());
+              Get.to(() => EmployeePermissionScreen());
             },
             child: const ListTile(
               leading: Icon(
@@ -247,7 +247,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
           elevation: 2.0,
           child: InkWell(
             onTap: () {
-              Get.to(EmployeeOutstationScreen());
+              Get.to(() => EmployeeOutstationScreen());
             },
             child: const ListTile(
               leading: Icon(
@@ -271,7 +271,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
           elevation: 2.0,
           child: InkWell(
             onTap: () {
-              Get.to(EmployeePaidLeaveScreen());
+              Get.to(() => EmployeePaidLeaveScreen());
             },
             child: const ListTile(
               leading: Icon(
@@ -307,7 +307,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
           elevation: 2.0,
           child: InkWell(
             onTap: () {
-              Get.to(PaidLeaveListScreen());
+              Get.to(() => PaidLeaveListScreen());
             },
             child: const ListTile(
               leading: Icon(
@@ -391,7 +391,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
-                    Get.to(ReportScreen());
+                    Get.to(() => ReportScreen());
                   },
                   child: const ListTile(
                     leading: Icon(
@@ -415,7 +415,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
-                    Get.to(PermissionListScreen());
+                    Get.to(() => PermissionListScreen());
                   },
                   child: const ListTile(
                     leading: Icon(
@@ -439,7 +439,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
-                    Get.to(OutstationListScreen());
+                    Get.to(() => OutstationListScreen());
                   },
                   child: ListTile(
                     leading: Icon(
@@ -473,7 +473,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
-                    Get.to(ForgotPassScreen());
+                    Get.to(() => ForgotPassScreen());
                   },
                   child: const ListTile(
                     leading: Icon(
@@ -497,7 +497,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
-                    Get.to(RegulationScreen());
+                    Get.to(() => RegulationScreen());
                   },
                   child: ListTile(
                     leading: Icon(
@@ -529,7 +529,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
-                    Get.to(ChangePasswordScreen());
+                    Get.to(() => ChangePasswordScreen());
                   },
                   child: const ListTile(
                     leading: Icon(
