@@ -62,10 +62,13 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
             ),
           ),
         ),
-        confirm: RaisedButton(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-          color: Colors.blueAccent,
-          textColor: Colors.white,
+        confirm: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+            primary: Colors.blueAccent,
+            onPrimary: Colors.white,
+          ),
           onPressed: () {
             Get.back();
             _sendData(outstation);
@@ -90,7 +93,8 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
         pd.hide();
         showAlertDialog("success", "Sukses", _res['message'].toString(),
             dismissible: false);
-        Timer(const Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+        Timer(
+            const Duration(seconds: 5), () => Get.off(() => BottomNavScreen()));
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);
@@ -146,11 +150,13 @@ class _PresenceListScreenState extends State<PresenceListScreen> {
           presenceType: presence.codeType,
           buttonWidget: SizedBox(
             width: Get.width * 0.9,
-            child: RaisedButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              color: Colors.red[600],
-              textColor: Colors.white,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6)),
+                primary: Colors.red[600],
+                onPrimary: Colors.white,
+              ),
               onPressed: () {
                 _cancelAttendance(presence);
               },

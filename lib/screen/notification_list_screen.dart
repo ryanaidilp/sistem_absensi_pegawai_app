@@ -289,7 +289,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
       floatingActionButton: _user?.position == 'Camat'
           ? FloatingActionButton(
               onPressed: () {
-                Get.to(CreateNotificationScreen());
+                Get.to(() => CreateNotificationScreen());
               },
               backgroundColor: Colors.blueAccent,
               child: const Icon(Icons.add),

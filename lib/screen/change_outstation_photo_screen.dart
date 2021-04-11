@@ -65,7 +65,8 @@ class _ChangeOutstationPhotoScreenState
         pd.hide();
         showAlertDialog('success', "Sukses", _res['message'].toString(),
             dismissible: false);
-        Timer(const Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+        Timer(
+            const Duration(seconds: 5), () => Get.off(() => BottomNavScreen()));
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);
@@ -85,10 +86,10 @@ class _ChangeOutstationPhotoScreenState
     if (_base64Image == null) {
       return InkWell(
         onTap: () {
-          Get.to(ImageDetailScreen(
-            imageUrl: _outstation.photo,
-            tag: _outstation.id.toString(),
-          ));
+          Get.to(() => ImageDetailScreen(
+                imageUrl: _outstation.photo,
+                tag: _outstation.id.toString(),
+              ));
         },
         child: Hero(
           tag: _outstation.id.toString(),
@@ -122,10 +123,10 @@ class _ChangeOutstationPhotoScreenState
     final Uint8List bytes = base64Decode(_base64Image);
     return InkWell(
       onTap: () {
-        Get.to(ImageDetailScreen(
-          bytes: bytes,
-          tag: 'image',
-        ));
+        Get.to(() => ImageDetailScreen(
+              bytes: bytes,
+              tag: 'image',
+            ));
       },
       child: Hero(
         tag: 'image',
@@ -201,22 +202,26 @@ class _ChangeOutstationPhotoScreenState
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  RaisedButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6)),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6)),
+                      primary: Colors.blueAccent,
+                      onPrimary: Colors.white,
+                    ),
                     onPressed: _openCamera,
-                    color: Colors.blueAccent,
-                    textColor: Colors.white,
                     child: const Text('Ubah Foto'),
                   ),
-                  RaisedButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6)),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6)),
+                      primary: Colors.green,
+                      onPrimary: Colors.white,
+                    ),
                     onPressed: () {
                       _uploadData(_outstation);
                     },
-                    color: Colors.green,
-                    textColor: Colors.white,
                     child: const Text('Kirim'),
                   ),
                 ],
