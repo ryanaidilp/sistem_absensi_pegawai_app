@@ -42,7 +42,6 @@ class ApiService {
       {@required Endpoint endpoint, Map<String, dynamic> data}) async {
     final url = api.endpointUri(endpoint);
     final Uri uri = Uri.parse(url);
-    print(url);
     final response = await http.post(uri, body: data);
     return response;
   }
@@ -52,7 +51,6 @@ class ApiService {
     await _getToken();
     final url = api.endpointUri(endpoint);
     final Uri uri = Uri.parse(url);
-    print(url);
     final response =
         http.post(uri, body: jsonEncode(data), headers: _setHeaders());
     return response;
