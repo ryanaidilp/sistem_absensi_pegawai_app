@@ -1,6 +1,6 @@
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
+import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -146,7 +146,7 @@ class _PaidLeaveListScreenState extends State<PaidLeaveListScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blueAccent,
         onPressed: () {
-          Get.to(CreatePaidLeaveScreen());
+          Get.to(() => CreatePaidLeaveScreen());
         },
         child: const Icon(Icons.add),
       ),
