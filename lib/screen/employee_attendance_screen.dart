@@ -11,6 +11,7 @@ import 'package:spo_balaesang/models/holiday.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/presence_list_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
+import 'package:spo_balaesang/utils/extensions.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -21,23 +22,24 @@ class EmployeeAttendanceScreen extends StatefulWidget {
 }
 
 class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
-  final CalendarController _calendarController = CalendarController();
   bool _isLoading = false;
   DateTime _selectedDate = DateTime.now();
   final Map<DateTime, List<dynamic>> _holidays = {};
   List<Employee> _employees;
   List<Holiday> _selectedHolidays = [];
 
-  void _onDaySelected(DateTime value, List events, List holidays) {
+  void _onDaySelected(DateTime value, DateTime focusedDay) {
+    final List<dynamic> _holiday = _getHolidayForDay(value);
     setState(() {
       _selectedDate = value;
-      if (holidays is List<Holiday>) {
-        _selectedHolidays = holidays;
+
+      if (_holiday is List<Holiday>) {
+        _selectedHolidays = _holiday;
       } else {
         _selectedHolidays = [];
       }
 
-      if (_selectedDate.weekday == 6 || _selectedDate.weekday == 7) {
+      if (_selectedDate.isWeekend()) {
         return;
       }
 
@@ -107,18 +109,44 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       child: TableCalendar(
         startingDayOfWeek: StartingDayOfWeek.monday,
-        calendarController: _calendarController,
         availableCalendarFormats: const <CalendarFormat, String>{
-          CalendarFormat.month: '1 minggu',
-          CalendarFormat.twoWeeks: '1 bulan',
-          CalendarFormat.week: '2 minggu'
+          CalendarFormat.month: '1 bulan',
         },
-        startDay: DateTime(2021),
+        calendarStyle: const CalendarStyle(
+          weekendTextStyle: TextStyle(color: Colors.red),
+        ),
+        calendarBuilders: CalendarBuilders(
+          defaultBuilder: (_, date, focusedDay) {
+            return calendarBuilder(date,
+                isNotEmpty: _getHolidayForDay(date).isNotEmpty);
+          },
+          dowBuilder: dowBuilder,
+        ),
+        calendarFormat: CalendarFormat.month,
+        firstDay: DateTime(2021),
         onDaySelected: _onDaySelected,
+        focusedDay: _selectedDate,
+        selectedDayPredicate: (day) {
+          return isSameDay(_selectedDate, day);
+        },
+        headerStyle: const HeaderStyle(titleCentered: true),
+        lastDay: DateTime(DateTime.now().year + 5),
         availableGestures: AvailableGestures.horizontalSwipe,
-        holidays: _holidays,
+        // holidayPredicate: _getHolidayForDay,
       ),
     );
+  }
+
+  List<dynamic> _getHolidayForDay(DateTime day) {
+    List<dynamic> _holiday;
+    try {
+      _holiday = _holidays.entries
+          .firstWhere((element) => isSameDay(day, element.key))
+          .value;
+    } catch (e) {
+      printError(info: e.toString());
+    }
+    return _holiday ?? [];
   }
 
   @override
@@ -130,12 +158,6 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
   void initState() {
     _fetchPresenceData();
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _calendarController.dispose();
-    super.dispose();
   }
 
   Widget _buildPnsSection(Employee employee) {
@@ -234,11 +256,13 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
             ),
             const Text('Gagal memuat data'),
             sizedBoxH20,
-            RaisedButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6)),
-              color: Colors.blueAccent,
-              textColor: Colors.white,
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6)),
+                onPrimary: Colors.white,
+                primary: Colors.blueAccent,
+              ),
               onPressed: _fetchPresenceData,
               child: const Text('Coba Lagi'),
             )
@@ -324,13 +348,15 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
                           Center(
                             child: SizedBox(
                               width: Get.width * 0.9,
-                              child: RaisedButton(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6)),
-                                textColor: Colors.white,
-                                color: Colors.blueAccent,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6)),
+                                  onPrimary: Colors.white,
+                                  primary: Colors.blueAccent,
+                                ),
                                 onPressed: () {
-                                  Get.to(PresenceListScreen(
+                                  Get.to(() => PresenceListScreen(
                                       employee: employee, date: _selectedDate));
                                 },
                                 child: const Text('Lihat data kehadiran'),
