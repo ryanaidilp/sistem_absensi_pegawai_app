@@ -15,13 +15,18 @@ class OnBoardingScreen extends StatelessWidget {
         pages: onBoardingScreens,
         showSkipButton: true,
         skip: const Text("Skip"),
+        next: const Icon(
+          Icons.navigate_next,
+          color: Colors.blueAccent,
+          size: 32,
+        ),
         onSkip: () {
-          Get.off(page);
+          Get.off(() => page);
         },
         done: const Text("Selesai",
             style: TextStyle(fontWeight: FontWeight.w600)),
         onDone: () {
-          Get.off(page);
+          Get.off(() => page);
         },
       ),
     );

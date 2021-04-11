@@ -27,7 +27,6 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
   bool _isLoading = false;
   final TextEditingController _reasonController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  final CalendarController _calendarController = CalendarController();
   List<AbsentPermission> _filteredPermission = <AbsentPermission>[];
   Set<String> choices = {'Semua', 'Disetujui', 'Belum Disetujui'};
   String _selectedChoice = 'Semua';
@@ -87,10 +86,13 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
             ),
           ),
         ),
-        confirm: RaisedButton(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-          color: Colors.blueAccent,
-          textColor: Colors.white,
+        confirm: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+            primary: Colors.blueAccent,
+            onPrimary: Colors.white,
+          ),
           onPressed: () {
             Get.back();
             _sendData(permission, false);
@@ -106,10 +108,12 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
   SizedBox _cancelButton(String label, AbsentPermission permission) {
     return SizedBox(
       width: Get.width,
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-        textColor: Colors.white,
-        color: Colors.red[600],
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+          primary: Colors.red,
+          onPrimary: Colors.white,
+        ),
         onPressed: () {
           _rejectPermission(permission);
         },
@@ -121,10 +125,12 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
   SizedBox _approveButton(AbsentPermission permission) {
     return SizedBox(
       width: Get.width,
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-        textColor: Colors.white,
-        color: Colors.blueAccent,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+          primary: Colors.blueAccent,
+          onPrimary: Colors.white,
+        ),
         onPressed: () {
           _approvePermission(permission);
         },
@@ -189,7 +195,6 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
   void dispose() {
     _reasonController.dispose();
     _nameController.dispose();
-    _calendarController.dispose();
     super.dispose();
   }
 
@@ -272,23 +277,31 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
         title: 'Pilih Tanggal',
         content: Flexible(
           child: SizedBox(
+            height: Get.height * 0.4,
             width: Get.width * 0.9,
             child: TableCalendar(
               availableCalendarFormats: const <CalendarFormat, String>{
-                CalendarFormat.month: '1 minggu',
-                CalendarFormat.twoWeeks: '1 bulan',
-                CalendarFormat.week: '2 minggu'
+                CalendarFormat.month: '1 bulan',
               },
+              calendarStyle: const CalendarStyle(
+                weekendTextStyle: TextStyle(color: Colors.red),
+              ),
+              calendarBuilders: const CalendarBuilders(
+                dowBuilder: dowBuilder,
+              ),
+              calendarFormat: CalendarFormat.month,
               availableGestures: AvailableGestures.horizontalSwipe,
-              headerStyle: const HeaderStyle(
-                  formatButtonTextStyle: TextStyle(fontSize: 12.0)),
-              calendarController: _calendarController,
+              shouldFillViewport: true,
+              headerStyle: const HeaderStyle(titleCentered: true),
               startingDayOfWeek: StartingDayOfWeek.monday,
-              startDay: DateTime(2021),
-              endDay: DateTime(DateTime.now().year + 5),
-              initialSelectedDay: _selectedDate,
+              firstDay: DateTime.now().subtract(const Duration(days: 7)),
+              focusedDay: _selectedDate,
+              selectedDayPredicate: (day) {
+                return isSameDay(_selectedDate, day);
+              },
+              lastDay: DateTime(DateTime.now().year + 5),
               locale: 'in_ID',
-              onDaySelected: (day, events, holidays) {
+              onDaySelected: (day, focusedDay) {
                 Get.back();
                 setState(() {
                   _selectedDate = day;

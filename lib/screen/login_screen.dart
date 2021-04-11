@@ -174,7 +174,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     margin: const EdgeInsets.only(right: 20.0, bottom: 20.0),
                     child: InkWell(
                       onTap: () {
-                        Get.to(ForgotPassScreen(), fullscreenDialog: true);
+                        Get.to(() => ForgotPassScreen(),
+                            fullscreenDialog: true);
                       },
                       child: Text(
                         'Lupa Password?',
@@ -245,7 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           OneSignal.shared.setExternalUserId(
                                               result[jsonDataField][userIdField]
                                                   .toString());
-                                          Get.off(BottomNavScreen());
+                                          Get.off(() => BottomNavScreen());
                                         } else {
                                           showErrorDialog(result);
                                         }

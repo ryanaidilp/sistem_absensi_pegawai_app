@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_config/flutter_config.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
@@ -10,6 +11,9 @@ class ForgotPassScreen extends StatelessWidget {
   final double getSmallDiameter = Get.width * 2 / 3;
 
   final double getBigDiameter = Get.width * 7 / 8;
+
+  final String adminPhoneNumber =
+      FlutterConfig.get("ADMIN_PHONE_NUMBER").toString();
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +114,7 @@ class ForgotPassScreen extends StatelessWidget {
                               children: <Widget>[
                                 IconButton(
                                   onPressed: () {
-                                    launch('tel:ADMIN_PHONE_NUMBER');
+                                    launch('tel:$adminPhoneNumber');
                                   },
                                   color: Colors.blueAccent,
                                   icon: const Icon(Icons.phone),
@@ -118,8 +122,8 @@ class ForgotPassScreen extends StatelessWidget {
                                 ),
                                 IconButton(
                                   onPressed: () async {
-                                    const whatsappUrl =
-                                        "whatsapp://send?phone=ADMIN_PHONE_NUMBER";
+                                    final String whatsappUrl =
+                                        'whatsapp://send?phone=$adminPhoneNumber';
                                     await canLaunch(whatsappUrl)
                                         ? launch(whatsappUrl)
                                         : Get.defaultDialog(

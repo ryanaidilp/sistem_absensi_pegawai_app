@@ -29,7 +29,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
         title: const Text('Ubah Password'),
@@ -133,7 +133,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               left: 0,
               right: 0,
               bottom: MediaQuery.of(context).viewInsets.bottom,
-              child: RaisedButton(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  onPrimary: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0)),
+                  primary: Colors.blueAccent,
+                ),
                 onPressed: () async {
                   final ProgressDialog pd =
                       ProgressDialog(context, isDismissible: false);
@@ -156,23 +162,21 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           'success', "Sukses", _res['message'].toString(),
                           dismissible: false);
                       Timer(const Duration(seconds: 1),
-                          () => Get.off(BottomNavScreen()));
+                          () => Get.off(() => BottomNavScreen()));
                     } else {
                       pd.hide();
                       showErrorDialog(_res);
                     }
                   } catch (e) {
                     pd.hide();
-                     showErrorDialog({
-                'message': 'Kesalahan',
-                'errors': {'exception':['Terjadi kesalahan!']}
-              });
+                    showErrorDialog({
+                      'message': 'Kesalahan',
+                      'errors': {
+                        'exception': ['Terjadi kesalahan!']
+                      }
+                    });
                   }
                 },
-                textColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                color: Colors.blueAccent,
                 child: isLoading
                     ? const SizedBox(
                         height: 30.0,

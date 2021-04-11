@@ -9,7 +9,6 @@ import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/network/api.dart';
 import 'package:spo_balaesang/network/api_service.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
-import 'package:spo_balaesang/utils/view_util.dart';
 
 class DataRepository {
   DataRepository({@required this.apiService});
@@ -40,14 +39,7 @@ class DataRepository {
           .map(
               (dynamic json) => Employee.fromJson(json as Map<String, dynamic>))
           .toList();
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return employee;
   }
 
@@ -63,14 +55,7 @@ class DataRepository {
       user = User.fromJson(_data['data'] as Map<String, dynamic>);
     } on SocketException {
       return null;
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return user;
   }
 
@@ -80,14 +65,7 @@ class DataRepository {
       final Map<String, dynamic> _data =
           await apiService.getEndpointData(endpoint: Endpoint.logout);
       response = _data;
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return response;
   }
 
@@ -96,14 +74,7 @@ class DataRepository {
     try {
       response = await apiService.postEndpointWithoutToken(
           endpoint: Endpoint.login, data: data);
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return response;
   }
 
@@ -112,14 +83,7 @@ class DataRepository {
     try {
       response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.changePass, data: data);
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return response;
   }
 
@@ -129,14 +93,7 @@ class DataRepository {
       final response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.permission, data: data);
       result = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return result;
   }
 
@@ -145,14 +102,7 @@ class DataRepository {
     try {
       data = await apiService.getEndpointData(
           endpoint: Endpoint.permission, query: {'date': date.toString()});
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return data;
   }
 
@@ -162,14 +112,7 @@ class DataRepository {
       data = await apiService.getEndpointData(
           endpoint: Endpoint.employeePermission,
           query: {'date': date.toString()});
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return data;
   }
 
@@ -178,14 +121,7 @@ class DataRepository {
     try {
       response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.approvePermission, data: data);
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return response;
   }
 
@@ -196,14 +132,7 @@ class DataRepository {
       final response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.changePermissionPhoto, data: data);
       result = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return result;
   }
 
@@ -213,14 +142,7 @@ class DataRepository {
       final response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.outstation, data: data);
       result = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return result;
   }
 
@@ -229,14 +151,7 @@ class DataRepository {
     try {
       data = await apiService.getEndpointData(
           endpoint: Endpoint.outstation, query: {'date': date.toString()});
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return data;
   }
 
@@ -246,14 +161,7 @@ class DataRepository {
       data = await apiService.getEndpointData(
           endpoint: Endpoint.employeeOutstation,
           query: {'date': date.toString()});
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return data;
   }
 
@@ -262,14 +170,7 @@ class DataRepository {
     try {
       response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.approveOutstation, data: data);
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return response;
   }
 
@@ -280,14 +181,7 @@ class DataRepository {
       final response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.changeOutstationPhoto, data: data);
       result = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return result;
   }
 
@@ -295,14 +189,7 @@ class DataRepository {
     Map<String, dynamic> data;
     try {
       data = await apiService.getEndpointData(endpoint: Endpoint.notifications);
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return data;
   }
 
@@ -315,14 +202,7 @@ class DataRepository {
             'year': date.year.toString(),
             'month': date.month.toString()
           });
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return data;
   }
 
@@ -331,14 +211,7 @@ class DataRepository {
     try {
       response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.notifications, data: data);
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return response;
   }
 
@@ -347,14 +220,7 @@ class DataRepository {
     try {
       data = await apiService.getEndpointData(
           endpoint: Endpoint.readNotifications);
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return data;
   }
 
@@ -363,14 +229,7 @@ class DataRepository {
     try {
       data = await apiService.getEndpointData(
           endpoint: Endpoint.deleteNotifications);
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return data;
   }
 
@@ -381,14 +240,7 @@ class DataRepository {
       final response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.sendNotifications, data: data);
       result = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return result;
   }
 
@@ -397,14 +249,7 @@ class DataRepository {
     try {
       response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.presence, data: data);
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return response;
   }
 
@@ -413,14 +258,7 @@ class DataRepository {
     try {
       data = await apiService.getEndpointData(
           endpoint: Endpoint.paidLeave, query: {'date': date.toString()});
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return data;
   }
 
@@ -430,14 +268,7 @@ class DataRepository {
       data = await apiService.getEndpointData(
           endpoint: Endpoint.employeePaidLeave,
           query: {'date': date.toString()});
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return data;
   }
 
@@ -448,14 +279,7 @@ class DataRepository {
       final response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.changePaidLeavePhoto, data: data);
       result = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return result;
   }
 
@@ -464,14 +288,7 @@ class DataRepository {
     try {
       response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.approvePaidLeave, data: data);
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return response;
   }
 
@@ -481,14 +298,7 @@ class DataRepository {
       final response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.paidLeave, data: data);
       result = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return result;
   }
 
@@ -499,14 +309,7 @@ class DataRepository {
           await apiService.getEndpointData(endpoint: Endpoint.presence, query: {
         'date': date.toString(),
       });
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return data;
   }
 
@@ -515,14 +318,7 @@ class DataRepository {
     try {
       response = await apiService.postEndpointWithToken(
           endpoint: Endpoint.cancelAttendance, data: data);
-    } catch (e) {
-      showErrorDialog({
-        'message': 'Kesalahan',
-        'errors': {
-          'exception': ['Terjadi kesalahan!']
-        }
-      });
-    }
+    } catch (e) {}
     return response;
   }
 }

@@ -33,7 +33,8 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
         pd.hide();
         showAlertDialog('success', "Sukses", _res['message'].toString(),
             dismissible: false);
-        Timer(const Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+        Timer(
+            const Duration(seconds: 5), () => Get.off(() => BottomNavScreen()));
       } else {
         if (pd.isShowing()) pd.hide();
         showErrorDialog(_res);
@@ -122,12 +123,14 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  RaisedButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6)),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6)),
+                      primary: Colors.blueAccent,
+                      onPrimary: Colors.white,
+                    ),
                     onPressed: _sendNotification,
-                    color: Colors.blueAccent,
-                    textColor: Colors.white,
                     child: const Text('Kirim'),
                   ),
                 ],

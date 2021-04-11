@@ -41,7 +41,8 @@ class ApiService {
   Future<http.Response> postEndpointWithoutToken(
       {@required Endpoint endpoint, Map<String, dynamic> data}) async {
     final url = api.endpointUri(endpoint);
-    final response = await http.post(url, body: data);
+    final Uri uri = Uri.parse(url);
+    final response = await http.post(uri, body: data);
     return response;
   }
 
@@ -49,8 +50,9 @@ class ApiService {
       {@required Endpoint endpoint, Map<String, dynamic> data}) async {
     await _getToken();
     final url = api.endpointUri(endpoint);
+    final Uri uri = Uri.parse(url);
     final response =
-        http.post(url, body: jsonEncode(data), headers: _setHeaders());
+        http.post(uri, body: jsonEncode(data), headers: _setHeaders());
     return response;
   }
 
