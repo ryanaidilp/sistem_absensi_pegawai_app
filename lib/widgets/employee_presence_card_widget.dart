@@ -55,10 +55,10 @@ class EmployeePresenceCardWidget extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        Get.to(ImageDetailScreen(
-          tag: heroTag,
-          imageUrl: photo,
-        ));
+        Get.to(() => ImageDetailScreen(
+              tag: heroTag,
+              imageUrl: photo,
+            ));
       },
       child: Hero(
         tag: heroTag,
