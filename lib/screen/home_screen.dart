@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.grey[300],
             child: InkWell(
               onTap: () {
-                Get.to(EmployeeListScreen(employees: _users));
+                Get.to(() => EmployeeListScreen(employees: _users));
               },
               splashColor: Colors.white,
               borderRadius: BorderRadius.circular(100),
@@ -472,7 +472,7 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Colors.green[300],
           child: InkWell(
             onTap: () {
-              Get.to(PresenceScreen()).then((value) => _getUser());
+              Get.to(() => PresenceScreen()).then((value) => _getUser());
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -533,7 +533,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return CountdownTimer(
       controller: _countdownController,
-      emptyWidget: const AutoSizeText(
+      endWidget: const AutoSizeText(
         'Semua absen hari ini telah selesai',
         maxFontSize: 12.0,
         minFontSize: 10.0,
@@ -551,8 +551,7 @@ class _HomeScreenState extends State<HomeScreen> {
       double fontSize = 14;
       if (status == 'Terlambat') {
         final duration = calculateLateTime(
-            user.nextPresence.startTime,
-            user.nextPresence.attendTime);
+            user.nextPresence.startTime, user.nextPresence.attendTime);
         status += ' $duration';
         fontSize = 12;
       }
@@ -777,7 +776,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    Get.to(NotificationListScreen())
+                    Get.to(() => NotificationListScreen())
                         .then((value) => _getUser());
                   },
                 ),
