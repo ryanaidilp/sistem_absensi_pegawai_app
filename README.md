@@ -22,6 +22,7 @@ Permasalahan timbul saat sebagian besar pegawai tidak jujur dalam mengisi absen 
     BASE_URL=BASE URL ONLINE
     LOCAL_URL=LOCAL_URL #Jika kamu ingin menyambungkian ke server di localhost
     ONE_SIGNAL_APP_ID=APP ID UNTUK ONE SIGNAL
+    ADMIN_PHONE_NUMBER=Nomor handphone admin server
 ```
 
 Isikan variabel sesuai dengan konfigurasi anda.
