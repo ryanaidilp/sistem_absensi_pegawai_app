@@ -157,6 +157,7 @@ class StatisticCard extends StatelessWidget {
           'Diluar Tanggungan',
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
             children: <Widget>[
               sizedBoxW6,
               Text(
@@ -185,6 +186,7 @@ class StatisticCard extends StatelessWidget {
                 'Tahunan',
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
                   children: <Widget>[
                     Text(
                       report.yearly.annualLeave[reportDayField].toString(),
@@ -208,6 +210,7 @@ class StatisticCard extends StatelessWidget {
                 'Alasan Penting',
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
                   children: <Widget>[
                     Text(
                       report.yearly.importantReasonLeave[reportDayField]
@@ -238,6 +241,7 @@ class StatisticCard extends StatelessWidget {
                 'Sakit',
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
                   children: <Widget>[
                     Text(
                       report.yearly.sickLeave[reportDayField].toString(),
@@ -261,6 +265,7 @@ class StatisticCard extends StatelessWidget {
                 'Bersalin',
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
                   children: <Widget>[
                     Text(
                       report.yearly.maternityLeave[reportDayField].toString(),
@@ -328,6 +333,7 @@ class StatisticCard extends StatelessWidget {
                 'Alpa',
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
                   children: <Widget>[
                     sizedBoxW6,
                     Text(
@@ -357,6 +363,7 @@ class StatisticCard extends StatelessWidget {
                       'Izin',
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
                         children: <Widget>[
                           Text(
                             report.yearly.absentPermission[reportDayField]
@@ -381,6 +388,7 @@ class StatisticCard extends StatelessWidget {
                       'Dinas Luar',
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
                         children: <Widget>[
                           Text(
                             report.yearly.outstation[reportDayField].toString(),
@@ -414,47 +422,47 @@ class StatisticCard extends StatelessWidget {
                     ),
                   ),
                   sizedBoxH8,
-                  IntrinsicHeight(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          children: <Widget>[
-                            Text(
-                              report.monthly.notMorningParadeCount.toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 32.0,
-                              ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: <Widget>[
+                          Text(
+                            report.monthly.notMorningParadeCount.toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32.0,
                             ),
-                            const Text(
-                              ' kali/bulan',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                          const Text(
+                            ' kali/bulan',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 40.0, child: verticalDiv),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: <Widget>[
+                          Text(
+                            report.yearly.notMorningParadeCount.toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32.0,
                             ),
-                          ],
-                        ),
-                        verticalDiv,
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          children: <Widget>[
-                            Text(
-                              report.yearly.notMorningParadeCount.toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 32.0,
-                              ),
-                            ),
-                            const Text(
-                              ' kali/tahun',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 12.0),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                          const Text(
+                            ' kali/tahun',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                    ],
                   )
                 ],
               ),
@@ -472,47 +480,47 @@ class StatisticCard extends StatelessWidget {
                     ),
                   ),
                   sizedBoxH8,
-                  IntrinsicHeight(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          children: <Widget>[
-                            Text(
-                              report.monthly.lateCount.toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 32.0,
-                              ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: <Widget>[
+                          Text(
+                            report.monthly.lateCount.toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32.0,
                             ),
-                            const Text(
-                              ' kali/bulan',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                          const Text(
+                            ' kali/bulan',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 40.0, child: verticalDiv),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: <Widget>[
+                          Text(
+                            report.yearly.lateCount.toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32.0,
                             ),
-                          ],
-                        ),
-                        verticalDiv,
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          children: <Widget>[
-                            Text(
-                              report.yearly.lateCount.toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 32.0,
-                              ),
-                            ),
-                            const Text(
-                              ' kali/tahun',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 12.0),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                          const Text(
+                            ' kali/tahun',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                    ],
                   )
                 ],
               ),
@@ -530,47 +538,47 @@ class StatisticCard extends StatelessWidget {
                     ),
                   ),
                   sizedBoxH8,
-                  IntrinsicHeight(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          children: <Widget>[
-                            Text(
-                              report.monthly.earlyLunchBreakCount.toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 32.0,
-                              ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: <Widget>[
+                          Text(
+                            report.monthly.earlyLunchBreakCount.toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32.0,
                             ),
-                            const Text(
-                              ' kali/bulan',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                          const Text(
+                            ' kali/bulan',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 40.0, child: verticalDiv),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: <Widget>[
+                          Text(
+                            report.yearly.earlyLunchBreakCount.toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32.0,
                             ),
-                          ],
-                        ),
-                        verticalDiv,
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          children: <Widget>[
-                            Text(
-                              report.yearly.earlyLunchBreakCount.toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 32.0,
-                              ),
-                            ),
-                            const Text(
-                              ' kali/tahun',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 12.0),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                          const Text(
+                            ' kali/tahun',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                    ],
                   )
                 ],
               ),
@@ -588,49 +596,49 @@ class StatisticCard extends StatelessWidget {
                     ),
                   ),
                   sizedBoxH8,
-                  IntrinsicHeight(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          children: <Widget>[
-                            Text(
-                              report.monthly.notComeAfterLunchBreakCount
-                                  .toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 32.0,
-                              ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: <Widget>[
+                          Text(
+                            report.monthly.notComeAfterLunchBreakCount
+                                .toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32.0,
                             ),
-                            const Text(
-                              ' kali/bulan',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                          const Text(
+                            ' kali/bulan',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 40.0, child: verticalDiv),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: <Widget>[
+                          Text(
+                            report.yearly.notComeAfterLunchBreakCount
+                                .toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32.0,
                             ),
-                          ],
-                        ),
-                        verticalDiv,
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          children: <Widget>[
-                            Text(
-                              report.yearly.notComeAfterLunchBreakCount
-                                  .toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 32.0,
-                              ),
-                            ),
-                            const Text(
-                              ' kali/tahun',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 12.0),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                          const Text(
+                            ' kali/tahun',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                    ],
                   )
                 ],
               ),
@@ -648,47 +656,47 @@ class StatisticCard extends StatelessWidget {
                     ),
                   ),
                   sizedBoxH8,
-                  IntrinsicHeight(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          children: <Widget>[
-                            Text(
-                              report.monthly.leaveEarlyCount.toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 32.0,
-                              ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: <Widget>[
+                          Text(
+                            report.monthly.leaveEarlyCount.toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32.0,
                             ),
-                            const Text(
-                              ' kali/bulan',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                          const Text(
+                            ' kali/bulan',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 40.0, child: verticalDiv),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: <Widget>[
+                          Text(
+                            report.yearly.leaveEarlyCount.toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32.0,
                             ),
-                          ],
-                        ),
-                        verticalDiv,
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          children: <Widget>[
-                            Text(
-                              report.yearly.leaveEarlyCount.toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 32.0,
-                              ),
-                            ),
-                            const Text(
-                              ' kali/tahun',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 12.0),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                          const Text(
+                            ' kali/tahun',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          ),
+                        ],
+                      ),
+                    ],
                   )
                 ],
               ),
