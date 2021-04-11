@@ -200,14 +200,14 @@ class EmployeeProposalWidget extends StatelessWidget {
                 InkWell(
                   onLongPress: () {
                     if (updateWidget != null) {
-                      Get.to(updateWidget);
+                      Get.to(() => updateWidget);
                     }
                   },
                   onTap: () {
-                    Get.to(ImageDetailScreen(
-                      imageUrl: photo,
-                      tag: heroTag,
-                    ));
+                    Get.to(() => ImageDetailScreen(
+                          imageUrl: photo,
+                          tag: heroTag,
+                        ));
                   },
                   child: Hero(
                     tag: heroTag,
