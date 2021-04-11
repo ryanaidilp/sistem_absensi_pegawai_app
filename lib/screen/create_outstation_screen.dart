@@ -29,8 +29,6 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
   File _tmpFile;
   DateTime _dueDate = DateTime.now();
   DateTime _startDate = DateTime.now();
-  final CalendarController _startDateController = CalendarController();
-  final CalendarController _dueDateController = CalendarController();
   bool _isDateChange = false;
 
   final TextEditingController _titleController = TextEditingController();
@@ -70,7 +68,8 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
           pd.hide();
           showAlertDialog('success', "Sukses", _res['message'].toString(),
               dismissible: false);
-          Timer(const Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+          Timer(const Duration(seconds: 5),
+              () => Get.off(() => BottomNavScreen()));
         } else {
           if (pd.isShowing()) pd.hide();
           showErrorDialog(_res);
@@ -101,10 +100,10 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
     final Uint8List bytes = base64Decode(_base64Image);
     return InkWell(
       onTap: () {
-        Get.to(ImageDetailScreen(
-          bytes: bytes,
-          tag: 'image',
-        ));
+        Get.to(() => ImageDetailScreen(
+              bytes: bytes,
+              tag: 'image',
+            ));
       },
       child: Hero(
         tag: 'image',
@@ -124,37 +123,43 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
   Future<void> _selectDueDate() async {
     Get.defaultDialog(
         title: 'Pilih Tanggal Selesai',
-        content: Flexible(
-          child: SizedBox(
-            width: Get.width * 0.9,
-            child: TableCalendar(
-              availableCalendarFormats: const <CalendarFormat, String>{
-                CalendarFormat.month: '1 minggu',
-                CalendarFormat.twoWeeks: '1 bulan',
-                CalendarFormat.week: '2 minggu'
-              },
-              availableGestures: AvailableGestures.horizontalSwipe,
-              headerStyle: const HeaderStyle(
-                  formatButtonTextStyle: TextStyle(fontSize: 12.0)),
-              calendarController: _dueDateController,
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              startDay: DateTime.now().subtract(const Duration(days: 7)),
-              endDay: DateTime.now().add(const Duration(days: 7)),
-              initialSelectedDay: _dueDate,
-              locale: 'in_ID',
-              onDaySelected: (day, events, holidays) {
-                Get.back();
-                setState(() {
-                  if (!_isDateChange) {
-                    _isDateChange = true;
-                  }
-                  _dueDate = day;
-                  if (_dueDate.isBefore(_startDate)) {
-                    _startDate = day;
-                  }
-                });
-              },
+        content: SizedBox(
+          width: Get.width * 0.9,
+          height: Get.height * 0.4,
+          child: TableCalendar(
+            availableCalendarFormats: const <CalendarFormat, String>{
+              CalendarFormat.month: '1 bulan',
+            },
+            calendarStyle: const CalendarStyle(
+              weekendTextStyle: TextStyle(color: Colors.red),
             ),
+            calendarBuilders: const CalendarBuilders(
+              dowBuilder: dowBuilder,
+            ),
+            calendarFormat: CalendarFormat.month,
+            availableGestures: AvailableGestures.horizontalSwipe,
+            shouldFillViewport: true,
+            headerStyle: const HeaderStyle(titleCentered: true),
+            startingDayOfWeek: StartingDayOfWeek.monday,
+            firstDay: DateTime.now().subtract(const Duration(days: 7)),
+            focusedDay: _dueDate,
+            selectedDayPredicate: (day) {
+              return isSameDay(_dueDate, day);
+            },
+            lastDay: DateTime(DateTime.now().year + 5),
+            locale: 'in_ID',
+            onDaySelected: (day, focusedDay) {
+              Get.back();
+              setState(() {
+                if (!_isDateChange) {
+                  _isDateChange = true;
+                }
+                _dueDate = day;
+                if (_dueDate.isBefore(_startDate)) {
+                  _startDate = day;
+                }
+              });
+            },
           ),
         ));
   }
@@ -162,36 +167,43 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
   Future<void> _selectStartDate() async {
     Get.defaultDialog(
         title: 'Pilih Tanggal Mulai',
-        content: Flexible(
-          child: SizedBox(
-            width: Get.width * 0.9,
-            child: TableCalendar(
-              availableCalendarFormats: const <CalendarFormat, String>{
-                CalendarFormat.month: '1 minggu',
-                CalendarFormat.twoWeeks: '1 bulan',
-                CalendarFormat.week: '2 minggu'
-              },
-              availableGestures: AvailableGestures.horizontalSwipe,
-              headerStyle: const HeaderStyle(
-                  formatButtonTextStyle: TextStyle(fontSize: 12.0)),
-              calendarController: _startDateController,
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              startDay: DateTime.now().subtract(const Duration(days: 7)),
-              initialSelectedDay: _startDate,
-              locale: 'in_ID',
-              onDaySelected: (day, events, holidays) {
-                Get.back();
-                setState(() {
-                  if (!_isDateChange) {
-                    _isDateChange = true;
-                  }
-                  _startDate = day;
-                  if (_startDate.isAfter(_dueDate)) {
-                    _dueDate = day;
-                  }
-                });
-              },
+        content: SizedBox(
+          width: Get.width * 0.9,
+          height: Get.height * 0.4,
+          child: TableCalendar(
+            availableCalendarFormats: const <CalendarFormat, String>{
+              CalendarFormat.month: '1 bulan',
+            },
+            calendarStyle: const CalendarStyle(
+              weekendTextStyle: TextStyle(color: Colors.red),
             ),
+            calendarBuilders: const CalendarBuilders(
+              dowBuilder: dowBuilder,
+            ),
+            shouldFillViewport: true,
+            calendarFormat: CalendarFormat.month,
+            availableGestures: AvailableGestures.horizontalSwipe,
+            headerStyle: const HeaderStyle(titleCentered: true),
+            startingDayOfWeek: StartingDayOfWeek.monday,
+            firstDay: DateTime.now().subtract(const Duration(days: 7)),
+            focusedDay: _startDate,
+            lastDay: DateTime(DateTime.now().year + 5),
+            locale: 'in_ID',
+            selectedDayPredicate: (day) {
+              return isSameDay(_startDate, day);
+            },
+            onDaySelected: (day, focusedDay) {
+              Get.back();
+              setState(() {
+                if (!_isDateChange) {
+                  _isDateChange = true;
+                }
+                _startDate = day;
+                if (_startDate.isAfter(_dueDate)) {
+                  _dueDate = day;
+                }
+              });
+            },
           ),
         ));
   }
@@ -200,8 +212,6 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
-    _startDateController.dispose();
-    _dueDateController.dispose();
     super.dispose();
   }
 
@@ -369,21 +379,25 @@ class _CreateOutstationScreenState extends State<CreateOutstationScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  RaisedButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6)),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6)),
+                      primary: Colors.blueAccent,
+                      onPrimary: Colors.white,
+                    ),
                     onPressed: _openCamera,
-                    color: Colors.blueAccent,
-                    textColor: Colors.white,
                     child:
                         Text(_base64Image == null ? 'Ambil Foto' : 'Ubah Foto'),
                   ),
-                  RaisedButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6)),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6)),
+                      primary: Colors.green,
+                      onPrimary: Colors.white,
+                    ),
                     onPressed: _uploadData,
-                    color: Colors.green,
-                    textColor: Colors.white,
                     child: const Text('Kirim'),
                   ),
                 ],

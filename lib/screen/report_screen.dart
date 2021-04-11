@@ -4,7 +4,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
+import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -34,7 +34,6 @@ class _ReportScreenState extends State<ReportScreen> {
   DataRepository _dataRepo;
   DateTime _year;
   DateTime _selectedDate = DateTime.now();
-  CalendarController _calendarController;
   final Map<DateTime, List<dynamic>> _events = {};
   List<DailyData> _selectedEvents;
   List<Holiday> _selectedHolidays;
@@ -73,9 +72,7 @@ class _ReportScreenState extends State<ReportScreen> {
         } else {
           _selectedEvents = [];
         }
-        _selectedHolidays = _holidays.entries
-            .firstWhere((element) => element.key.isSameDate(DateTime.now()))
-            .value as List<Holiday>;
+        // _selectedHolidays = _getHolidayForDay(DateTime.now()) as List<Holiday>;
       });
     } catch (e) {
       //
@@ -86,20 +83,20 @@ class _ReportScreenState extends State<ReportScreen> {
     }
   }
 
-  void _onDaySelected(DateTime day, List events, List holidays) {
+  void _onDaySelected(DateTime day, DateTime focusedDay) {
+    final List<dynamic> _eventsData = _getEventsForDay(day);
+    final List<dynamic> _holidaysData = _getHolidayForDay(day);
     setState(() {
-      if (events is List<DailyData>) {
-        _selectedEvents = events;
+      if (_eventsData is List<DailyData>) {
+        _selectedEvents = _eventsData;
       } else {
         _selectedEvents = [];
       }
-
-      if (holidays is List<Holiday>) {
-        _selectedHolidays = holidays;
+      if (_holidaysData is List<Holiday>) {
+        _selectedHolidays = _holidaysData;
       } else {
         _selectedHolidays = [];
       }
-
       _selectedDate = day;
     });
   }
@@ -145,8 +142,10 @@ class _ReportScreenState extends State<ReportScreen> {
   Widget _buildSalaryCalculator() {
     final String date = DateFormat.yMMMM('id_ID').format(_year);
     String label = 'Kalkulator Gaji : $date';
+    String _prefix = 'Gaji';
     if (_user?.status == 'PNS') {
       label = 'Kalkulator Tunjangan : $date';
+      _prefix = 'Tunjangan';
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,15 +167,15 @@ class _ReportScreenState extends State<ReportScreen> {
                 TextFormField(
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   controller: _salaryController,
-                  decoration: const InputDecoration(
-                    labelStyle: TextStyle(color: Colors.blueAccent),
-                    border: UnderlineInputBorder(
+                  decoration: InputDecoration(
+                    labelStyle: const TextStyle(color: Colors.blueAccent),
+                    border: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.blueAccent)),
-                    prefixIcon: Icon(
+                    prefixIcon: const Icon(
                       Icons.money_rounded,
                       color: Colors.blueAccent,
                     ),
-                    labelText: 'Jumlah Gaji Bulanan',
+                    labelText: 'Jumlah $_prefix Bulanan',
                   ),
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
@@ -272,11 +271,13 @@ class _ReportScreenState extends State<ReportScreen> {
             ),
             const Text('Gagal memuat data'),
             const SizedBox(height: 20.0),
-            RaisedButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6)),
-              color: Colors.blueAccent,
-              textColor: Colors.white,
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6.0),
+                  ),
+                  primary: Colors.blueAccent,
+                  onPrimary: Colors.white),
               onPressed: _fetchReportData,
               child: const Text('Coba Lagi'),
             )
@@ -364,40 +365,72 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Widget _buildTableCalendar() {
-    return Card(
-      elevation: 2.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-      child: TableCalendar(
-        startingDayOfWeek: StartingDayOfWeek.monday,
-        calendarController: _calendarController,
-        availableCalendarFormats: const <CalendarFormat, String>{
-          CalendarFormat.month: '1 minggu',
-          CalendarFormat.twoWeeks: '1 bulan',
-          CalendarFormat.week: '2 minggu'
-        },
-        startDay: DateTime(2021),
-        onDaySelected: _onDaySelected,
-        availableGestures: AvailableGestures.horizontalSwipe,
-        builders: CalendarBuilders(
-          markersBuilder: (context, date, events, holidays) {
-            final children = <Widget>[];
+    return Center(
+      child: Card(
+        elevation: 2.0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        child: SizedBox(
+          child: TableCalendar(
+            startingDayOfWeek: StartingDayOfWeek.monday,
+            availableCalendarFormats: const <CalendarFormat, String>{
+              CalendarFormat.month: '1 bulan',
+            },
+            calendarFormat: CalendarFormat.month,
+            firstDay: DateTime(2021),
+            lastDay: DateTime(DateTime.now().year + 5),
+            focusedDay: _selectedDate,
+            selectedDayPredicate: (day) {
+              return isSameDay(_selectedDate, day);
+            },
+            headerStyle: const HeaderStyle(titleCentered: true),
+            onDaySelected: _onDaySelected,
+            availableGestures: AvailableGestures.horizontalSwipe,
+            calendarBuilders: CalendarBuilders(
+              defaultBuilder: (_, date, focusedDay) {
+                return calendarBuilder(date,
+                    isNotEmpty: _getHolidayForDay(date).isNotEmpty);
+              },
+              dowBuilder: dowBuilder,
+              markerBuilder: (context, date, events) {
+                if (events.isNotEmpty) {
+                  return Positioned(
+                    bottom: 1,
+                    child: _buildEventsMarker(date, events),
+                  );
+                }
 
-            if (events.isNotEmpty) {
-              children.add(
-                Positioned(
-                  bottom: 1,
-                  child: _buildEventsMarker(date, events),
-                ),
-              );
-            }
-
-            return children;
-          },
+                return const SizedBox();
+              },
+            ),
+            eventLoader: _getEventsForDay,
+          ),
         ),
-        events: _events,
-        holidays: _holidays,
       ),
     );
+  }
+
+  List<dynamic> _getEventsForDay(DateTime day) {
+    List<dynamic> _event;
+    try {
+      _event = _events.entries
+          .singleWhere((element) => isSameDay(day, element.key))
+          .value;
+    } catch (e) {
+      printError(info: e.toString());
+    }
+    return _event ?? [];
+  }
+
+  List<dynamic> _getHolidayForDay(DateTime day) {
+    List<dynamic> _holiday;
+    try {
+      _holiday = _holidays.entries
+          .firstWhere((element) => isSameDay(day, element.key))
+          .value;
+    } catch (e) {
+      printError(info: e.toString());
+    }
+    return _holiday ?? [];
   }
 
   Widget _buildEventsMarker(DateTime date, List events) {
@@ -407,11 +440,11 @@ class _ReportScreenState extends State<ReportScreen> {
       height: 16.0,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6),
-        color: _calendarController.isSelected(date)
+        color: date.isSameDate(_selectedDate)
             ? _checkAttendancePercentageColor(
                 _countAttendancePercentage(events as List<DailyData>))
-            : _calendarController.isToday(date)
-                ? _calendarController.isSelected(date)
+            : date.isToday()
+                ? date.isSameDate(_selectedDate)
                     ? _checkAttendancePercentageColor(
                         _countAttendancePercentage(events as List<DailyData>))
                     : Colors.white
@@ -422,7 +455,7 @@ class _ReportScreenState extends State<ReportScreen> {
           formatPercentage(_countAttendancePercentage(events as List<DailyData>)
               .toPrecision(0)),
           style: TextStyle(
-            color: _calendarController.isSelected(date)
+            color: isSameDay(_selectedDate, date)
                 ? Colors.white
                 : _checkAttendancePercentageColor(
                     _countAttendancePercentage(events as List<DailyData>)),
@@ -449,11 +482,12 @@ class _ReportScreenState extends State<ReportScreen> {
             ),
             const Text('Gagal memuat data'),
             const SizedBox(height: 20.0),
-            RaisedButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6)),
-              color: Colors.blueAccent,
-              textColor: Colors.white,
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6)),
+                  primary: Colors.blueAccent,
+                  onPrimary: Colors.white),
               onPressed: _fetchReportData,
               child: const Text('Coba Lagi'),
             )
@@ -525,18 +559,9 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   @override
-  void dispose() {
-    if (mounted) {
-      _calendarController.dispose();
-    }
-    super.dispose();
-  }
-
-  @override
   void initState() {
     _year = DateTime.now().year == 2021 ? DateTime.now() : DateTime.utc(2021);
     _dataRepo = Provider.of<DataRepository>(context, listen: false);
-    _calendarController = CalendarController();
     super.initState();
     _loadUser();
     _fetchReportData();
