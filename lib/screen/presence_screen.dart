@@ -62,7 +62,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
 
     controller.scannedDataStream.listen((scanData) {
       setState(() {
-        _code = scanData;
+        _code = scanData.code;
       });
       if (_address != null || _address.isNotEmpty) {
         this.controller?.pauseCamera();
@@ -95,7 +95,8 @@ class _PresenceScreenState extends State<PresenceScreen> {
         pd.hide();
         showAlertDialog("success", "Sukses", _res['message'].toString(),
             dismissible: false);
-        Timer(const Duration(seconds: 5), () => Get.off(BottomNavScreen()));
+        Timer(
+            const Duration(seconds: 5), () => Get.off(() => BottomNavScreen()));
       } else {
         controller?.resumeCamera();
         if (pd.isShowing()) pd.hide();
@@ -119,7 +120,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
           AndroidIntent(action: 'android.settings.LOCATION_SOURCE_SETTINGS');
       intent.launch();
     }
-    final Position position = await Geolocator().getCurrentPosition(
+    final Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.bestForNavigation);
     final address = await placemarkFromCoordinates(
         position.latitude, position.longitude,
@@ -146,10 +147,10 @@ class _PresenceScreenState extends State<PresenceScreen> {
     final Uint8List bytes = base64Decode(_base64Image);
     return InkWell(
       onTap: () {
-        Get.to(ImageDetailScreen(
-          bytes: bytes,
-          tag: 'image',
-        ));
+        Get.to(() => ImageDetailScreen(
+              bytes: bytes,
+              tag: 'image',
+            ));
       },
       child: Hero(
         tag: 'image',
@@ -281,12 +282,14 @@ class _PresenceScreenState extends State<PresenceScreen> {
               ),
               sizedBoxH20,
               _showImage(),
-              RaisedButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6)),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6)),
+                  primary: Colors.blueAccent,
+                  onPrimary: Colors.white,
+                ),
                 onPressed: _openCamera,
-                color: Colors.blueAccent,
-                textColor: Colors.white,
                 child: Text(_base64Image == null ? 'Ambil Foto' : 'Ubah Foto'),
               ),
             ],
