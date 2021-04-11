@@ -96,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkGps() async {
-    if (!(await Geolocator().isLocationServiceEnabled())) {
+    if (!(await Geolocator.isLocationServiceEnabled())) {
       Get.defaultDialog(
         title: 'Perhatian',
         content: const Center(
@@ -106,7 +106,7 @@ class _SplashScreenState extends State<SplashScreen> {
           ),
         ),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
             onPressed: () {
               const AndroidIntent intent = AndroidIntent(
                   action: 'android.settings.LOCATION_SOURCE_SETTINGS');
@@ -118,7 +118,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   color: Colors.blueAccent,
                 )),
           ),
-          FlatButton(
+          TextButton(
             onPressed: () {
               Get.back();
             },
