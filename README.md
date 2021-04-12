@@ -14,6 +14,10 @@ Aplikasi ini dibangun untuk mengatasi permasalahan pencatatan absensi pegawai di
 
 Permasalahan timbul saat sebagian besar pegawai tidak jujur dalam mengisi absen tersebut, ada yang titip ke teman untuk diparaf namanya, ada yang langsung isi absen sampai beberapa hari ke depan, ada yang mengisi absen diluar waktunya, dsb. Dengan adanya sistem ini, diharapkan bisa membantu mengatasi permasalahan-permasalahan yang telah disebutkan.
 
+## License
+
+**SiAP** is open-sourced software licensed under the [GPL v2.0](https://www.gnu.org/licenses/gpl-2.0.html).
+
 ## Konfigurasi
 
 *Clone* repository back-end aplikasinya [disini](https://github.com/ryanaidilp/sistem_absensi_pegawai). Buat file **.env** pada root folder aplikasi ini lalu tambahkan variabel berikut
