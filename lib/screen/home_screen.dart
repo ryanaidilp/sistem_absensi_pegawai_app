@@ -14,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:spo_balaesang/models/employee.dart';
@@ -39,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Employee> _users;
   bool isLoading = false;
   double _percentage = 0;
+  final RefreshController _refreshController = RefreshController();
 
   @override
   void setState(void Function() fn) {
@@ -208,14 +210,16 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       });
     } finally {
-      setState(() {
-        isLoading = false;
-        _countdownController = CountdownTimerController(
-            onEnd: () {
-              _getUser();
-            },
-            endTime: checkTime());
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          _countdownController = CountdownTimerController(
+              onEnd: () {
+                _getUser();
+              },
+              endTime: checkTime());
+        });
+      }
     }
   }
 
@@ -761,63 +765,63 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[100],
-        appBar: AppBar(
-          backgroundColor: Colors.blueAccent,
-          elevation: 0.0,
-          actions: <Widget>[
-            Stack(
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(
-                    (user != null && user.unreadNotification > 0)
-                        ? Icons.notifications_active_rounded
-                        : Icons.notifications_none_rounded,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    Get.to(() => NotificationListScreen())
-                        .then((value) => _getUser());
-                  },
+      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        backgroundColor: Colors.blueAccent,
+        elevation: 0.0,
+        actions: <Widget>[
+          Stack(
+            children: <Widget>[
+              IconButton(
+                icon: Icon(
+                  (user != null && user.unreadNotification > 0)
+                      ? Icons.notifications_active_rounded
+                      : Icons.notifications_none_rounded,
+                  color: Colors.white,
                 ),
-                _buildUnreadNotificationCount(),
-              ],
-            ),
-          ],
-          leadingWidth: Get.width * 0.25,
-          leading: Image.asset(
-            'assets/logo/logo.png',
+                onPressed: () {
+                  Get.to(() => NotificationListScreen())
+                      .then((value) => _getUser());
+                },
+              ),
+              _buildUnreadNotificationCount(),
+            ],
           ),
+        ],
+        leadingWidth: Get.width * 0.25,
+        leading: Image.asset(
+          'assets/logo/logo.png',
         ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.blueAccent,
-          onPressed: () async {
-            final ProgressDialog pd = ProgressDialog(context);
-            final showing = await pd.show();
-            try {
-              await Future.wait([_getUser(), _getAllEmployee(pd: pd)]);
-            } catch (e) {
-              showErrorDialog({
-                'message': 'Kesalahan',
-                'errors': {
-                  'exception': ['Terjadi kesalahan!']
-                }
-              });
-            } finally {
-              if (showing) {
-                pd.hide();
+      ),
+      body: SmartRefresher(
+        header: const MaterialClassicHeader(),
+        controller: _refreshController,
+        onRefresh: () async {
+          final ProgressDialog pd = ProgressDialog(context);
+          final showing = await pd.show();
+          try {
+            await Future.wait([_getUser(), _getAllEmployee(pd: pd)]);
+          } catch (e) {
+            _refreshController.refreshFailed();
+            showErrorDialog({
+              'message': 'Kesalahan',
+              'errors': {
+                'exception': ['Terjadi kesalahan!']
               }
+            });
+          } finally {
+            _refreshController.refreshCompleted();
+            if (showing) {
+              pd.hide();
             }
-          },
-          child: const Icon(
-            Icons.refresh,
-            color: Colors.white,
-          ),
-        ),
-        body: CustomScrollView(
+          }
+        },
+        child: CustomScrollView(
           physics: const ClampingScrollPhysics(),
           slivers: <Widget>[_buildHeader(), _buildNextPresence()],
-        ));
+        ),
+      ),
+    );
   }
 
   SliverToBoxAdapter _buildHeader() {
