@@ -169,9 +169,12 @@ class _PresenceScreenState extends State<PresenceScreen> {
 
   Widget _buildQrScanner() {
     if (_address == null || _base64Image == null) {
-      return const Text(
-        'Scanner akan aktif setelah lokasi berhasil dideteksi dan anda telah mengambil foto',
-        style: TextStyle(color: Colors.grey),
+      return const ImagePlaceholderWidget(
+        label: 'Scan Kode Absen',
+        child: Icon(
+          Icons.qr_code_rounded,
+          color: Colors.grey,
+        ),
       );
     }
     return SizedBox(
@@ -193,7 +196,10 @@ class _PresenceScreenState extends State<PresenceScreen> {
 
   Widget _buildPlaceholderQR() {
     if (_address == null || _base64Image == null) {
-      return const SizedBox();
+      return const Text(
+        'Scanner akan aktif setelah lokasi berhasil dideteksi dan anda telah mengambil foto',
+        style: TextStyle(color: Colors.grey),
+      );
     }
     return const Text(
       'Arahkan kamera ke layar komputer',
@@ -239,6 +245,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
                 ],
               ),
               _buildPlaceholderQR(),
+              sizedBoxH10,
               _buildQrScanner(),
               sizedBoxH20,
               Row(
@@ -282,15 +289,24 @@ class _PresenceScreenState extends State<PresenceScreen> {
               ),
               sizedBoxH20,
               _showImage(),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6)),
-                  primary: Colors.blueAccent,
-                  onPrimary: Colors.white,
+              sizedBoxH10,
+              Align(
+                alignment: Alignment.bottomRight,
+                child: SizedBox(
+                  width: Get.width,
+                  height: 40,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6)),
+                      primary: Colors.blueAccent,
+                      onPrimary: Colors.white,
+                    ),
+                    onPressed: _openCamera,
+                    child:
+                        Text(_base64Image == null ? 'Ambil Foto' : 'Ubah Foto'),
+                  ),
                 ),
-                onPressed: _openCamera,
-                child: Text(_base64Image == null ? 'Ambil Foto' : 'Ubah Foto'),
               ),
             ],
           ),
