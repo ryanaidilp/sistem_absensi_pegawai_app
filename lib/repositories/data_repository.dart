@@ -26,7 +26,7 @@ class DataRepository {
         prefs.remove(prefsEmployeeKey);
         prefs.reload();
       }
-      prefs.setString(prefsEmployeeKey, jsonEncode(_data));
+      prefs.setString(prefsEmployeeKey, jsonEncode(_data['data']));
       employee = _result
           .map(
               (dynamic json) => Employee.fromJson(json as Map<String, dynamic>))
@@ -193,15 +193,22 @@ class DataRepository {
     return data;
   }
 
-  Future<Map<String, dynamic>> getStatistics(DateTime date) async {
+  Future<Map<String, dynamic>> getStatistics(DateTime date,
+      [int userId]) async {
     Map<String, dynamic> data;
+
+    final Map<String, String> queries = {
+      'year': date.year.toString(),
+      'month': date.month.toString(),
+    };
+
+    if (userId != null) {
+      queries['user_id'] = userId.toString();
+    }
+
     try {
       data = await apiService.getEndpointData(
-          endpoint: Endpoint.statistics,
-          query: {
-            'year': date.year.toString(),
-            'month': date.month.toString()
-          });
+          endpoint: Endpoint.statistics, query: queries);
     } catch (e) {}
     return data;
   }
