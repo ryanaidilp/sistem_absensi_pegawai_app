@@ -35,20 +35,24 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
   bool _isAlarmActive = false;
   List<Presence> _presences;
 
-  Future<void> getUser() async {
+  Future<void> loadData() async {
     final sp = await SharedPreferences.getInstance();
     final _data = sp.get(prefsUserKey);
     bool _alarm = false;
+
     if (sp.containsKey(prefsAlarmKey)) {
       _alarm = sp.get(prefsAlarmKey) as bool;
     } else {
       sp.setBool(prefsAlarmKey, _alarm);
     }
+
     final Map<String, dynamic> _json =
         jsonDecode(_data.toString()) as Map<String, dynamic>;
+
     if (_alarm) {
       await flutterLocalNotificationsPlugin.cancelAll();
     }
+
     setState(() {
       user = User.fromJson(_json);
       _presences = user.presences;
@@ -174,7 +178,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
   @override
   void initState() {
     super.initState();
-    getUser();
+    loadData();
   }
 
   Widget _buildStakeholderMenu() {
@@ -391,7 +395,7 @@ class _ApplicationScreenState extends State<ApplicationScreen> {
                 elevation: 2.0,
                 child: InkWell(
                   onTap: () {
-                    Get.to(() => ReportScreen());
+                    Get.to(() => ReportScreen(user: user));
                   },
                   child: const ListTile(
                     leading: Icon(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flare_flutter/flare_actor.dart';
@@ -7,10 +8,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/models/holiday.dart';
+import 'package:spo_balaesang/models/presence.dart';
 import 'package:spo_balaesang/models/report/absent_report.dart';
 import 'package:spo_balaesang/models/report/daily.dart';
 import 'package:spo_balaesang/models/user.dart';
@@ -23,7 +26,14 @@ import 'package:spo_balaesang/widgets/statistics_card_widget.dart';
 import 'package:spo_balaesang/widgets/user_info_card_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import 'bottom_nav_screen.dart';
+
 class ReportScreen extends StatefulWidget {
+  const ReportScreen({this.user, this.isApproval = false});
+
+  final User user;
+  final bool isApproval;
+
   @override
   _ReportScreenState createState() => _ReportScreenState();
 }
@@ -31,6 +41,7 @@ class ReportScreen extends StatefulWidget {
 class _ReportScreenState extends State<ReportScreen> {
   AbsentReport _absentReport;
   bool _isLoading = false;
+  bool _isApproval;
   DataRepository _dataRepo;
   DateTime _year;
   DateTime _selectedDate = DateTime.now();
@@ -41,24 +52,15 @@ class _ReportScreenState extends State<ReportScreen> {
   User _user;
   final TextEditingController _salaryController = TextEditingController();
   double _salary = 0;
-
-  Future<void> _loadUser() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final User user = User.fromJson(
-        jsonDecode(prefs.getString(prefsUserKey)) as Map<String, dynamic>);
-    if (user != null) {
-      setState(() {
-        _user = user;
-      });
-    }
-  }
+  final TextEditingController _reasonController = TextEditingController();
 
   Future<void> _fetchReportData() async {
     try {
       setState(() {
         _isLoading = true;
       });
-      final Map<String, dynamic> _result = await _dataRepo.getStatistics(_year);
+      final Map<String, dynamic> _result =
+          await _dataRepo.getStatistics(_year, _user.id);
       final AbsentReport absentReport =
           AbsentReport.fromJson(_result['data'] as Map<String, dynamic>);
       setState(() {
@@ -387,7 +389,7 @@ class _ReportScreenState extends State<ReportScreen> {
             availableGestures: AvailableGestures.horizontalSwipe,
             calendarBuilders: CalendarBuilders(
               defaultBuilder: (_, date, focusedDay) {
-                return calendarBuilder(date,
+                return holidayBuilder(date,
                     isNotEmpty: _getHolidayForDay(date).isNotEmpty);
               },
               dowBuilder: dowBuilder,
@@ -545,17 +547,65 @@ class _ReportScreenState extends State<ReportScreen> {
           status = '${event.attendStatus} $duration';
         }
         return EmployeePresenceCardWidget(
-          presenceType: event.attendType,
-          status: status,
-          point: formatPercentage(checkPresencePercentage(event.attendStatus)),
-          color: color,
-          attendTime: event.attendTime,
-          address: event.address,
-          heroTag: event.photo,
+          isApprovalCard: _isApproval,
           photo: event.photo,
+          heroTag: event.photo,
+          status: status,
+          color: color,
+          address: event.address,
+          attendTime: event.attendTime,
+          point: formatPercentage(checkPresencePercentage(event.attendStatus)),
+          presenceType: event.attendType,
+          buttonWidget: SizedBox(
+            width: Get.width * 0.9,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6)),
+                primary: Colors.red[600],
+                onPrimary: Colors.white,
+              ),
+              onPressed: () {
+                _cancelAttendance(Presence.fromJson(event.toPresenceJson()));
+              },
+              child: const Text('Batalkan'),
+            ),
+          ),
         );
       }).toList(),
     );
+  }
+
+  void _cancelAttendance(Presence presence) {
+    Get.defaultDialog(
+        title: 'Alasan Pembatalan!',
+        content: Flexible(
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            width: Get.width * 0.9,
+            child: TextFormField(
+              controller: _reasonController,
+              decoration: const InputDecoration(
+                  labelText: 'Alasan',
+                  focusColor: Colors.blueAccent,
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blueAccent))),
+            ),
+          ),
+        ),
+        confirm: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+            primary: Colors.blueAccent,
+            onPrimary: Colors.white,
+          ),
+          onPressed: () {
+            Get.back();
+            _sendData(presence);
+          },
+          child: const Text('OK'),
+        ));
   }
 
   @override
@@ -563,8 +613,15 @@ class _ReportScreenState extends State<ReportScreen> {
     _year = DateTime.now().year == 2021 ? DateTime.now() : DateTime.utc(2021);
     _dataRepo = Provider.of<DataRepository>(context, listen: false);
     super.initState();
-    _loadUser();
+    _user = widget.user;
+    _isApproval = widget.isApproval;
     _fetchReportData();
+  }
+
+  @override
+  void dispose() {
+    _reasonController.dispose();
+    super.dispose();
   }
 
   Future<void> _selectYear(BuildContext context) async {
@@ -579,6 +636,39 @@ class _ReportScreenState extends State<ReportScreen> {
         _fetchReportData();
       }
     }, locale: DateTimePickerLocale.id, dateFormat: 'MMMM-y');
+  }
+
+  Future<void> _sendData(Presence presence) async {
+    final ProgressDialog pd = ProgressDialog(context, isDismissible: false);
+    pd.show();
+    try {
+      final dataRepo = Provider.of<DataRepository>(context, listen: false);
+      final Map<String, dynamic> data = {
+        'presence_id': presence.id,
+        'reason': _reasonController.value.text
+      };
+      final http.Response response = await dataRepo.cancelAttendance(data);
+      final Map<String, dynamic> _res =
+          jsonDecode(response.body) as Map<String, dynamic>;
+      if (response.statusCode == 200) {
+        pd.hide();
+        showAlertDialog("success", "Sukses", _res['message'].toString(),
+            dismissible: false);
+        Timer(
+            const Duration(seconds: 5), () => Get.off(() => BottomNavScreen()));
+      } else {
+        if (pd.isShowing()) pd.hide();
+        showErrorDialog(_res);
+      }
+    } catch (e) {
+      pd.hide();
+      showErrorDialog({
+        'message': 'Kesalahan',
+        'errors': {
+          'exception': ['Terjadi kesalahan!']
+        }
+      });
+    }
   }
 
   @override
