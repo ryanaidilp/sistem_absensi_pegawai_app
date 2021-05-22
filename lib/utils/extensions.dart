@@ -12,4 +12,12 @@ extension DateOnlyCompare on DateTime {
   bool isWeekend() {
     return weekday == 6 || weekday == 7;
   }
+
+  bool isFinished() {
+    return isBefore(DateTime.now());
+  }
+
+  bool isOnGoing() {
+    return isAfter(DateTime.now());
+  }
 }

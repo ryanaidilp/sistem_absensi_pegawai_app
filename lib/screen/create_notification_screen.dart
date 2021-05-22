@@ -120,20 +120,19 @@ class _CreateNotificationScreenState extends State<CreateNotificationScreen> {
                     labelStyle: TextStyle(color: Colors.grey)),
               ),
               sizedBoxH20,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6)),
-                      primary: Colors.blueAccent,
-                      onPrimary: Colors.white,
-                    ),
-                    onPressed: _sendNotification,
-                    child: const Text('Kirim'),
+              SizedBox(
+                width: Get.width,
+                height: 40.0,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
+                    primary: Colors.blueAccent,
+                    onPrimary: Colors.white,
                   ),
-                ],
+                  onPressed: _sendNotification,
+                  child: const Text('Kirim'),
+                ),
               ),
               sizedBoxH20,
             ],

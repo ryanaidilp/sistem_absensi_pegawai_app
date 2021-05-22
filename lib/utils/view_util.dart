@@ -221,7 +221,7 @@ Widget dowBuilder(BuildContext context, DateTime date) {
   );
 }
 
-Widget calendarBuilder(DateTime date, {bool isNotEmpty}) {
+Widget holidayBuilder(DateTime date, {bool isNotEmpty}) {
   TextStyle _style = const TextStyle(color: Colors.black);
   if (isNotEmpty || date.isWeekend()) {
     _style = const TextStyle(color: Colors.red);

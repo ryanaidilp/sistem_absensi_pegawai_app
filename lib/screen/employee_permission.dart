@@ -294,7 +294,7 @@ class _EmployeePermissionScreenState extends State<EmployeePermissionScreen> {
               shouldFillViewport: true,
               headerStyle: const HeaderStyle(titleCentered: true),
               startingDayOfWeek: StartingDayOfWeek.monday,
-              firstDay: DateTime.now().subtract(const Duration(days: 7)),
+              firstDay: DateTime(2021),
               focusedDay: _selectedDate,
               selectedDayPredicate: (day) {
                 return isSameDay(_selectedDate, day);

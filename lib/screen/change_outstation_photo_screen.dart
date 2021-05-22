@@ -198,33 +198,37 @@ class _ChangeOutstationPhotoScreenState
               ),
               sizedBoxH20,
               _showImage(),
-              sizedBoxH10,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6)),
-                      primary: Colors.blueAccent,
-                      onPrimary: Colors.white,
-                    ),
-                    onPressed: _openCamera,
-                    child: const Text('Ubah Foto'),
+              sizedBoxH20,
+              SizedBox(
+                width: Get.width,
+                height: 40.0,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
+                    primary: Colors.blueAccent,
+                    onPrimary: Colors.white,
                   ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6)),
-                      primary: Colors.green,
-                      onPrimary: Colors.white,
-                    ),
-                    onPressed: () {
-                      _uploadData(_outstation);
-                    },
-                    child: const Text('Kirim'),
+                  onPressed: _openCamera,
+                  child: const Text('Ubah Foto'),
+                ),
+              ),
+              sizedBoxH20,
+              SizedBox(
+                width: Get.width,
+                height: 40.0,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
+                    primary: Colors.green,
+                    onPrimary: Colors.white,
                   ),
-                ],
+                  onPressed: () {
+                    _uploadData(_outstation);
+                  },
+                  child: const Text('Kirim'),
+                ),
               ),
               sizedBoxH20,
             ],

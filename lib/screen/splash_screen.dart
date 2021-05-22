@@ -81,12 +81,12 @@ class _SplashScreenState extends State<SplashScreen> {
   void navigationPage() {
     final Widget _page = _isLoggedIn ? BottomNavScreen() : LoginScreen();
     if (_isFirstSeen) {
-      Get.off<Widget>(_page,
+      Get.off<Widget>(() => _page,
           transition: Transition.rightToLeftWithFade,
           curve: Curves.easeIn,
           duration: const Duration(milliseconds: 500));
     } else {
-      Get.off<Widget>(OnBoardingScreen(page: _page));
+      Get.off<Widget>(() => OnBoardingScreen(page: _page));
     }
   }
 
@@ -193,7 +193,7 @@ class _SplashScreenState extends State<SplashScreen> {
                               color: Colors.white,
                               fontWeight: FontWeight.w700)),
                       SizedBox(width: 2.0),
-                      Text('v4.3.2', style: TextStyle(color: Colors.white)),
+                      Text('v5.0.0', style: TextStyle(color: Colors.white)),
                       Spacer()
                     ],
                   ),

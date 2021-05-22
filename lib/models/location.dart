@@ -13,4 +13,10 @@ class Location {
         longitude: double.parse(json[locationLongitudeField].toString()),
         address: json[locationAddressField] as String);
   }
+
+  Map<String, dynamic> toJson() => {
+        locationLatitudeField: latitude,
+        locationLongitudeField: longitude,
+        locationAddressField: address
+      };
 }
