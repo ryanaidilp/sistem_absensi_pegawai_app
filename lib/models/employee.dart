@@ -3,7 +3,8 @@ import 'package:spo_balaesang/utils/app_const.dart';
 
 class Employee {
   const Employee(
-      {this.nip,
+      {this.id,
+      this.nip,
       this.name,
       this.phone,
       this.gender,
@@ -14,6 +15,7 @@ class Employee {
       this.rank,
       this.group});
 
+  final int id;
   final String nip;
   final String name;
   final String phone;
@@ -27,6 +29,7 @@ class Employee {
 
   factory Employee.fromJson(Map<String, dynamic> json) {
     return Employee(
+        id: json[userIdField] as int,
         nip: json[userNipField] as String,
         name: json[userNameField] as String,
         phone: json[userPhoneField] as String,
@@ -42,4 +45,17 @@ class Employee {
                 .toList()
             : null);
   }
+
+  Map<String, dynamic> toJson() => {
+        userIdField: id,
+        userNameField: name,
+        userNipField: nip,
+        userPhoneField: phone,
+        userGenderField: gender,
+        userDepartmentField: department,
+        userRankField: rank,
+        userGroupField: group,
+        userStatusField: status,
+        userPositionField: position
+      };
 }
