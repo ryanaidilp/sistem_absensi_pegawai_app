@@ -25,19 +25,19 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
     if (mounted) super.setState(fn);
   }
 
-  Future<List<Employee>> loadData() async {
+  Future<void> loadData() async {
     final sp = await SharedPreferences.getInstance();
-    final _dataEmployees = sp.get(prefsEmployeeKey);
-
-    final List<dynamic> _jsonEmployees =
-        jsonDecode(_dataEmployees.toString()) as List<dynamic>;
-    setState(() {
-      _employees = _jsonEmployees
-          .map(
-              (employee) => Employee.fromJson(employee as Map<String, dynamic>))
-          .toList();
-    });
-    return await _employees;
+    do {
+      final _dataEmployees = sp.get(prefsEmployeeKey);
+      final List<dynamic> _jsonEmployees =
+          jsonDecode(_dataEmployees.toString()) as List<dynamic>;
+      setState(() {
+        _employees = _jsonEmployees
+            .map((employee) =>
+                Employee.fromJson(employee as Map<String, dynamic>))
+            .toList();
+      });
+    } while (_employees.isEmpty);
   }
 
   @override
@@ -189,9 +189,9 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
                   context: context,
                   delegate: SearchPage(
                       searchLabel: 'Cari Pegawai',
-                      searchStyle: const TextStyle(color: Colors.white),
                       barTheme: ThemeData(
                         appBarTheme: const AppBarTheme(
+                          brightness: Brightness.dark,
                           color: Colors.blueAccent,
                         ),
                       ),
