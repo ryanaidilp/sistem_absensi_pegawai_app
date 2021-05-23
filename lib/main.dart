@@ -64,7 +64,10 @@ class _MyAppState extends State<MyApp> {
           theme: ThemeData(
               primarySwatch: Colors.blue,
               backgroundColor: Colors.white,
-              scaffoldBackgroundColor: Colors.grey[100]),
+              scaffoldBackgroundColor: Colors.grey[100],
+              appBarTheme: const AppBarTheme(
+                brightness: Brightness.dark,
+              )),
           home: SplashScreen()),
     );
   }

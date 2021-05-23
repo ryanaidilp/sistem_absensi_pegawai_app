@@ -223,6 +223,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
                     barTheme: ThemeData(
                       appBarTheme: const AppBarTheme(
                         color: Colors.blueAccent,
+                        brightness: Brightness.dark,
                       ),
                     ),
                     showItemsOnEmpty: true,
