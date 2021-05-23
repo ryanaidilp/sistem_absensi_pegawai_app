@@ -48,6 +48,7 @@ dependencies:
   pull_to_refresh: 2.0.0
   timeline_tile: 2.0.0
   search_page: 2.0.0+1
+  location: 4.1.1
   flutter: 
     sdk: flutter
 
