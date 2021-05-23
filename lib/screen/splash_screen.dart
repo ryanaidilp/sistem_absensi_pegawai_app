@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:location/location.dart' as location;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
@@ -107,11 +108,15 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
         actions: <Widget>[
           TextButton(
-            onPressed: () {
-              const AndroidIntent intent = AndroidIntent(
-                  action: 'android.settings.LOCATION_SOURCE_SETTINGS');
-              intent.launch();
-              Get.back();
+            onPressed: () async {
+              final _serviceEnabled =
+                  await location.Location().requestService();
+              if (!_serviceEnabled) {
+                const AndroidIntent intent = AndroidIntent(
+                    action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+                intent.launch();
+                Get.back();
+              }
             },
             child: const Text('OK',
                 style: TextStyle(
@@ -193,7 +198,7 @@ class _SplashScreenState extends State<SplashScreen> {
                               color: Colors.white,
                               fontWeight: FontWeight.w700)),
                       SizedBox(width: 2.0),
-                      Text('v5.0.0', style: TextStyle(color: Colors.white)),
+                      Text('v5.0.1', style: TextStyle(color: Colors.white)),
                       Spacer()
                     ],
                   ),

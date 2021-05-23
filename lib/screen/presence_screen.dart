@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:location/location.dart' as location;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
@@ -116,9 +117,13 @@ class _PresenceScreenState extends State<PresenceScreen> {
   Future<void> _getUserLocation() async {
     if (await Permission.location.serviceStatus.isDisabled) {
       Permission.location.shouldShowRequestRationale;
-      const AndroidIntent intent =
-          AndroidIntent(action: 'android.settings.LOCATION_SOURCE_SETTINGS');
-      intent.launch();
+      final bool isLocationServiceEnable =
+          await location.Location().requestService();
+      if (!isLocationServiceEnable) {
+        const AndroidIntent intent =
+            AndroidIntent(action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+        intent.launch();
+      }
     }
     final Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.bestForNavigation);
