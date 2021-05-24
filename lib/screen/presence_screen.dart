@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -14,6 +15,7 @@ import 'package:location/location.dart' as location;
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:spo_balaesang/models/user.dart';
 import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/bottom_nav_screen.dart';
 import 'package:spo_balaesang/screen/image_detail_screen.dart';
@@ -21,8 +23,13 @@ import 'package:spo_balaesang/utils/app_const.dart';
 import 'package:spo_balaesang/utils/file_util.dart';
 import 'package:spo_balaesang/utils/view_util.dart';
 import 'package:spo_balaesang/widgets/image_placeholder_widget.dart';
+import 'package:spo_balaesang/widgets/user_info_card_widget.dart';
 
 class PresenceScreen extends StatefulWidget {
+  const PresenceScreen({this.user});
+
+  final User user;
+
   @override
   _PresenceScreenState createState() => _PresenceScreenState();
 }
@@ -35,6 +42,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
   double _latitude = 0;
   double _longitude = 0;
   String _code;
+  User _user;
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController controller;
@@ -114,6 +122,12 @@ class _PresenceScreenState extends State<PresenceScreen> {
   }
 
   Future<void> _getUserLocation() async {
+    if (_address.isNotEmpty) {
+      setState(() {
+        _address = null;
+      });
+    }
+
     if (!(await Geolocator.isLocationServiceEnabled())) {
       final bool isLocationServiceEnable =
           await location.Location().requestService();
@@ -123,11 +137,13 @@ class _PresenceScreenState extends State<PresenceScreen> {
         intent.launch();
       }
     }
+
     final Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.bestForNavigation);
     final address = await placemarkFromCoordinates(
         position.latitude, position.longitude,
         localeIdentifier: 'id');
+
     setState(() {
       _latitude = position.latitude;
       _longitude = position.longitude;
@@ -213,6 +229,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
   @override
   void initState() {
     super.initState();
+    _user = widget.user;
     _getUserLocation();
   }
 
@@ -220,6 +237,55 @@ class _PresenceScreenState extends State<PresenceScreen> {
   void dispose() {
     controller?.dispose();
     super.dispose();
+  }
+
+  Widget _buildLocationSection() {
+    List<Widget> _children;
+    if (_address == null || _address.isEmpty) {
+      _children = <Widget>[
+        sizedBoxH6,
+        Row(
+          children: const <Widget>[
+            Text(
+              'Memuat lokasi..',
+              style: TextStyle(color: Colors.grey),
+            ),
+            sizedBoxW6,
+            SpinKitCircle(
+              color: Colors.blueAccent,
+              size: 18.0,
+            )
+          ],
+        )
+      ];
+    } else {
+      _children = <Widget>[
+        sizedBoxH6,
+        Text(
+          _address,
+          style: const TextStyle(color: Colors.grey),
+        ),
+        sizedBoxH10,
+        SizedBox(
+          width: Get.width,
+          height: 40.0,
+          child: ElevatedButton(
+            onPressed: _getUserLocation,
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
+              primary: Colors.blueAccent[200],
+              onPrimary: Colors.white,
+            ),
+            child: const Text('Muat Ulang Lokasi'),
+          ),
+        )
+      ];
+    }
+
+    return Column(
+      children: _children,
+    );
   }
 
   @override
@@ -237,6 +303,21 @@ class _PresenceScreenState extends State<PresenceScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              UserInfoCardWidget(
+                department: _user.department,
+                name: _user.name,
+                position: _user.position,
+                status: _user.status,
+                rank: _user?.rank,
+                group: _user?.group,
+                nip: _user?.nip,
+              ),
+              sizedBoxH6,
+              const Text(
+                '*) : Pastikan data pegawai sesuai sebelum melakukan presensi.',
+                style: TextStyle(color: Colors.grey),
+              ),
+              sizedBoxH20,
               Row(
                 children: const <Widget>[
                   Text('Scanner'),
@@ -261,12 +342,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
                   ),
                 ],
               ),
-              Text(
-                (_address == null || _address.isEmpty)
-                    ? 'Memuat lokasi..'
-                    : _address,
-                style: const TextStyle(color: Colors.grey),
-              ),
+              _buildLocationSection(),
               sizedBoxH20,
               Row(
                 children: const <Widget>[
@@ -287,7 +363,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
                 '*): Absen akan dibatalkan jika foto tidak sesuai dengan ketentuan. Tekan untuk memperbesar.',
                 style: TextStyle(
                     fontSize: 10.0,
-                    color: Colors.blueAccent,
+                    color: Colors.red,
                     fontStyle: FontStyle.italic),
               ),
               sizedBoxH20,
