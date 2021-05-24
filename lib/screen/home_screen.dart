@@ -476,7 +476,8 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Colors.green[300],
           child: InkWell(
             onTap: () {
-              Get.to(() => PresenceScreen()).then((value) => _getUser());
+              Get.to(() => PresenceScreen(user: user))
+                  .then((value) => _getUser());
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
