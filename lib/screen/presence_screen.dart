@@ -11,7 +11,6 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart' as location;
-import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -115,8 +114,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
   }
 
   Future<void> _getUserLocation() async {
-    if (await Permission.location.serviceStatus.isDisabled) {
-      Permission.location.shouldShowRequestRationale;
+    if (!(await Geolocator.isLocationServiceEnabled())) {
       final bool isLocationServiceEnable =
           await location.Location().requestService();
       if (!isLocationServiceEnable) {

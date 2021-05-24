@@ -115,8 +115,8 @@ class _SplashScreenState extends State<SplashScreen> {
                 const AndroidIntent intent = AndroidIntent(
                     action: 'android.settings.LOCATION_SOURCE_SETTINGS');
                 intent.launch();
-                Get.back();
               }
+              Get.back();
             },
             child: const Text('OK',
                 style: TextStyle(
