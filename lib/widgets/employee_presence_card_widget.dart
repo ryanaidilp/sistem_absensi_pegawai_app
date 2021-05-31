@@ -89,6 +89,24 @@ class EmployeePresenceCardWidget extends StatelessWidget {
     );
   }
 
+  String checkAddressLabel() {
+    if (int.parse(point.substring(0, point.length - 1)) == 0 &&
+        address.isNotEmpty) {
+      return 'Alasan Pembatalan';
+    }
+
+    return 'Lokasi';
+  }
+
+  IconData checkAddressIcon() {
+    if (int.parse(point.substring(0, point.length - 1)) == 0 &&
+        address.isNotEmpty) {
+      return Icons.notes_rounded;
+    }
+
+    return Icons.location_on_rounded;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -156,12 +174,12 @@ class EmployeePresenceCardWidget extends StatelessWidget {
               Row(
                 children: <Widget>[
                   Icon(
-                    Icons.location_on,
+                    checkAddressIcon(),
                     color: Colors.grey[600],
                     size: 20.0,
                   ),
                   sizedBoxW4,
-                  Text('Lokasi', style: labelTextStyle)
+                  Text(checkAddressLabel(), style: labelTextStyle)
                 ],
               ),
               sizedBoxH4,
