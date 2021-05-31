@@ -309,17 +309,6 @@ class DataRepository {
     return result;
   }
 
-  Future<Map<String, dynamic>> getEmployeePresence(DateTime date) async {
-    Map<String, dynamic> data;
-    try {
-      data =
-          await apiService.getEndpointData(endpoint: Endpoint.presence, query: {
-        'date': date.toString(),
-      });
-    } catch (e) {}
-    return data;
-  }
-
   Future<Response> cancelAttendance(Map<String, dynamic> data) async {
     Response response;
     try {
