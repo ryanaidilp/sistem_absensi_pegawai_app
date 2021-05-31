@@ -1,13 +1,13 @@
-import 'dart:convert';
-
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:search_page/search_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spo_balaesang/models/employee.dart';
 import 'package:spo_balaesang/models/user.dart';
+import 'package:spo_balaesang/repositories/data_repository.dart';
 import 'package:spo_balaesang/screen/report_screen.dart';
 import 'package:spo_balaesang/utils/app_const.dart';
 
@@ -19,25 +19,30 @@ class EmployeeAttendanceScreen extends StatefulWidget {
 
 class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
   List<Employee> _employees;
+  bool _isLoading = false;
 
   @override
   void setState(void Function() fn) {
     if (mounted) super.setState(fn);
   }
 
+  void _setLoading(bool isLoading) {
+    setState(() {
+      _isLoading = isLoading;
+    });
+  }
+
   Future<void> loadData() async {
-    final sp = await SharedPreferences.getInstance();
-    do {
-      final _dataEmployees = sp.get(prefsEmployeeKey);
-      final List<dynamic> _jsonEmployees =
-          jsonDecode(_dataEmployees.toString()) as List<dynamic>;
+    try {
+      _setLoading(true);
+      final dataRepo = Provider.of<DataRepository>(context, listen: false);
+      final List<Employee> _jsonEmployees = await dataRepo.getAllEmployee();
       setState(() {
-        _employees = _jsonEmployees
-            .map((employee) =>
-                Employee.fromJson(employee as Map<String, dynamic>))
-            .toList();
+        _employees = _jsonEmployees;
       });
-    } while (_employees.isEmpty);
+    } catch (e) {} finally {
+      _setLoading(false);
+    }
   }
 
   @override
@@ -177,6 +182,83 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
     );
   }
 
+  Widget _buildContent() {
+    if (_isLoading) {
+      return const SizedBox(
+        child: Center(
+            child: SpinKitCircle(
+          size: 45,
+          color: Colors.blueAccent,
+        )),
+      );
+    }
+
+    if (_employees == null || _employees.isEmpty) {
+      return SizedBox(
+        child: Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(
+                  width: Get.width * 0.5,
+                  height: Get.height * 0.3,
+                  child: const FlareActor(
+                    'assets/flare/failure.flr',
+                    animation: 'failure',
+                  ),
+                ),
+                const Text('Gagal memuat data pegawai!'),
+                sizedBoxH20,
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6)),
+                      primary: Colors.blueAccent,
+                      onPrimary: Colors.white),
+                  onPressed: loadData,
+                  child: const Text('Coba Lagi'),
+                )
+              ]),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      itemBuilder: (context, index) => _buildEmployeeCard(_employees[index]),
+      itemCount: _employees?.length ?? 0,
+    );
+  }
+
+  Future<Employee> _onSearchButtonPressed() async {
+    if (_employees == null || _employees.isEmpty) {
+      return null;
+    }
+
+    return showSearch(
+        context: context,
+        delegate: SearchPage(
+            searchLabel: 'Cari Pegawai',
+            barTheme: ThemeData(
+              appBarTheme: const AppBarTheme(
+                brightness: Brightness.dark,
+                color: Colors.blueAccent,
+              ),
+            ),
+            showItemsOnEmpty: true,
+            failure: _buildEmptyWidget(),
+            builder: (Employee employee) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: _buildEmployeeCard(employee),
+                ),
+            filter: (Employee employee) => [
+                  employee.name,
+                  employee.status,
+                  employee.nip,
+                  employee.department
+                ],
+            items: _employees));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -185,40 +267,13 @@ class _EmployeeAttendanceScreenState extends State<EmployeeAttendanceScreen> {
         title: const Text('Presensi Pegawai'),
         actions: <Widget>[
           IconButton(
-              onPressed: () => showSearch(
-                  context: context,
-                  delegate: SearchPage(
-                      searchLabel: 'Cari Pegawai',
-                      barTheme: ThemeData(
-                        appBarTheme: const AppBarTheme(
-                          brightness: Brightness.dark,
-                          color: Colors.blueAccent,
-                        ),
-                      ),
-                      showItemsOnEmpty: true,
-                      failure: _buildEmptyWidget(),
-                      builder: (Employee employee) => Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: _buildEmployeeCard(employee),
-                          ),
-                      filter: (Employee employee) => [
-                            employee.name,
-                            employee.status,
-                            employee.nip,
-                            employee.department
-                          ],
-                      items: _employees)),
+              onPressed: _onSearchButtonPressed,
               icon: const Icon(Icons.search_rounded))
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
-        child: ListView.builder(
-          itemBuilder: (context, index) =>
-              _buildEmployeeCard(_employees[index]),
-          itemCount: _employees?.length ?? 0,
-        ),
+        child: _buildContent(),
       ),
     );
   }
